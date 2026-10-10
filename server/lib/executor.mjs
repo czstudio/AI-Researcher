@@ -73,6 +73,8 @@ export async function runTask({ task, session, modeDef, body }) {
   const modelRes = resolveModel(body.modelOverride || modeDef?.defaultModel);
   if (modelRes.baseUrl && modelRes.apiKey) {
     const loopCtx = {
+      taskRef: task,
+      sessionRef: session,
       query: ctx.query,
       queryContent: ctx.queryContent,
       queryModel: ctx.model,

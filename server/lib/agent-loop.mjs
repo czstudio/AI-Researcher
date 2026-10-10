@@ -23,6 +23,20 @@ import http from 'node:http';
 import { URL } from 'node:url';
 
 const MAX_ROUNDS = 60;
+const ASK_TIMEOUT_MS = 10 * 60_000;
+/** 线上 human-in-the-loop：toolCallId → {resolve, question, taskId, sessionId}（submit_user_question 回填） */
+export const pendingQuestions = new Map();
+
+function askUser(ctx, toolCallId, question) {
+  return new Promise((resolve) => {
+    const rec = { resolve, question, taskId: ctx.taskId, sessionId: ctx.sessionId, at: Date.now() };
+    pendingQuestions.set(toolCallId, rec);
+    const t = setTimeout(() => {
+      if (pendingQuestions.delete(toolCallId)) resolve({ '(timeout)': '用户未在时限内回答，请基于已有信息继续或明确假设。' });
+    }, ASK_TIMEOUT_MS);
+    if (t.unref) t.unref();
+  });
+}
 const TOOL_TIMEOUT_MS = 120_000;
 const TOOL_OUTPUT_CAP = 8000;
 
@@ -110,6 +124,7 @@ export const TOOLS = [
   { type: 'function', function: { name: 'Grep', description: '工作区内正则检索', parameters: { type: 'object', properties: { pattern: { type: 'string' } }, required: ['pattern'] } } },
   { type: 'function', function: { name: 'TaskCreate', description: '创建执行计划条目（subject）', parameters: { type: 'object', properties: { subject: { type: 'string' } }, required: ['subject'] } } },
   { type: 'function', function: { name: 'TaskUpdate', description: '更新计划条目状态', parameters: { type: 'object', properties: { taskId: { type: 'string' }, status: { type: 'string', enum: ['pending', 'in_progress', 'done'] } }, required: ['taskId', 'status'] } } },
+  { type: 'function', function: { name: 'AskUserQuestion', description: '向用户提问以澄清关键信息（返回 {问题文本: 用户回答}）', parameters: { type: 'object', properties: { question: { type: 'string', description: '要问用户的问题（一句）' }, options: { type: 'array', items: { type: 'string' }, description: '可选的候选项' } }, required: ['question'] } } },
   { type: 'function', function: { name: 'mcp__paper_search__unified_paper_search', description: '跨 arXiv/Crossref/SemanticScholar 检索论文', parameters: { type: 'object', properties: { query: { type: 'string' }, max: { type: 'integer' } }, required: ['query'] } } },
   { type: 'function', function: { name: 'mcp__paper_search__search_papers_by_source', description: '按单一来源检索论文（arxiv|crossref|semanticscholar）', parameters: { type: 'object', properties: { query: { type: 'string' }, source: { type: 'string' } }, required: ['query', 'source'] } } },
   { type: 'function', function: { name: 'mcp__web_search__url2text', description: '抓取网页正文为文本', parameters: { type: 'object', properties: { url: { type: 'string' } }, required: ['url'] } } },
@@ -147,6 +162,7 @@ async function url2text(url) {
 
 /** 执行一个工具调用。workspace 内真实 fs / 真实 shell / 真实检索。 */
 async function executeTool(ctx, name, input) {
+  // ctx.currentToolCallId 由循环处注入（AskUserQuestion 用）
   const ws = ctx.workspaceDir;
   switch (name) {
     case 'Skill': {
@@ -187,6 +203,8 @@ async function executeTool(ctx, name, input) {
       if (t) t.status = input.status;
       return JSON.stringify({ success: !!t, taskId: input.taskId, updatedFields: ['status'] });
     }
+    case 'AskUserQuestion':
+      return JSON.stringify(await askUser(ctx, ctx.currentToolCallId, String(input.question || '请补充信息')));
     case 'mcp__paper_search__unified_paper_search':
       return JSON.stringify(await searchAll(String(input.query), { max: Math.min(input.max || 8, 20) }), null, 1).slice(0, TOOL_OUTPUT_CAP);
     case 'mcp__paper_search__search_papers_by_source': {
@@ -236,6 +254,9 @@ function completions({ baseUrl, apiKey, model, messages, tools, signal }) {
  *   {kind:'artifact', path, bytes}
  *   {kind:'final', content}
  */
+function taskOf(ctx) { return ctx.taskRef?.id ?? ctx.taskId ?? ''; }
+function sessionOf(ctx) { return ctx.sessionRef?.id ?? ctx.sessionId ?? ''; }
+
 export async function* runAgentLoop(ctx) {
   const tpl = LIVE_TEMPLATES[ctx.modeKey] || LIVE_TEMPLATES.auto;
   const wrapped = tpl.wrapper(ctx.queryContent || ctx.query, ctx.controls || {});
@@ -263,10 +284,13 @@ export async function* runAgentLoop(ctx) {
     yield { kind: 'trajectory', message: msg };
     if (!toolCalls.length) break;
     messages.push({ role: 'assistant', content: content || null, tool_calls: toolCalls });
+    ctx.taskId = ctx.taskId || String(taskOf(ctx) || '');
+    ctx.sessionId = ctx.sessionId || sessionOf(ctx);
     for (const tc of toolCalls) {
       let input = {};
       try { input = JSON.parse(tc.function?.arguments || '{}'); } catch { /* keep {} */ }
       const name = tc.function?.name || '';
+      ctx.currentToolCallId = tc.id;
       let output;
       try {
         output = await executeTool(ctx, name, input);
