@@ -108,6 +108,62 @@ Requirements:
 - Exploration: Breadth ${c.breadth ?? 5}/10, Depth ${c.depth ?? 5}/10
 - Style: Novel ${c.novel ?? 5}/10, Feasible ${c.feasible ?? 5}/10`,
   },
+  autoexperiment: {
+    agentName: 'NovixCodeAgent',
+    wrapper: (q, c = {}) => `Treat this as an end-to-end ML implementation and auto-experiment task.
+
+Requirements:
+- Implement a complete, runnable ML workflow in the project workspace.
+- Keep code self-contained and production-oriented; avoid brittle demo-only scripts.
+- Use the default environment directly (no virtualenv creation unless explicitly required).
+- Maintain phased task tracking (setup, implementation, testing/evaluation) with clear progress updates.
+- Implement full pipeline: data preparation, model building, training, evaluation, and result reporting.
+- Run real experiments, log key metrics, and preserve reproducibility metadata (configs, seeds, command history).
+- For long-running jobs, monitor execution status and ensure jobs complete before finalizing.
+- Adapt reference implementations into the project; do not rely on direct external codebase imports.
+- Deliver a reproducible 'entrypoint.sh' that can run core experiments and regenerate the main outputs.
+- Ensure final outputs are interpretable and mapped to the original task goals.
+- Respond in the same language used in the user task.
+
+Helpful skills may include, but are not limited to:
+- 'pytorch-lightning'
+- 'torch-geometric'
+- 'transformers'
+- 'scikit-learn'
+- 'statistical-analysis'
+- 'scientific-critical-thinking'
+- 'publication-plots'
+
+User task:
+${q}
+Compute: ${c.enableGpu ? 'GPU (cuda)' : 'CPU'}`,
+  },
+  notebook: {
+    agentName: 'NovixCodeAgent',
+    wrapper: (q, c = {}) => `Treat this as a notebook-first analysis task.
+
+Requirements:
+- Use the skill 'novix-notebook'.
+- Use Novix notebook MCP tools as the primary notebook interface.
+- Start with 'mcp__notebook__create_new_notebook', then add and execute cells with 'mcp__notebook__add_cell_and_execute' or 'mcp__notebook__insert_cell_and_execute'.
+- Use 'mcp__notebook__get_number_of_cells', 'mcp__notebook__get_cell_type_and_source', and 'mcp__notebook__get_cell_output' to inspect notebook structure and outputs before finishing.
+- Keep the main notebook under '/home/novix/workspace/project/notebook' (local: project/notebook).
+- Use real data, real references, and real analysis unless the user explicitly asks for mock data.
+- Review the notebook as a complete artifact before finishing.
+- If useful, export whole-notebook review images before completion.
+- Respond in the same language used in the user task.
+
+Helpful skills may include, but are not limited to:
+- 'novix-notebook'
+- 'exploratory-data-analysis'
+- 'open-notebook'
+- 'matplotlib'
+- 'seaborn'
+- 'plotly'
+
+User task:
+${q}`,
+  },
   // 同构重建（线上模板未逐字捕获，结构自 Idea/Deep Survey 实测推断）：
   methoddesign: { agentName: 'Proposal Agent', wrapper: (q, c = {}) => `Treat this as a research methodology proposal task.\n\n- Load and follow the \`novix-proposal\` skill.\n- Deliverable: a method/experiment proposal with falsifiable evaluation protocol.\n- Respond in the same language used in the user task.\n\nHelpful skills may include: awaken, novix-proposal, literature-review, hypothesis-generation, scientific-critical-thinking, citation-management.\n\nUser task:\n${q}` },
   autoexperiment: { agentName: 'ML Agent', wrapper: (q, c = {}) => `Treat this as a runnable ML experiment task.\n\n- Deliverable: runnable experiment code + metrics + entrypoint.sh that reproduces end to end.\n- Compute: ${c.enableGpu ? 'GPU' : 'CPU'}.\n\nUser task:\n${q}` },
@@ -128,7 +184,30 @@ export const TOOLS = [
   { type: 'function', function: { name: 'mcp__paper_search__unified_paper_search', description: '跨 arXiv/Crossref/SemanticScholar 检索论文', parameters: { type: 'object', properties: { query: { type: 'string' }, max: { type: 'integer' } }, required: ['query'] } } },
   { type: 'function', function: { name: 'mcp__paper_search__search_papers_by_source', description: '按单一来源检索论文（arxiv|crossref|semanticscholar）', parameters: { type: 'object', properties: { query: { type: 'string' }, source: { type: 'string' } }, required: ['query', 'source'] } } },
   { type: 'function', function: { name: 'mcp__web_search__url2text', description: '抓取网页正文为文本', parameters: { type: 'object', properties: { url: { type: 'string' } }, required: ['url'] } } },
+  // ---- notebook 域（线上 Data Analysis 实测 2026-10-10）：notebook 即执行环境 ----
+  { type: 'function', function: { name: 'mcp__notebook__create_new_notebook', description: '新建 notebook（工作区 project/notebook/main.ipynb）', parameters: { type: 'object', properties: { path: { type: 'string' } } } } },
+  { type: 'function', function: { name: 'mcp__notebook__add_cell_and_execute', description: '追加 cell 并真实执行（python3），返回 stdout/stderr', parameters: { type: 'object', properties: { cell_type: { type: 'string', enum: ['code', 'markdown'] }, source: { type: 'string' } }, required: ['source'] } } },
+  { type: 'function', function: { name: 'mcp__notebook__get_cell_output', description: '读取某 cell 的既有输出', parameters: { type: 'object', properties: { index: { type: 'integer' } }, required: ['index'] } } },
+  { type: 'function', function: { name: 'mcp__notebook__get_number_of_cells', description: 'notebook cell 数', parameters: { type: 'object', properties: {} } } },
+  { type: 'function', function: { name: 'mcp__notebook__get_cell_type_and_source', description: '读某 cell 类型与源码', parameters: { type: 'object', properties: { index: { type: 'integer' } }, required: ['index'] } } },
+  { type: 'function', function: { name: 'mcp__notebook__delete_cell', description: '删除某 cell', parameters: { type: 'object', properties: { index: { type: 'integer' } }, required: ['index'] } } },
+  // ---- files / delivery 域（线上实测）----
+  { type: 'function', function: { name: 'mcp__files__open_files', description: '在工作区文件面板打开文件（登记近期打开）', parameters: { type: 'object', properties: { paths: { type: 'array', items: { type: 'string' } } }, required: ['paths'] } } },
+  { type: 'function', function: { name: 'mcp__delivery__deliver_to_user', description: '把文件登记为对用户的最终交付', parameters: { type: 'object', properties: { files: { type: 'array', items: { type: 'string' } }, note: { type: 'string' } }, required: ['files'] } } },
 ];
+
+function persistNotebook(ctx, ws) {
+  try {
+    const nb = {
+      nbformat: 4, nbformat_minor: 5,
+      metadata: { kernelspec: { name: 'python3' } },
+      cells: (ctx.nb?.cells || []).map((c) => ({ ...c, outputs: c.outputs || [], execution_count: c.execution_count ?? null })),
+    };
+    const abs = inWorkspace(ws, ctx.nb.path);
+    fs.mkdirSync(path.dirname(abs), { recursive: true });
+    fs.writeFileSync(abs, JSON.stringify(nb, null, 1));
+  } catch { /* 持久化失败不阻塞 */ }
+}
 
 function inWorkspace(ws, rel) {
   const abs = path.resolve(ws, rel);
@@ -213,6 +292,55 @@ async function executeTool(ctx, name, input) {
     }
     case 'mcp__web_search__url2text':
       return url2text(String(input.url));
+    case 'mcp__notebook__create_new_notebook': {
+      ctx.nb = { path: input.path || 'project/notebook/main.ipynb', cells: [], kernel: 0 };
+      return JSON.stringify({ created: true, path: ctx.nb.path, cells: 0 });
+    }
+    case 'mcp__notebook__add_cell_and_execute': {
+      ctx.nb = ctx.nb || { path: 'project/notebook/main.ipynb', cells: [] };
+      const cell = { cell_type: input.cell_type || 'code', source: String(input.source) };
+      if (cell.cell_type === 'code') {
+        const tmp = `.nb_cell_${Date.now().toString(36)}.py`;
+        const abs = inWorkspace(ws, tmp);
+        fs.writeFileSync(abs, cell.source);
+        // 线上语义：cell 在 notebook 内核顺序执行；本地用 python3 单进程近似（变量经 _nb_ctx.pkl 传递）
+        const prelude = `import pickle,os\n_ctx='.nb_ctx.pkl'\n_g={}\nif os.path.exists(_ctx):\n _g=pickle.load(open(_ctx,'rb'));globals().update(_g)\nexec(open(${JSON.stringify(tmp)}).read())\nimport sys\n_d={}\nfor k,v in list(globals().items()):\n if k.startswith('__') or k in ('pickle','os','sys'):continue\n try:_d[k]=pickle.dumps(v) and v\n except Exception:pass\ntry:pickle.dump(_d,open(_ctx,'wb'))\nexcept Exception:pass`;
+        const pre = `.nb_pre_${Date.now().toString(36)}.py`;
+        fs.writeFileSync(inWorkspace(ws, pre), prelude);
+        const r = await sh(`python3 ${pre}`, ws);
+        fs.rmSync(abs, { force: true }); fs.rmSync(inWorkspace(ws, pre), { force: true });
+        cell.outputs = [{ output_type: 'stream', text: r.output }];
+        cell.execution_count = ++ctx.nb.kernel;
+      }
+      ctx.nb.cells.push(cell);
+      persistNotebook(ctx, ws);
+      return JSON.stringify({ index: ctx.nb.cells.length - 1, execution_count: cell.execution_count ?? null, output: (cell.outputs?.[0]?.text || '').slice(0, TOOL_OUTPUT_CAP) });
+    }
+    case 'mcp__notebook__get_number_of_cells':
+      return JSON.stringify({ count: (ctx.nb?.cells || []).length });
+    case 'mcp__notebook__get_cell_type_and_source': {
+      const c = ctx.nb?.cells?.[input.index];
+      return c ? JSON.stringify({ cell_type: c.cell_type, source: c.source }) : 'cell 不存在';
+    }
+    case 'mcp__notebook__get_cell_output': {
+      const c = ctx.nb?.cells?.[input.index];
+      return JSON.stringify({ output: c?.outputs?.[0]?.text ?? null });
+    }
+    case 'mcp__notebook__delete_cell': {
+      if (ctx.nb?.cells) { ctx.nb.cells.splice(Number(input.index), 1); persistNotebook(ctx, ws); }
+      return JSON.stringify({ deleted: true });
+    }
+    case 'mcp__files__open_files': {
+      const paths = Array.isArray(input.paths) ? input.paths : [];
+      ctx.openedFiles = [...(ctx.openedFiles || []), ...paths];
+      return JSON.stringify({ opened: paths.length, files: paths });
+    }
+    case 'mcp__delivery__deliver_to_user': {
+      const files = Array.isArray(input.files) ? input.files : [];
+      fs.mkdirSync(inWorkspace(ws, 'delivery'), { recursive: true });
+      fs.writeFileSync(inWorkspace(ws, 'delivery/MANIFEST.md'), `# 交付清单\n\n${files.map((f) => `- \`${f}\``).join('\n')}\n${input.note ? `\n> ${input.note}\n` : ''}`);
+      return JSON.stringify({ delivered: files.length, files, manifest: 'delivery/MANIFEST.md' });
+    }
     default:
       return `未实现的工具：${name}`;
   }
