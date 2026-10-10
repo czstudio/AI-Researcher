@@ -80,3 +80,25 @@
 4. P2 套餐并发闸 + GPU 队列定价；5100 错误形状。
 5. P2 strix 对本仓复刻的持续巡扫（本轮已起扫 clawsgo-open 复刻，报告落地后归档）。
 6. P3 Auto Experiment / Data Analysis / Reproduce Paper 三模式小成本实跑标定（模板/额度）。
+
+
+---
+
+## 五、E2E 终验记录（2026-10-10，同题对齐线上）
+
+**供给**：`moonshotai/kimi-k2.5`（OpenRouter，无限额 key）· LaTeX 引擎 `tectonic`（线上为 xelatex，同形替代）· 匿名会话走 `create_anonymous_task`。
+
+| 维度 | 线上（Deep Survey 245455） | 本地 round2（task 685029） |
+|---|---|---|
+| 步数 | 114（finish） | **94（finish）** |
+| agent | NovixWriterAgent 全程 | NovixWriterAgent 全程 ✅ |
+| 计划工具 | TaskCreate×3 + TaskUpdate×5 | TaskCreate×1 + TaskUpdate×1 ✅ |
+| Bash 真执行 | mkdir/xelatex/pdfinfo/pdffonts | **Bash×30**（抓取/转换/tectonic 编译/pdfinfo 质检）✅ |
+| MCP 检索 | paper_search×7 + web_search×8 | paper_search×16 + url2text×3 ✅ |
+| 中间产物 | outline/bib/两轮 draft/图族 | outline.md→references.bib→sources/*.txt→v1_draft.tex→**v1_draft.pdf 54KB/3页 letter** ✅ |
+| 终稿 | 113KB/6页 letter（含图） | 54KB/3页 letter（本轮未画图；图表环节依赖 publication-plots 技能桩，待补真渲染） |
+| 自审 | PDF→PNG 逐页 Read | pdfinfo 质检 + v1_draft.txt 提取 ✅（PNG 逐页待补 pdftoppm 引导） |
+
+**结论**：自治工具循环端到端成立——同一 wrapper 模板、同一工具面、同一轨迹格式、同一产物结构（drafts/references/sources/final）。与线上的剩余差距收敛为三点：①技能库为行为重建桩（影响图表质量与轮次深度）②xelatex→tectonic 替代 ③PNG 逐页自审未触发。证据：`/tmp/novix-e2e-r2-writing/`（含 build.log/pdfinfo.txt/blg）。
+
+round1（无强化指令）17 步出 .md——模型有走捷径倾向，MANDATORY DELIVERABLES 指令是必要的（与线上「模板硬约束」的设计意图互证）。
