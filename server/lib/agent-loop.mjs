@@ -16,7 +16,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { resolveModel } from './llm.mjs';
-import { searchAll, searchArxiv, searchCrossref, searchSemanticScholar } from './literature.mjs';
+import { searchAll, searchArxiv, searchCrossref, searchSemanticScholar, fetchPaperFulltext, webSearch, scholarSearch } from './literature.mjs';
 import * as db from '../store/db.mjs';
 import https from 'node:https';
 import http from 'node:http';
@@ -166,7 +166,6 @@ ${q}`,
   },
   // 同构重建（线上模板未逐字捕获，结构自 Idea/Deep Survey 实测推断）：
   methoddesign: { agentName: 'Proposal Agent', wrapper: (q, c = {}) => `Treat this as a research methodology proposal task.\n\n- Load and follow the \`novix-proposal\` skill.\n- Deliverable: a method/experiment proposal with falsifiable evaluation protocol.\n- Respond in the same language used in the user task.\n\nHelpful skills may include: awaken, novix-proposal, literature-review, hypothesis-generation, scientific-critical-thinking, citation-management.\n\nUser task:\n${q}` },
-  autoexperiment: { agentName: 'ML Agent', wrapper: (q, c = {}) => `Treat this as a runnable ML experiment task.\n\n- Deliverable: runnable experiment code + metrics + entrypoint.sh that reproduces end to end.\n- Compute: ${c.enableGpu ? 'GPU' : 'CPU'}.\n\nUser task:\n${q}` },
   auto: { agentName: 'NovixWriterAgent', wrapper: (q) => `${q}` },
 };
 
@@ -192,6 +191,9 @@ export const TOOLS = [
   { type: 'function', function: { name: 'mcp__notebook__get_cell_type_and_source', description: '读某 cell 类型与源码', parameters: { type: 'object', properties: { index: { type: 'integer' } }, required: ['index'] } } },
   { type: 'function', function: { name: 'mcp__notebook__delete_cell', description: '删除某 cell', parameters: { type: 'object', properties: { index: { type: 'integer' } }, required: ['index'] } } },
   // ---- files / delivery 域（线上实测）----
+  { type: 'function', function: { name: 'mcp__paper_search__get_paper_fulltext', description: '获取 arXiv 论文全文（PDF→text）', parameters: { type: 'object', properties: { identifier: { type: 'string', description: 'arXiv ID 或 URL' } }, required: ['identifier'] } } },
+  { type: 'function', function: { name: 'mcp__web_search__web_search', description: '真实网络搜索（DuckDuckGo）', parameters: { type: 'object', properties: { query: { type: 'string' } }, required: ['query'] } } },
+  { type: 'function', function: { name: 'mcp__web_search__google_scholar_search', description: '学术搜索（arXiv/S2/DOI 限定）', parameters: { type: 'object', properties: { query: { type: 'string' } }, required: ['query'] } } },
   { type: 'function', function: { name: 'mcp__files__open_files', description: '在工作区文件面板打开文件（登记近期打开）', parameters: { type: 'object', properties: { paths: { type: 'array', items: { type: 'string' } } }, required: ['paths'] } } },
   { type: 'function', function: { name: 'mcp__delivery__deliver_to_user', description: '把文件登记为对用户的最终交付', parameters: { type: 'object', properties: { files: { type: 'array', items: { type: 'string' } }, note: { type: 'string' } }, required: ['files'] } } },
 ];
@@ -269,11 +271,30 @@ async function executeTool(ctx, name, input) {
   const ws = ctx.workspaceDir;
   switch (name) {
     case 'Skill': {
-      // 线上语义：返回该技能的使用说明（技能库随仓库 dist/skills 提供，可自行扩充）
-      const dir = path.join(path.resolve(import.meta.dirname, '..', '..'), 'skills', input.skill);
-      const f = path.join(dir, 'SKILL.md');
-      if (fs.existsSync(f)) return fs.readFileSync(f, 'utf8').slice(0, TOOL_OUTPUT_CAP);
-      return `技能 ${input.skill} 未安装。可用技能见 skills/ 目录；请基于通用科研方法论继续。${input.args ? `（调用参数：${input.args}）` : ''}`;
+      // 线上语义：返回使用说明 + 权限信封（allowedTools）+ 脚本绝对路径
+      const skillRoot = path.resolve(import.meta.dirname, '..', '..', 'skills', input.skill);
+      const f = path.join(skillRoot, 'SKILL.md');
+      if (fs.existsSync(f)) {
+        const guide = fs.readFileSync(f, 'utf8').slice(0, TOOL_OUTPUT_CAP - 500);
+        // 权限信封（对齐线上 allowedTools 模型）
+        const allowedTools = ['Read', 'Write', 'Bash', 'Glob', 'Grep'];
+        // 脚本绝对路径（agent 不需要猜）
+        let scripts = [];
+        const scriptsDir = path.join(skillRoot, 'scripts');
+        if (fs.existsSync(scriptsDir)) {
+          scripts = fs.readdirSync(scriptsDir).filter(n => n.endsWith('.py') || n.endsWith('.js')).map(n => path.join(scriptsDir, n));
+        }
+        return JSON.stringify({ success: true, commandName: input.skill, allowedTools, guide, scriptPaths: scripts, skillRoot }) .slice(0, TOOL_OUTPUT_CAP);
+      }
+      // 别名归一（publication-plots ↔ plots 等）
+      const aliases = { plots: 'publication-plots', schematics: 'scientific-schematics', quality: 'report-quality-gate', gate: 'report-quality-gate', export: 'pdf-export', pdf: 'pdf-export', dataviz: 'dataviz', palette: 'dataviz' };
+      const canonical = aliases[input.skill];
+      if (canonical) {
+        input.skill = canonical;
+        return executeTool(ctx, 'Skill', input);
+      }
+      const available = fs.readdirSync(path.resolve(import.meta.dirname, '..', '..', 'skills')).join(', ');
+      return `技能 ${input.skill} 未安装（可用：${available}）。可用通用方法论继续；或用 ${available.split(',')[0]} 等已安装技能。`;
     }
     case 'Read':
       return fs.readFileSync(inWorkspace(ws, input.file_path), 'utf8').split('\n').slice(0, 400).join('\n');
@@ -283,8 +304,17 @@ async function executeTool(ctx, name, input) {
       fs.writeFileSync(abs, input.content ?? '');
       return `已写入 ${input.file_path}`;
     }
-    case 'Bash':
-      return (await sh(String(input.command), ws, ctx.signal)).output;
+    case 'Bash': {
+      // P0-2（GAP-LIST v2）：enableGpu 不再是死参数——本地有 GPU 时注入 CUDA_VISIBLE_DEVICES
+      let cmd = String(input.command);
+      if (ctx.enableGpu && !cmd.includes('CUDA_VISIBLE_DEVICES')) {
+        const hasGpu = await sh('command -v nvidia-smi >/dev/null 2>&1 && echo yes || echo no', ws, ctx.signal);
+        if (hasGpu.output.trim() === 'yes') {
+          cmd = `CUDA_VISIBLE_DEVICES=0 ${cmd}`;
+        }
+      }
+      return (await sh(cmd, ws, ctx.signal)).output;
+    }
     case 'Glob': {
       const out = await sh(`find . -path ./.git -prune -o -print | head -400`, ws, ctx.signal);
       const pat = input.pattern || '**/*';
@@ -354,6 +384,14 @@ async function executeTool(ctx, name, input) {
       if (ctx.nb?.cells) { ctx.nb.cells.splice(Number(input.index), 1); persistNotebook(ctx, ws); }
       return JSON.stringify({ deleted: true });
     }
+    case 'mcp__paper_search__get_paper_fulltext': {
+      const r = await fetchPaperFulltext(String(input.identifier));
+      return JSON.stringify(r.error ? r : { arxivId: r.arxivId, chars: r.chars, text: r.text?.slice(0, TOOL_OUTPUT_CAP) });
+    }
+    case 'mcp__web_search__web_search':
+      return JSON.stringify(await webSearch({ query: String(input.query), limit: input.limit || 5 }));
+    case 'mcp__web_search__google_scholar_search':
+      return JSON.stringify(await scholarSearch({ query: String(input.query), limit: input.limit || 5 }));
     case 'mcp__files__open_files': {
       const paths = Array.isArray(input.paths) ? input.paths : [];
       ctx.openedFiles = [...(ctx.openedFiles || []), ...paths];
@@ -409,8 +447,19 @@ function completions({ baseUrl, apiKey, model, messages, tools, signal }) {
 function taskOf(ctx) { return ctx.taskRef?.id ?? ctx.taskId ?? ''; }
 function sessionOf(ctx) { return ctx.sessionRef?.id ?? ctx.sessionId ?? ''; }
 
+// 身族工具面分化（P0-3 GAP-LIST v2 2026-10-11）
+const WRITER_FAMILY = new Set(['deepsurvey', 'ideaspark', 'methoddesign', 'auto']);
+const CODE_FAMILY = new Set(['autoexperiment', 'notebook', 'reproduce']);
+
+function toolsForFamily(modeKey) {
+  if (CODE_FAMILY.has(modeKey)) return TOOLS; // 全开（Bash/GPU/notebook/MCP 全部）
+  // Writer 系：去掉 notebook 域（写作不需要逐 cell 执行）
+  return TOOLS.filter(t => !t.function.name.startsWith('mcp__notebook__'));
+}
+
 export async function* runAgentLoop(ctx) {
   const tpl = LIVE_TEMPLATES[ctx.modeKey] || LIVE_TEMPLATES.auto;
+  const familyTools = toolsForFamily(ctx.modeKey);
   const wrapped = tpl.wrapper(ctx.queryContent || ctx.query, ctx.controls || {});
   const system = [
     'You are a research agent running inside an "agentic workspace for research".',
@@ -430,7 +479,7 @@ export async function* runAgentLoop(ctx) {
   let lastContent = '';
   for (let round = 0; round < MAX_ROUNDS; round++) {
     if (ctx.signal?.aborted) break;
-    const { content, toolCalls } = await completions({ baseUrl, apiKey, model, messages, tools: TOOLS, signal: ctx.signal });
+    const { content, toolCalls } = await completions({ baseUrl, apiKey, model, messages, tools: familyTools, signal: ctx.signal });
     if (content) lastContent = content;
     const msg = { role: 'assistant', content: content || '', ...(toolCalls.length ? { tool_calls: toolCalls } : {}), agent_name: tpl.agentName };
     yield { kind: 'trajectory', message: msg };

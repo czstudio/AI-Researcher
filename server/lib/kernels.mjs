@@ -279,7 +279,7 @@ json.dump({"final_loss": losses[-1], "accuracy": acc, "loss_curve": losses[::20]
   const b = writeArtifact(
     ctx,
     'project/entrypoint.sh',
-    `#!/usr/bin/env bash\nset -euo pipefail\ncd "$(dirname "$0")"\nexport PYTHONHASHSEED=7\nexport CUDA_VISIBLE_DEVICES=""\nPY=\${PYTHON:-python3}\n"\${PY}" src/experiment.py\n`
+    `#!/usr/bin/env bash\nset -euo pipefail\ncd "$(dirname "$0")"\nexport PYTHONHASHSEED=7\nexport CUDA_VISIBLE_DEVICES=${ctx.enableGpu ? "0" : ""}\nPY=\${PYTHON:-python3}\n"\${PY}" src/experiment.py\n`
   );
   yield { kind: 'artifact', ...b };
 

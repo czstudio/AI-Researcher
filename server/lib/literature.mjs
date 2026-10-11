@@ -151,3 +151,67 @@ export async function fetchArxivSource(identifier) {
     pdfUrl: tagOne(entry, 'id').replace('/abs/', '/pdf/'),
   };
 }
+
+// ---- P0-4 检索三件套（线上工具面对齐 2026-10-10 GAP-LIST v2）----
+
+/** arXiv PDF → 全文文本（挂 mcp__paper_search__get_paper_fulltext 工具） */
+export async function fetchPaperFulltext(identifier, { maxChars = 12000 } = {}) {
+  // 支持 arXiv ID（2309.17453 / 2309.17453v2）或 URL
+  let arxivId = identifier;
+  const m = String(identifier).match(/arxiv\.org\/(?:abs|pdf)\/([\d.]+(?:v\d+)?)/i);
+  if (m) arxivId = m[1];
+  if (!/^[\d.]+(v\d+)?$/i.test(arxivId)) {
+    return { error: `not an arXiv id: ${identifier}`, text: null };
+  }
+  const pdfUrl = `https://arxiv.org/pdf/${arxivId}`;
+  try {
+    const res = await fetch(pdfUrl, { headers: { 'User-Agent': 'novix-open-research/1.0' }, signal: AbortSignal.timeout(30_000) });
+    if (!res.ok) return { error: `arxiv ${res.status}`, text: null };
+    const buf = Buffer.from(await res.arrayBuffer());
+    const tmp = `/tmp/novix-paper-${Date.now()}.pdf`;
+    const fs = await import('node:fs');
+    fs.writeFileSync(tmp, buf);
+    // pdftotext 提取
+    const { execFile } = await import('node:child_process');
+    const text = await new Promise((resolve) => {
+      execFile('pdftotext', ['-l', '20', tmp, '-'], { maxBuffer: 4e6 }, (err, stdout) => {
+        fs.rmSync(tmp, { force: true });
+        resolve(err ? null : stdout);
+      });
+    });
+    if (!text) return { error: 'pdftotext failed or not installed', text: null };
+    return { arxivId, source: pdfUrl, chars: text.length, text: text.slice(0, maxChars) };
+  } catch (e) {
+    return { error: e.message, text: null };
+  }
+}
+
+/** 真实 web 搜索（DuckDuckGo HTML 版——clawsgo workspace.mjs:857 同源实现） */
+export async function webSearch({ query, limit = 5 } = {}) {
+  const url = `https://duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+  try {
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36' },
+      signal: AbortSignal.timeout(15_000),
+    });
+    const html = await res.text();
+    const results = [];
+    const linkRe = /<a[^>]+class="result__a"[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g;
+    const snipRe = /<a[^>]+class="result__snippet"[^>]*>([\s\S]*?)<\/a>/g;
+    const strip = (s) => s.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
+    let m;
+    while ((m = linkRe.exec(html)) && results.length < limit) {
+      const snippetM = snipRe.exec(html);
+      results.push({ url: m[1], title: strip(m[2]).slice(0, 120), snippet: snippetM ? strip(snippetM[1]).slice(0, 200) : '' });
+    }
+    return { query, results };
+  } catch (e) {
+    return { query, results: [], error: e.message };
+  }
+}
+
+/** Google Scholar 搜索（Serper 风格解析——无 API key 时降级到 DuckDuckGo academic 前缀） */
+export async function scholarSearch({ query, limit = 5 } = {}) {
+  // Google Scholar 直爬易被墙——用 site:scholar.google.com 或学术关键词 DuckDuckGo 降级
+  return webSearch({ query: `${query} site:arxiv.org OR site:semanticscholar.org OR "doi.org"`, limit });
+}
