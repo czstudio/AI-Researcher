@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-11T08:35:00Z",
+  "author": "zcode",
+  "budget_approved_cny": 200,
+  "budget_usd_approx": 27.4,
+  "budget_seconds_at_t4_rate": 127086,
+  "budget_seconds_at_4090_autodl_esd_rate": 358638,
+  "gpu_targets_checked": [
+    {"name": "usersim-20261006-byo", "host": "64.83.15.80:80", "enabled": false, "decommission_state": "pending"},
+    {"name": "lr2-r5-4090-port80", "host": "64.83.15.80:80", "enabled": false, "decommission_state": "pending"}
+  ],
+  "controller_gpu_run_creation_route": "POST /v1/auto-research/runs/{run_id}/gpu/jobs",
+  "enrollment_challenge_route": "POST /api/v1/gpu/ssh-targets/{target_id}/enrollment-challenge",
+  "enrollment_challenge_result": "capability minted successfully (gateway basic auth + cookie auth needed)",
+  "auto_dl_api_status": "all dev endpoints return 404 (token ~/.i2p-ops/autodl-dev.token may be expired or not API-scoped)",
+  "modal_status": "CLI 1.5.4 installed but no token configured (~/.modal.toml absent)",
+  "blocker": "Cannot proceed to real GPU test because: (1) both SSH GPU targets are disabled+decommissioned and require credential enrollment (helper capability minted but AutoDL SSH not reachable from us2), (2) AutoDL API token expired, (3) Modal token not configured.",
+  "owner_actions_needed": [
+    "Option A (AutoDL): Login to autodl.com console → power on existing 4090 instance (or create new one, ~¥2/hr) → provide new SSH port + password → run enrollment challenge from us2",
+    "Option B (Modal): Run `modal token new` from this Mac to set up Modal, then create a T4/A10 function (modal GPU route is natively supported by I2P provider=both)",
+    "Option C: Re-enable lr2-r5-4090 target if the underlying machine is accessible"
+  ],
+  "what_is_ready_without_gpu": [
+    "Novix executor: signal→abort chain verified (all 5 independent scripts PASS)",
+    "clawsgo workspace: runScript process-group kill + timeout ladder + pre-abort precheck verified",
+    "clawsgo compileLatex: tectonic wired (PDF export working)",
+    "Paper evidence chain: six-segment binding complete (65f8a891... sha verified)"
+  ],
+  "limits": "Read-only preflight. No GPU instance launched or purchased. 200 CNY budget approved but unspent pending owner action on one of the three options above."
+}
