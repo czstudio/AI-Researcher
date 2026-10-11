@@ -89,9 +89,19 @@ const active = new Map(); // taskId → {lease, controller}
 
 /**
  * 提交 GPU 任务（自动租用）
- * 限额检查 → 入队 → 自动调度
+ * 限额检查 → 幂等检查 → 入队 → 自动调度
  */
 export async function submit(userId, taskId, spec = {}) {
+  // 幂等：同一 (user, task) 的重复提交不重复租用（单一真源=盘上租约）
+  const existing = listLeases().find(l => l.taskId === taskId && l.userId === userId);
+  if (existing && (existing.status === 'active' || existing.status === 'provisioning')) {
+    return { leaseId: existing.id, status: existing.status, deduped: true };
+  }
+  const queuedIdx = queue.findIndex(q => q.taskId === taskId && q.userId === userId);
+  if (queuedIdx >= 0) {
+    return { queued: true, position: queuedIdx + 1, deduped: true };
+  }
+
   // 多用户隔离：限额检查
   const userActive = listLeases().filter(l => l.userId === userId && l.status === 'active').length;
   if (userActive >= MAX_PER_USER) {
@@ -167,10 +177,14 @@ async function _launchByo(userId, taskId, target, spec) {
 }
 
 async function _waitForDeployment(taskId, lease) {
+  // 取消判据只认盘上租约（单一真源）：取消后的 ready 回调不得复活租约
+  const isCancelled = () => readLease(lease.id)?.status === 'cancelled';
   await waitForReady(lease.deploymentName, 180_000, (progress) => {
+    if (isCancelled()) return;
     lease.status = progress.status === 'running' ? 'active' : 'provisioning';
     writeLease(lease);
   });
+  if (isCancelled()) return;
   lease.status = 'active';
   // 从 container list 获取完整 SSH 信息（host/port/password/serviceUrl）
   const ssh = await getContainerSsh(lease.deploymentId);
@@ -185,13 +199,17 @@ async function _waitForDeployment(taskId, lease) {
 
 /**
  * 取消任务（自动停止部署+释放+停止计费）
+ * provider 停止失败时如实上报，不假报 cancelled。
  */
 export async function cancel(userId, taskId) {
   const lease = listLeases().find(l => l.taskId === taskId && l.userId === userId);
   if (!lease) return { cancelled: false, reason: 'not_found' };
 
   if (lease.provider === 'autodl' && lease.deploymentId) {
-    await releaseServer(lease.deploymentId).catch(() => {});
+    const stopped = await releaseServer(lease.deploymentId).catch(() => false);
+    if (stopped === false) {
+      return { cancelled: false, reason: 'provider_stop_failed', leaseId: lease.id };
+    }
   }
   lease.status = 'cancelled';
   lease.releasedAt = new Date().toISOString();
@@ -213,7 +231,12 @@ export async function releaseAfterTask(userId, taskId, delayMs = LEASE_TTL_MS) {
     // 检查该用户是否有新任务在用这个 lease
     if (lease.status !== 'active') return;
     if (lease.provider === 'autodl') {
-      await releaseServer(lease.deploymentId).catch(() => {});
+      const stopped = await releaseServer(lease.deploymentId).catch(() => false);
+      if (stopped === false) {
+        lease.status = 'release_failed';
+        writeLease(lease);
+        return;
+      }
     }
     lease.status = 'released';
     lease.releasedAt = new Date().toISOString();

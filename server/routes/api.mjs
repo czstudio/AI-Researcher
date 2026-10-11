@@ -8,6 +8,7 @@ import { subscribe, publish } from '../lib/hub.mjs';
 import { runTask } from '../lib/executor.mjs';
 import { searchAll } from '../lib/literature.mjs';
 import { llmConfigured } from '../lib/llm.mjs';
+import { registerGpuRoutes } from './gpu.js';
 
 const MODES = U.readJson(path.resolve(process.cwd(), 'contracts/modes.json'), { modes: [], models: [], plans: [] });
 const ERRORS = U.readJson(path.resolve(process.cwd(), 'contracts/errors.json'), { codes: {} });
@@ -125,6 +126,9 @@ function parseMultipart(buffer, boundary) {
 // ---------- handlers ----------
 const routes = new Map();
 const route = (method, p, fn) => routes.set(`${method} ${p}`, fn);
+
+// GPU 租用面（自动租用/取消/状态/BYO）——注册进同一张路由表
+registerGpuRoutes(route, requireUser);
 
 // ---- public ----
 route('GET', '/site-config/public', async () =>

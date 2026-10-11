@@ -36,7 +36,7 @@ export function registerGpuRoutes(route, requireUser) {
   });
 
   // 余额（AutoDL 余额透传）
-  route('GET', '/gpu/balance', async (req, res) => {
+  route('GET', '/gpu/balance', async (req, res, p) => {
     const a = requireUser(req, p);
     if (a.denied) return a.denied;
     const balance = await autodl.getBalance();
@@ -69,11 +69,3 @@ export function registerGpuRoutes(route, requireUser) {
     return { code: '0', message: 'Success', result: autodl.estimateCost(gpuName || '4090', hours || 1) };
   });
 }
-ROUTTEEOF
-
-# 修正 typo
-sed -i '' 's/ROUTTEEOF/ROUTEEOF/' server/routes/gpu.js 2>/dev/null || true
-node --check server/routes/gpu.js && echo "routes OK"
-__zcode_status=$?
-if [ "$__zcode_status" -eq 0 ]; then pwd -P > '/var/folders/mm/8tmx321574v4hkwkdw3716v00000gn/T/zcode-40a8aa9e-256e-4abc-beb7-824ef99e16de-cwd'; fi
-exit "$__zcode_status"
