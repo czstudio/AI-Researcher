@@ -1,0 +1,213 @@
+{
+  "root": {
+    "id": "root",
+    "parent": null,
+    "children": [
+      "mechanisms",
+      "compression",
+      "streaming"
+    ],
+    "created_at": 1791731298.773,
+    "summary": "Research opportunities for attention sinks in small language models",
+    "description": "Research-driven ideation on the mechanisms, compression robustness, and streaming behavior of attention sinks in decoder-only models of approximately 0.1-3 billion parameters. Distinguish established findings from hypotheses; control for architecture, tokenizer, training, and inference backend.",
+    "next_action": "Use fresh literature research to select 2-4 distinct families, deepen surviving approaches, and deliver a validated tree with preregistration-ready follow-up protocols.",
+    "references": []
+  },
+  "mechanisms": {
+    "id": "mechanisms",
+    "parent": "root",
+    "children": [
+      "causal_predictor",
+      "checkpoint_trajectory"
+    ],
+    "created_at": 1791731437.204,
+    "summary": "Causal sink-function diagnostics across small-model architectures",
+    "description": "Novelty: not another sink-existence survey; use intervention response and downstream loss to distinguish routing from value-path function across small models. Gap: Gu et al. already establish sinks in tiny models, while the 2026 GPT-2 circuit is architecture-specific and the NOP/broadcast framing is demonstrated primarily in vision. Feasibility: inference-only layer/head interventions on public 0.1-3B checkpoints before any training; absolute-position and rotary models are analyzed separately. Evaluation: paired held-out NLL, value-path sensitivity, and architecture-stratified replication. Risk: interventions can be off-manifold, so include matched random controls and rescue experiments.",
+    "next_action": "Research causal-function measurements and existing small-model sink probes; choose two nonredundant methods with architecture-specific controls and produce preregistered pilot plans.",
+    "references": [
+      "https://arxiv.org/abs/2410.10781",
+      "https://arxiv.org/abs/2604.14722",
+      "https://arxiv.org/abs/2606.08105"
+    ]
+  },
+  "compression": {
+    "id": "compression",
+    "parent": "root",
+    "children": [
+      "precision_certificate",
+      "calibration_shift"
+    ],
+    "created_at": 1791731437.455,
+    "summary": "Sink-aware precision allocation under a fixed deployment budget",
+    "description": "Novelty: isolate causal K-versus-V sensitivity and actual byte/latency costs rather than re-proposing sink prefixes or blanket mixed precision. Gap: prefix sinks already mitigate activation outliers, but that result does not establish that preserving sink K and V equally is optimal in small-model streaming caches. Feasibility: post-training simulated quantization followed by one real backend; no large-model pretraining required. Evaluate held-out NLL, output drift, eviction stability, actual cache bytes and measured runtime at equal budgets. Risk: a narrow precision policy can lose to ordinary recent-token protection or kernel overhead.",
+    "next_action": "Fresh-search sink-aware quantization and KV compression; identify overlap with published methods and retain only falsifiable byte-matched approaches.",
+    "references": [
+      "https://aclanthology.org/2024.emnlp-main.134/",
+      "https://arxiv.org/abs/2410.10781",
+      "https://arxiv.org/abs/2309.17453"
+    ]
+  },
+  "streaming": {
+    "id": "streaming",
+    "parent": "root",
+    "children": [
+      "boundary_shock",
+      "retrieval_interaction"
+    ],
+    "created_at": 1791731437.712,
+    "summary": "Boundary-local failures and recovery in small-model streaming",
+    "description": "Novelty: study the localized transient induced by eviction, resets and retrieval reinsertion, not the already-established benefit of retaining first tokens. Gap: StreamingLLM explicitly does not extend memory of evicted content; a 2026 position paper further separates stability, access and use horizons. Aggregate perplexity can conceal boundary shocks. Feasibility: inference-only controlled streams with known answers, equal cache bytes and exact position handling. Evaluate post-boundary NLL, recovery length, accessible-fact accuracy and inaccessible negative controls separately. Risk: decoder limitations or retrieval quality may dominate sinks.",
+    "next_action": "Fresh-search reset/retrieval and sink routing; choose two scoped boundary experiments with separate stability and recall outcomes.",
+    "references": [
+      "https://arxiv.org/abs/2309.17453",
+      "https://arxiv.org/abs/2609.07282",
+      "https://arxiv.org/abs/2604.10098"
+    ]
+  },
+  "causal_predictor": {
+    "id": "causal_predictor",
+    "parent": "mechanisms",
+    "children": [
+      "protocol_causal"
+    ],
+    "created_at": 1791731535.319,
+    "summary": "Predict intervention harm from separate routing and value-path tests",
+    "description": "Hypothesis: on held-out documents, frozen routing/value response diagnostics predict distinct same-layer/KV-group anchor-masking harm better than mass alone. Fit features and deletion labels on development documents; acquire test diagnostic features without test deletion labels. Group source-document observations across models/configurations/seeds in splitting and bootstrap. Existing GPT-2 circuits, NOP/broadcast diagnostics, compositional prediction and attention-causal communication are prior art. The narrow novelty is this prospective harm target, not causal discovery itself. Patch K before scores and V before aggregation, with position-correct random/sham controls. Mixed or unclassified heads remain allowed; broad architectural generalization is exploratory.",
+    "next_action": "Fresh-search predictive causal diagnostics and null-key replacement; specify an inference-only pilot with exact K/V hook locations, independent development/test documents and a frozen harm-prediction model.",
+    "references": [
+      "https://arxiv.org/abs/2410.10781",
+      "https://arxiv.org/abs/2604.14722",
+      "https://arxiv.org/abs/2606.08105v2",
+      "https://arxiv.org/abs/2608.14712",
+      "https://proceedings.neurips.cc/paper_files/paper/2025/hash/3486e35eb33b5463e25d00b765edf229-Abstract-Conference.html"
+    ]
+  },
+  "checkpoint_trajectory": {
+    "id": "checkpoint_trajectory",
+    "parent": "mechanisms",
+    "children": [],
+    "created_at": 1791731535.564,
+    "summary": "Track onset of cache dependence separately from sink mass and outliers",
+    "description": "Hypothesis: the onset of sink-dependent streaming failure need not coincide with the onset of high sink mass, massive activations or content-channel sharpening. Gap: Gu already studies emergence; gradient-sink work already separates massive activations from sink preservation, and SinkProbe already separates sink mass from position bias. New contribution is a fixed-checkpoint, within-family trajectory of causal cache dependence with uncertainty around the ordering of these events. Use public Pythia checkpoints at 160M, 410M and 1B with fixed evaluation support and matched token counts. Evaluate K/V interventions and eviction NLL, not just heatmaps. Feasibility: no training required. Risk: checkpoint spacing makes onset interval-censored; do not infer one universal phase transition or universal gradient mechanism.",
+    "next_action": "Audit available checkpoints and tokenizer/config consistency; run 5-10 checkpoint pilot on one model size, estimate onset intervals using held-out documents, and produce a trajectory analysis specification.",
+    "references": [
+      "https://proceedings.mlr.press/v202/biderman23a.html",
+      "https://arxiv.org/abs/2410.10781",
+      "https://arxiv.org/abs/2603.17771",
+      "https://arxiv.org/abs/2609.08574",
+      "https://arxiv.org/abs/2608.14712"
+    ]
+  },
+  "precision_certificate": {
+    "id": "precision_certificate",
+    "parent": "compression",
+    "children": [
+      "protocol_precision"
+    ],
+    "created_at": 1791731600.327,
+    "summary": "A held-out noninferiority map for sink-value precision downgrades",
+    "description": "Hypothesis: some sink groups tolerate lower-precision V but need precise K, including near cache evictions. Novelty is a boundary/domain-stratified held-out noninferiority and sensitivity map for 0.1-3B models, not asymmetric precision, noninitial detection, or small-model sink protection (already studied by KIVI, key-favored allocation, KVSink and SubKV). Experiment A isolates sensitivity at fixed states/token set; experiment B matches actual deployment bytes. Freeze calibration policy before held-out testing against symmetric, random/recent and published baselines. Report noninferiority supported, margin-exceeding harm supported, or inconclusive; mean-NLL support is not universal safety. Risk: tiny protected prefixes make savings negligible; engineering stop is separate from numerical harm.",
+    "next_action": "Fresh-search asymmetric sink protection and boundary-sensitive quantization; design a byte-accounted pilot with separate K/V quantizers, head-group constraints and a preregistered noninferiority margin.",
+    "references": [
+      "https://arxiv.org/abs/2402.02750",
+      "https://arxiv.org/abs/2502.15075",
+      "https://arxiv.org/abs/2508.04257",
+      "https://doi.org/10.1002/spe.3422"
+    ]
+  },
+  "calibration_shift": {
+    "id": "calibration_shift",
+    "parent": "compression",
+    "children": [],
+    "created_at": 1791731600.579,
+    "summary": "Stress-test sink-protection calibration under domain and prefix shifts",
+    "description": "Hypothesis: precision policies calibrated on ordinary prose can misidentify risky sink tokens after code/log transitions or altered prefix templates. Gap: KVSink and outlier-token tracing already address noninitial sink detection; SubKV already adapts recent windows. The new target is failure attribution and frozen-policy transfer under prefix/domain shift, with an explicit abstain-to-baseline fallback, not a new sink detector. Feasible inference-only calibration/test split on prose, code and structured logs with token-length controls. Compare fixed first-N, KVSink and development-only causal policies at equal bytes; report failure rates and risk-coverage curves rather than only mean PPL. Risk: apparent failure may come from domain difficulty or unavailable kernels; use within-document unquantized paired controls.",
+    "next_action": "Collect legal/licensed prose, code and log fixtures; freeze calibration policies without test leakage, evaluate shift-triggered errors and fallback cost, and release a stress-test manifest.",
+    "references": [
+      "https://arxiv.org/abs/2508.04257",
+      "https://doi.org/10.1002/spe.3422",
+      "https://aclanthology.org/2025.acl-long.631/",
+      "https://aclanthology.org/2024.emnlp-main.134/"
+    ]
+  },
+  "boundary_shock": {
+    "id": "boundary_shock",
+    "parent": "streaming",
+    "children": [
+      "protocol_boundary"
+    ],
+    "created_at": 1791731652.519,
+    "summary": "Measure sink replacement shocks at session and cache boundaries",
+    "description": "Hypothesis: alternate-prefix anchor-state substitution produces a short-lived predictive-loss shock hidden by aggregate PPL. Identical-prefix replay under deterministic inference is a no-op; the substantive treatment changes recorded prefix token IDs/provenance. Novelty is paired attribution of boundary-local effects beyond suffix recomputation, not basic sink retention, a generic horizon benchmark or a memory mechanism. Cross original/alternate anchors and reused/recomputed suffix in same-model isolated-session diagnostics; freeze suffix state and positions within each arm. Require signed loss, interaction analysis, matched nonsink substitutions and position/backend checks before sink-specific attribution. Mixed-state arms are not deployment policies. Risk: prefix-content or inconsistent rotary keys can explain shocks.",
+    "next_action": "Fresh-search sink reset and position-remapping failures; build a factorial boundary pilot with exact suffix matching, position assertions, transient NLL and a fresh-recompute control.",
+    "references": [
+      "https://arxiv.org/abs/2309.17453",
+      "https://arxiv.org/abs/2609.07282",
+      "https://arxiv.org/abs/2604.16883",
+      "https://aclanthology.org/2024.acl-long.143/"
+    ]
+  },
+  "retrieval_interaction": {
+    "id": "retrieval_interaction",
+    "parent": "streaming",
+    "children": [],
+    "created_at": 1791731652.761,
+    "summary": "Test whether preserved anchors compete with reinserted evidence",
+    "description": "Hypothesis: the anchor budget or anchor placement can change use of newly reinserted evidence, independently of stream stability. Novelty is a small-model factorial interaction study with oracle retrieval and byte-matched caches; it is not the ThreeH distinction itself, a new memory system, or SinkTrack-style information injection into BOS. Randomize answer-bearing passage placement within supported cached context and retained anchor count, with no-evidence and distractor controls. Record exact-match or answer log probability, transient NLL, memory and insertion cost. Risk: a weak small model may fail even with accessible evidence; require an in-window competency screen and separate oracle retrieval from real retrieval. Cache eviction does not erase all indirect traces in later cached states, so state-matched negative controls are necessary.",
+    "next_action": "Verify prior art on sink/evidence interference; generate answer-balanced oracle-retrieval fixtures and preregister a 2-by-3 interaction experiment after an in-window competency screen.",
+    "references": [
+      "https://arxiv.org/abs/2309.17453",
+      "https://arxiv.org/abs/2609.07282",
+      "https://arxiv.org/abs/2604.10027",
+      "https://arxiv.org/abs/2604.16883"
+    ]
+  },
+  "protocol_causal": {
+    "id": "protocol_causal",
+    "parent": "causal_predictor",
+    "children": [],
+    "created_at": 1791731789.909,
+    "summary": "Priority 1: preregister a cross-family sink-removal harm predictor",
+    "description": "Preregistration-ready hypothesis: on held-out documents, frozen K/V diagnostic features predict same-layer/KV-group joint anchor-masking harm better than sink mass alone. Inputs: pinned GPT-2 124M and Pythia 160M/410M/1B; 100 development and 200 disjoint test documents, supported lengths 128/512, three fixture-sampling seeds. Unit is document by prespecified layer/KV-group configuration. Patch K before QK scores and V before aggregation, then measure output-projected effects: V-zero with K fixed, norm-matched nonsink K substitution with V fixed, and sham. Target masks all declared anchors in that same group and renormalizes attention, leaving surviving positions and suffix states unchanged; whole-model deletion is exploratory. Fit development features against development labels; acquire test features with the frozen procedure without accessing test deletion labels. Cluster every model/configuration/seed from a source document in splits and bootstrap. Compare frozen predictor paired MAE with mass-only, norm-only and ablated baselines. Go only if paired 95% interval for improvement excludes zero with convergent random/sham and rescue controls; otherwise reject prediction claim. Prior art includes circuit tests, NOP/broadcast diagnostics, compositional predictors and attention-causal communication; novelty is this narrow target/transfer contract. Few families and off-manifold interventions prohibit universal function claims. Deliver preregistration, hook tests and held-out error attribution; no model experiment has been run.",
+    "next_action": "Follow-up session: pin model revisions, implement K/V and sham hooks, verify unchanged attention weights for V-only patches and no-op numerical equivalence, collect development/test fixtures, freeze the predictor, and produce held-out prediction errors with bootstrap intervals and rescue checks.",
+    "references": [
+      "https://arxiv.org/abs/2604.14722",
+      "https://arxiv.org/abs/2606.08105v2",
+      "https://arxiv.org/abs/2608.14712",
+      "https://proceedings.neurips.cc/paper_files/paper/2025/hash/3486e35eb33b5463e25d00b765edf229-Abstract-Conference.html",
+      "https://proceedings.mlr.press/v202/biderman23a.html"
+    ]
+  },
+  "protocol_precision": {
+    "id": "protocol_precision",
+    "parent": "precision_certificate",
+    "children": [],
+    "created_at": 1791731790.165,
+    "summary": "Priority 3: test sink-V noninferiority near eviction",
+    "description": "Preregistration-ready hypothesis: a frozen calibration-selected sink KV-group policy supports mean-NLL noninferiority when downgrading V near cache eviction. Inputs: Pythia 410M/1B, capacities 256/512; optional 1-3B rotary GQA after audit. Experiment A fixes retained states/token set and nonsink quantizers, compares K16/V16, K16/V4, K4/V16, K4/V4 using established K-channel/V-token axes. Experiment B matches actual total bytes versus KVSink, SubKV, first-N, random/recent and symmetric protection, counting scales, zero points, padding and residual windows; GQA policy operates on shared KV groups. Freeze development policy and provisional 0.01 nats/token margin; test 200 disjoint streams with prose/code strata and nonoverlapping 64-token boundary windows. Cluster documents across seeds/events. Noninferiority supported if upper one-sided 95% bound is below margin with simultaneous stratum control; margin-exceeding harm supported if lower bound is above margin; otherwise inconclusive. This supports tested mean loss, not universal safety. Engineering go separately requires at least 1% measured total-cache saving without real-backend latency regression; negligible savings stops kernels but does not refute numerical noninferiority. Novelty is this boundary/transfer reporting contract, not asymmetric precision or sink protection. HeadQ is withdrawn and excluded as evidence. Deliver sensitivity map plus independent engineering disposition; fake quantization is not deployment evidence.",
+    "next_action": "Follow-up session: bound maximum byte saving first, implement fixed-state K/V sensitivity tests, freeze noninferiority policy/margin with development-only precision planning, run held-out simultaneous-stratum inference, then attempt a separately byte-matched real-backend comparison or stop kernels; report three statistical outcomes separately from engineering disposition.",
+    "references": [
+      "https://arxiv.org/abs/2402.02750",
+      "https://arxiv.org/abs/2502.15075",
+      "https://arxiv.org/abs/2508.04257",
+      "https://doi.org/10.1002/spe.3422",
+      "https://arxiv.org/abs/2405.06219"
+    ]
+  },
+  "protocol_boundary": {
+    "id": "protocol_boundary",
+    "parent": "boundary_shock",
+    "children": [],
+    "created_at": 1791731790.406,
+    "summary": "Priority 2: a factorial same-model anchor-substitution shock audit",
+    "description": "Preregistration-ready hypothesis: controlled alternate-prefix anchor-state substitution causes transient signed excess NLL beyond suffix recomputation effects. Inputs: pinned rotary Pythia 160M/410M/1B, 512 cached positions (four anchors plus 508 suffix), prose/code streams up to 16K via bounded-cache streaming. Record original token IDs at positions 0-3; construct alternate anchors by replaying a development-fixed answer-free four-token prefix at those positions. Identical-prefix replay is a numerical no-op, not a substantive reset. Cross original/alternate anchors with reused/recomputed suffix states; recompute exact suffix after original anchors and freeze it within that arm. Mixed-state arms are diagnostic, not production reset policies. Use only same-model isolated-session states. Hold suffix tensors and cache-local positions identical within each arm; pre-RoPE or inverse/reapplied rotary keys require numerical equality tests. Primary endpoint: signed mean excess NLL over 64 tokens versus unchanged anchors within the suffix arm; positive-part area is secondary. Estimate anchor-by-suffix interaction, peak loss and recovery with right censoring. Use 200 held-out boundaries, nonoverlapping 64-token scoring windows, document-cluster bootstrap and matched nonsink substitutions. Go if signed effect exceeds a development-fixed practical threshold with 95% interval excluding zero and survives position/backend/nonsink checks; otherwise reject attribution or find a bug. This changes prefix content/provenance, so it is not a pure reset or proof of sink function. No old-fact memory claim; retained suffix may contain indirect traces. Deliver diagnostic audit and reset compatibility checklist.",
+    "next_action": "Follow-up session: pin original and alternate-prefix token IDs/provenance, assert identical-prefix replay is a no-op, validate pre-/post-RoPE consistency, implement diagnostic factorial arms and nonsink controls, freeze signed-loss thresholds on development data, then report held-out shocks, interaction and censored recovery.",
+    "references": [
+      "https://arxiv.org/abs/2309.17453",
+      "https://arxiv.org/abs/2609.07282",
+      "https://arxiv.org/abs/2604.16883",
+      "https://arxiv.org/abs/2606.06160",
+      "https://arxiv.org/abs/2609.09085"
+    ]
+  }
+}
