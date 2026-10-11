@@ -115,18 +115,36 @@ export async function runTask({ task, session, modeDef, body }) {
           finalText = ev.content || finalText;
         }
       }
-      task.status = 'finish';
-      task.finishedAt = nowMs();
-      task.result = finalText;
-      pushTrajectory(task, { role: 'assistant', content: finalText, agent_name: modeDef?.agentName || 'NovixWriterAgent' });
-      publish(session.id, { type: 'response', taskId: task.id, messages: [{ role: 'assistant', content: finalText }] });
+      // 纠偏（独立验收 verify-04-terminal-race）：abort 已请求时不得覆盖 cancelled 终态
+      if (ac.signal.aborted) {
+        task.status = 'cancelled';
+        task.finishedAt = nowMs();
+        task.result = finalText || '(已取消)';
+        pushTrajectory(task, { role: 'assistant', content: '(interrupted by cancel)', agent_name: modeDef?.agentName || 'NovixWriterAgent' });
+        publish(session.id, { type: 'complete', taskId: task.id, cancelled: true });
+      } else {
+        task.status = 'finish';
+        task.finishedAt = nowMs();
+        task.result = finalText;
+        pushTrajectory(task, { role: 'assistant', content: finalText, agent_name: modeDef?.agentName || 'NovixWriterAgent' });
+        publish(session.id, { type: 'response', taskId: task.id, messages: [{ role: 'assistant', content: finalText }] });
+      }
     } catch (err) {
-      task.status = 'error';
-      task.errorCode = '5000';
-      task.finishedAt = nowMs();
-      task.result = `后台任务执行失败: ${err?.message || err}`;
-      pushTrajectory(task, { role: 'assistant', content: task.result });
-      publish(session.id, { type: 'error', taskId: task.id, errorCode: '5000', message: task.result });
+      // 纠偏：abort 引发的异常不得写 error——同样归 cancelled
+      if (ac.signal.aborted) {
+        task.status = 'cancelled';
+        task.finishedAt = nowMs();
+        task.result = finalText || '(已取消)';
+        pushTrajectory(task, { role: 'assistant', content: '(interrupted by cancel)' });
+        publish(session.id, { type: 'complete', taskId: task.id, cancelled: true });
+      } else {
+        task.status = 'error';
+        task.errorCode = '5000';
+        task.finishedAt = nowMs();
+        task.result = `后台任务执行失败: ${err?.message || err}`;
+        pushTrajectory(task, { role: 'assistant', content: task.result });
+        publish(session.id, { type: 'error', taskId: task.id, errorCode: '5000', message: task.result });
+      }
     } finally {
       task.updatedAt = nowMs();
       db.put('tasks', task.id, task);
@@ -174,22 +192,40 @@ export async function runTask({ task, session, modeDef, body }) {
           break;
       }
     }
-    task.status = 'finish';
-    task.finishedAt = nowMs();
-    task.result = finalText;
-    pushStep(task, 'assistant', finalText, { agent_name: modeDef?.agentName || 'NovixAgentMain' });
-    publish(session.id, {
-      type: 'response',
-      taskId: task.id,
-      messages: [{ role: 'assistant', content: finalText }],
-    });
+    // 纠偏（verify-04-fallback-race）：fallback 分支同样不得在 abort 后覆盖 cancelled 终态
+    if (ac.signal.aborted) {
+      task.status = 'cancelled';
+      task.finishedAt = nowMs();
+      task.result = finalText || '(已取消)';
+      pushStep(task, 'assistant', '(interrupted by cancel)', { agent_name: modeDef?.agentName || 'NovixAgentMain' });
+      publish(session.id, { type: 'complete', taskId: task.id, cancelled: true });
+    } else {
+      task.status = 'finish';
+      task.finishedAt = nowMs();
+      task.result = finalText;
+      pushStep(task, 'assistant', finalText, { agent_name: modeDef?.agentName || 'NovixAgentMain' });
+      publish(session.id, {
+        type: 'response',
+        taskId: task.id,
+        messages: [{ role: 'assistant', content: finalText }],
+      });
+    }
   } catch (err) {
-    task.status = 'error';
-    task.errorCode = '5000';
-    task.finishedAt = nowMs();
-    task.result = `后台任务执行失败: ${err?.message || err}`;
-    pushStep(task, 'assistant', task.result);
-    publish(session.id, { type: 'error', taskId: task.id, errorCode: '5000', message: task.result });
+    // 纠偏：fallback catch 同样归 cancelled（abort 引发的异常不得写 error）
+    if (ac.signal.aborted) {
+      task.status = 'cancelled';
+      task.finishedAt = nowMs();
+      task.result = finalText || '(已取消)';
+      pushStep(task, 'assistant', '(interrupted by cancel)', { agent_name: modeDef?.agentName || 'NovixAgentMain' });
+      publish(session.id, { type: 'complete', taskId: task.id, cancelled: true });
+    } else {
+      task.status = 'error';
+      task.errorCode = '5000';
+      task.finishedAt = nowMs();
+      task.result = `后台任务执行失败: ${err?.message || err}`;
+      pushStep(task, 'assistant', task.result);
+      publish(session.id, { type: 'error', taskId: task.id, errorCode: '5000', message: task.result });
+    }
   } finally {
     task.updatedAt = nowMs();
     db.put('tasks', task.id, task);
