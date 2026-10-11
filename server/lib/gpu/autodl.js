@@ -161,21 +161,24 @@ export function sshEndpoint(deployment) {
 
 /**
  * 停止部署（自动释放资源+停止计费）
- * AutoDL: PUT /api/v1/dev/deployment/operate {"deployment_id": ..., "type": "STOP"}
+ * 官方合同（autodl.com/docs/esd_api_doc，I2P Python provider 同款）：
+ * PUT /api/v1/dev/deployment/operate body 恰好 {deployment_uuid, operate:"stop"}
+ * （"stop" 是唯一受支持值；type:"STOP"/deployment_id 不存在于公开合同）
  */
-export async function releaseServer(deploymentId) {
+export async function releaseServer(deploymentUuid) {
   const r = await call('PUT', '/deployment/operate', {
-    deployment_id: deploymentId,
-    type: 'STOP',
+    deployment_uuid: deploymentUuid,
+    operate: 'stop',
   });
   return r.code === 'Success';
 }
 
 /**
  * 删除部署（彻底释放）
+ * 官方合同：DELETE /api/v1/dev/deployment body {deployment_uuid}
  */
-export async function destroyServer(deploymentId) {
-  const r = await call('DELETE', `/deployment`, { deployment_id: deploymentId });
+export async function destroyServer(deploymentUuid) {
+  const r = await call('DELETE', `/deployment`, { deployment_uuid: deploymentUuid });
   return r.code === 'Success';
 }
 

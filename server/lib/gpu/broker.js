@@ -154,7 +154,15 @@ async function _launch(userId, taskId, spec) {
       maxPricePerHour: spec.maxPricePerHour || 3.0,
       preferredDC: spec.preferredDC,
     });
-    lease.deploymentId = result.deployment_id || result.id;
+    // 官方 create 返回 deployment_uuid；未知形状/缺 UUID 失败关闭（不写无主租约）
+    const uuid = result?.deployment_uuid || result?.deployment_id || result?.id;
+    if (!uuid || typeof uuid !== 'string') {
+      lease.status = 'failed';
+      lease.error = 'provider create returned no deployment uuid (fail-closed)';
+      writeLease(lease);
+      throw new Error('AutoDL create returned no deployment_uuid');
+    }
+    lease.deploymentId = uuid;
     lease.deploymentName = result.deployment_name || `i2p-gpu-${taskId}`;
     writeLease(lease);
   } catch (err) {

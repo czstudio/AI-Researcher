@@ -45,8 +45,14 @@ let rentCalls = 0;
 let stopOk = true;
 let readyResolve;
 let readyProgress;
+// fixture = official documented create shape (autodl.com/docs/esd_api_doc):
+// deployment_uuid — NOT the legacy deployment_id alias.
 const autodlMock = {
-  async rentServer() { rentCalls += 1; return { deployment_id: `dep-${rentCalls}`, deployment_name: `gpu-${rentCalls}` }; },
+  async rentServer() {
+    rentCalls += 1;
+    if (rentCalls === Number(process.env.NOVIX_FIXCTL_BAD_RENT || 0)) return {};
+    return { deployment_uuid: `dep-${rentCalls}`, deployment_name: `gpu-${rentCalls}` };
+  },
   async waitForReady(_name, _timeout, onProgress) { readyProgress = onProgress; return new Promise((resolve) => { readyResolve = resolve; }); },
   async releaseServer() { return stopOk; },
   async destroyServer() { return true; },
@@ -148,5 +154,21 @@ const q2 = await broker.submit('quota-user', 'quota-second', { route: 'autodl' }
 const q3 = await broker.submit('quota-user', 'quota-third', { route: 'autodl' });
 expect(rentCalls - quotaBefore === 2, 'provisioning-counts-per-user-cap-two', `actual=${rentCalls - quotaBefore},expected=2`);
 expect(q3.rejected === true && q3.reason === 'per_user_limit', 'third-submit-rejected-per-user-limit', JSON.stringify(q3));
+
+// Fix 8: official documented create shape (deployment_uuid) is preserved into the lease.
+const oc = broker.status('replay-user', 'same-concurrent-task');
+expect(typeof oc.deploymentId === 'string' && oc.deploymentId === `dep-${rentCalls - 2}`, 'documented-create-uuid-preserved-in-lease', `actual=${JSON.stringify(oc.deploymentId)}`);
+
+// Fix 9: create response without any uuid → fail-closed (lease failed, capacity freed).
+{
+  const badRent = rentCalls + 1;
+  const prevBad = process.env.NOVIX_FIXCTL_BAD_RENT;
+  process.env.NOVIX_FIXCTL_BAD_RENT = String(badRent);
+  let threw = false;
+  try { await broker.submit('fail-user', 'fail-task', { route: 'autodl' }); } catch { threw = true; }
+  if (prevBad === undefined) delete process.env.NOVIX_FIXCTL_BAD_RENT; else process.env.NOVIX_FIXCTL_BAD_RENT = prevBad;
+  expect(threw, 'missing-uuid-submit-throws', `threw=${threw}`);
+  expect(broker.status('fail-user', 'fail-task').status === 'failed', 'missing-uuid-lease-failed-closed', `actual=${broker.status('fail-user', 'fail-task').status}`);
+}
 
 console.log(`SUMMARY fixed_head=${HEAD} source=git-show broker.js rentCalls=${rentCalls} mode=desired-behavior`);
