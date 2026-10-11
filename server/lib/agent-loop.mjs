@@ -14,7 +14,7 @@
 // 未配置 LLM 网关时调用方应回退到 kernels.mjs 的阶段脚本。
 import fs from 'node:fs';
 import path from 'node:path';
-import { execFile } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { resolveModel } from './llm.mjs';
 import { searchAll, searchArxiv, searchCrossref, searchSemanticScholar } from './literature.mjs';
 import * as db from '../store/db.mjs';
@@ -216,12 +216,34 @@ function inWorkspace(ws, rel) {
 }
 
 function sh(cmd, cwd, signal) {
+  // 独立验收 04 追加负控 C1：signal 已 abort 时 EventTarget 不触发 listener——
+  // 必须预检直接返回，否则 sleep 5 照跑到底（5044ms 实测）。
+  if (signal?.aborted) {
+    return Promise.resolve({ output: '(已取消，未执行)', code: null, aborted: true });
+  }
   return new Promise((resolve) => {
-    const child = execFile('/bin/zsh', ['-c', cmd], { cwd, timeout: TOOL_TIMEOUT_MS, maxBuffer: 4e6 }, (err, stdout, stderr) => {
-      resolve({ output: [stdout, stderr].filter(Boolean).join('\n').slice(0, TOOL_OUTPUT_CAP) || '(空)', code: err ? (err.code ?? 1) : 0 });
-    });
-    // cancel 路由 abort → SIGTERM 杀子进程（Bash 释放，不留孤儿）
-    if (signal) signal.addEventListener('abort', () => { try { child.kill('SIGTERM'); } catch { /* already exited */ } }, { once: true });
+    // 独立验收 04 发现：execFile SIGTERM 只杀 zsh 壳，孙进程（node/python 后台）存活。
+    // 修：detached 进程组 + kill(-pid) 组杀；SIGTERM 后 2s 兜底 SIGKILL；未 abort 前不误杀。
+    const child = spawn('/bin/zsh', ['-c', cmd], { cwd, timeout: TOOL_TIMEOUT_MS, maxBuffer: 4e6, detached: true });
+    let out = '';
+    child.stdout.on('data', (d) => { out += d; });
+    child.stderr.on('data', (d) => { out += d; });
+    let settled = false;
+    const done = (code) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(killTimer);
+      resolve({ output: (out || '').slice(0, TOOL_OUTPUT_CAP) || '(空)', code });
+    };
+    let killTimer = null;
+    child.on('error', () => done(1));
+    child.on('close', (code) => done(code ?? 0));
+    if (signal) signal.addEventListener('abort', () => {
+      if (settled) return;
+      try { process.kill(-child.pid, 'SIGTERM'); } catch { /* group gone */ }
+      killTimer = setTimeout(() => { try { process.kill(-child.pid, 'SIGKILL'); } catch { /* gone */ } }, 2000);
+      if (killTimer.unref) killTimer.unref();
+    }, { once: true });
   });
 }
 
