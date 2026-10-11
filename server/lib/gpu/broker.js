@@ -22,11 +22,12 @@ const DATA_DIR = process.env.GPU_BROKER_DIR || path.resolve(import.meta.dirname,
 const LEASE_TTL_MS = Number(process.env.GPU_LEASE_TTL_MS || 15 * 60_000); // 15min keep-warm
 const MAX_PER_USER = Number(process.env.GPU_MAX_PER_USER || 2);
 const MAX_TOTAL = Number(process.env.GPU_MAX_TOTAL || 8);
-// 占用容量的状态：provisioning（已下租用单）与 release_failed（provider 可能仍在计费，
-// 不可确认清理时维持占用）。cancelled/failed/released 不占。
+// 占用容量的状态：provisioning（已下租用单）、releasing（释放进行中，设备仍活）、
+// release_failed（provider 可能仍在计费，不可确认清理时维持占用）。
+// cancelled/failed/released 不占。
 // 单进程幂等边界：占位租约在 provider 调用前同步落盘，同进程内并发/重放都被挡下；
 // 跨进程 CAS 需要文件锁或原子 rename，本模块不做此承诺。
-const OCCUPYING = new Set(['active', 'provisioning', 'release_failed']);
+const OCCUPYING = new Set(['active', 'provisioning', 'releasing', 'release_failed']);
 
 // ---------- 租约存储（文件持久化，I2P AllocationLeaseStore 同构）----------
 
@@ -157,14 +158,24 @@ async function _launch(userId, taskId, spec) {
     // 官方 create 返回 deployment_uuid；未知形状/缺 UUID 失败关闭（不写无主租约）
     const uuid = result?.deployment_uuid || result?.deployment_id || result?.id;
     if (!uuid || typeof uuid !== 'string') {
-      lease.status = 'failed';
-      lease.error = 'provider create returned no deployment uuid (fail-closed)';
-      writeLease(lease);
+      mutateLease(lease.id, (l) => {
+        if (TERMINAL.has(l.status)) return;
+        l.status = 'failed';
+        l.error = 'provider create returned no deployment uuid (fail-closed)';
+      });
       throw new Error('AutoDL create returned no deployment_uuid');
     }
-    lease.deploymentId = uuid;
-    lease.deploymentName = result.deployment_name || `i2p-gpu-${taskId}`;
-    writeLease(lease);
+    // 盘上读改写：rentServer 窗口内的取消不得被复活
+    mutateLease(lease.id, (l) => {
+      l.deploymentId = uuid;
+      l.deploymentName = result.deployment_name || `i2p-gpu-${taskId}`;
+    });
+    // 取消发生在 rentServer 窗口时，cancel 当时无 deploymentId 可停——
+    // 此处发现终态即补停自愈（防 provider 泄漏计费），并维持终态
+    if (readLease(lease.id)?.status === 'cancelled') {
+      await releaseServer(uuid).catch(() => false);
+      return { leaseId: lease.id, status: 'cancelled' };
+    }
   } catch (err) {
     // 租用失败释放容量（failed 不占容量）
     lease.status = 'failed';
@@ -174,11 +185,13 @@ async function _launch(userId, taskId, spec) {
   }
   active.set(taskId, { lease });
 
-  // 异步等 ready
+  // 异步等 ready；失败只标记非终态租约（取消/释放后的迟到异常不得覆盖终态）
   _waitForDeployment(taskId, lease).catch(err => {
-    lease.status = 'failed';
-    lease.error = err.message;
-    writeLease(lease);
+    mutateLease(lease.id, (l) => {
+      if (TERMINAL.has(l.status)) return;
+      l.status = 'failed';
+      l.error = err.message;
+    });
   });
 
   return { leaseId: lease.id, status: 'provisioning' };
@@ -199,25 +212,51 @@ async function _launchByo(userId, taskId, target, spec) {
   return { leaseId: lease.id, status: 'active', ssh: lease.sshEndpoint };
 }
 
+// 同 (user,taskId) 可能存在被替代的旧租约（取消后重新提交=新 lease 新 id）：
+// 一切按 taskId 的查找都优先取占用中的租约，否则取最新一条；
+// 旧终态租约不得遮蔽当前租约。
+function _latestLease(userId, taskId) {
+  const leases = listLeases().filter(l => l.taskId === taskId && l.userId === userId);
+  if (!leases.length) return null;
+  const newestOf = (arr) => arr.reduce((best, l) =>
+    (String(l.createdAt || '') > String(best.createdAt || '') ? l : best));
+  const occupying = leases.filter(l => OCCUPYING.has(l.status));
+  return newestOf(occupying.length ? occupying : leases);
+}
+
+// 终态集合：异步间隙后被取消/释放的租约，不得被更早路径的失败/收尾写覆盖。
+const TERMINAL = new Set(['cancelled', 'released', 'release_failed', 'failed']);
+
+// 盘上读-改-写：任何异步间隙后都不用陈旧内存对象写租约。
+function mutateLease(id, mut) {
+  const fresh = readLease(id);
+  if (!fresh) return null;
+  mut(fresh);
+  writeLease(fresh);
+  return fresh;
+}
+
 async function _waitForDeployment(taskId, lease) {
-  // 取消判据只认盘上租约（单一真源）：取消后的 ready 回调不得复活租约
+  // 取消判据只认盘上租约（单一真源）：取消后的 ready/SSH 回调不得复活租约
   const isCancelled = () => readLease(lease.id)?.status === 'cancelled';
   await waitForReady(lease.deploymentName, 180_000, (progress) => {
     if (isCancelled()) return;
-    lease.status = progress.status === 'running' ? 'active' : 'provisioning';
-    writeLease(lease);
+    mutateLease(lease.id, (l) => { l.status = progress.status === 'running' ? 'active' : 'provisioning'; });
   });
   if (isCancelled()) return;
-  lease.status = 'active';
+  mutateLease(lease.id, (l) => { l.status = 'active'; });
   // 从 container list 获取完整 SSH 信息（host/port/password/serviceUrl）
   const ssh = await getContainerSsh(lease.deploymentId);
-  if (ssh) {
-    lease.sshEndpoint = { host: ssh.host, port: ssh.port, username: ssh.username, password: ssh.password };
-    lease.serviceUrl = ssh.serviceUrl;
-    lease.gpuName = ssh.gpuName;
-    lease.pricePerMs = ssh.price;
-  }
-  writeLease(lease);
+  // SSH 读取期间可能被取消——写合并前再查盘上终态，不得复活
+  if (isCancelled()) return;
+  mutateLease(lease.id, (l) => {
+    if (ssh) {
+      l.sshEndpoint = { host: ssh.host, port: ssh.port, username: ssh.username, password: ssh.password };
+      l.serviceUrl = ssh.serviceUrl;
+      l.gpuName = ssh.gpuName;
+      l.pricePerMs = ssh.price;
+    }
+  });
 }
 
 /**
@@ -225,7 +264,7 @@ async function _waitForDeployment(taskId, lease) {
  * provider 停止失败时如实上报，不假报 cancelled。
  */
 export async function cancel(userId, taskId) {
-  const lease = listLeases().find(l => l.taskId === taskId && l.userId === userId);
+  const lease = _latestLease(userId, taskId);
   if (!lease) return { cancelled: false, reason: 'not_found' };
 
   if (lease.provider === 'autodl' && lease.deploymentId) {
@@ -234,9 +273,10 @@ export async function cancel(userId, taskId) {
       return { cancelled: false, reason: 'provider_stop_failed', leaseId: lease.id };
     }
   }
-  lease.status = 'cancelled';
-  lease.releasedAt = new Date().toISOString();
-  writeLease(lease);
+  mutateLease(lease.id, (l) => {
+    l.status = 'cancelled';
+    l.releasedAt = new Date().toISOString();
+  });
 
   // 从队列拉下一个
   _drainQueue();
@@ -247,23 +287,30 @@ export async function cancel(userId, taskId) {
  * 任务完成后延迟释放（keep-warm 窗口——novix 会话常驻语义）
  */
 export async function releaseAfterTask(userId, taskId, delayMs = LEASE_TTL_MS) {
-  const lease = listLeases().find(l => l.taskId === taskId && l.userId === userId);
+  const lease = _latestLease(userId, taskId);
   if (!lease) return;
 
   const timer = setTimeout(async () => {
-    // 检查该用户是否有新任务在用这个 lease
-    if (lease.status !== 'active') return;
-    if (lease.provider === 'autodl') {
-      const stopped = await releaseServer(lease.deploymentId).catch(() => false);
-      if (stopped === false) {
-        lease.status = 'release_failed';
-        writeLease(lease);
-        return;
-      }
+    // durable guard BEFORE await：arm 之后 lease 可能已被 cancel/released——
+    // 按盘上 lease ID 读当前 status，已终态即 no-op（零 provider 调用、不覆盖终态）。
+    const current = readLease(lease.id);
+    if (!current || current.status !== 'active') return;
+    // 同步 claim：duplicate timer / 并发路径看到 releasing 即止（单 stop 保证）
+    current.status = 'releasing';
+    writeLease(current);
+    const stopped = current.provider === 'autodl'
+      ? await releaseServer(current.deploymentId).catch(() => false)
+      : true;
+    // durable guard AFTER await：await 期间可能被 cancel 改写——旧对象不得覆盖终态
+    const after = readLease(lease.id);
+    if (!after || after.status !== 'releasing') return;
+    if (stopped === false) {
+      after.status = 'release_failed'; // 可恢复失败，不假释放（release_failed 维持占用）
+    } else {
+      after.status = 'released';
+      after.releasedAt = new Date().toISOString();
     }
-    lease.status = 'released';
-    lease.releasedAt = new Date().toISOString();
-    writeLease(lease);
+    writeLease(after);
     _drainQueue();
   }, delayMs);
   if (timer.unref) timer.unref();
@@ -284,7 +331,7 @@ function _drainQueue() {
  * 查询状态
  */
 export function status(userId, taskId) {
-  const lease = listLeases().find(l => l.taskId === taskId && l.userId === userId);
+  const lease = _latestLease(userId, taskId);
   if (lease) return { found: true, ...lease };
   const qPos = queue.findIndex(q => q.taskId === taskId && q.userId === userId);
   if (qPos >= 0) return { found: true, status: 'queued', position: qPos + 1 };

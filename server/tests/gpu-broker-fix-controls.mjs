@@ -43,6 +43,9 @@ const cryptoMock = { randomUUID: () => `mock-uuid-${++uuidSeq}` };
 
 let rentCalls = 0;
 let stopOk = true;
+let stopCalls = 0;
+let gateNextStop = false;
+let gateResolve;
 let readyResolve;
 let readyProgress;
 // fixture = official documented create shape (autodl.com/docs/esd_api_doc):
@@ -54,7 +57,11 @@ const autodlMock = {
     return { deployment_uuid: `dep-${rentCalls}`, deployment_name: `gpu-${rentCalls}` };
   },
   async waitForReady(_name, _timeout, onProgress) { readyProgress = onProgress; return new Promise((resolve) => { readyResolve = resolve; }); },
-  async releaseServer() { return stopOk; },
+  async releaseServer() {
+    stopCalls += 1;
+    if (gateNextStop) { gateNextStop = false; return new Promise((resolve) => { gateResolve = resolve; }); }
+    return stopOk;
+  },
   async destroyServer() { return true; },
   async getContainerSsh() { return null; },
   async getBalance() { return null; },
@@ -171,4 +178,62 @@ expect(typeof oc.deploymentId === 'string' && oc.deploymentId === `dep-${rentCal
   expect(broker.status('fail-user', 'fail-task').status === 'failed', 'missing-uuid-lease-failed-closed', `actual=${broker.status('fail-user', 'fail-task').status}`);
 }
 
-console.log(`SUMMARY fixed_head=${HEAD} source=git-show broker.js rentCalls=${rentCalls} mode=desired-behavior`);
+// Fix 10: cancel AFTER releaseAfterTask is armed — the old timer must be a no-op
+// (no extra provider stop, terminal 'cancelled' not overwritten to 'released').
+stopOk = true;
+{
+  await broker.submit('timer-user', 'task-timer-cancel', { route: 'autodl' });
+  await broker.releaseAfterTask('timer-user', 'task-timer-cancel', 20);
+  const before = stopCalls;
+  await broker.cancel('timer-user', 'task-timer-cancel');
+  await new Promise((resolve) => setTimeout(resolve, 60));
+  expect(stopCalls - before === 1, 'cancel-after-arm-single-stop', `extraStops=${stopCalls - before - 1},expected 0 extra (cancel's own stop only)`);
+  expect(broker.status('timer-user', 'task-timer-cancel').status === 'cancelled', 'cancelled-lease-stays-cancelled-when-old-timer-fires', `actual=${broker.status('timer-user', 'task-timer-cancel').status}`);
+}
+
+// Fix 11: duplicate arm → exactly one provider stop, single release.
+{
+  await broker.submit('timer-user', 'task-dup-arm', { route: 'autodl' });
+  readyResolve?.({ status: 'running' });
+  await new Promise((resolve) => setImmediate(resolve));
+  const before = stopCalls;
+  await broker.releaseAfterTask('timer-user', 'task-dup-arm', 2);
+  await broker.releaseAfterTask('timer-user', 'task-dup-arm', 2);
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  expect(stopCalls - before === 1, 'duplicate-timers-stop-once', `actual=${stopCalls - before},expected=1`);
+  expect(broker.status('timer-user', 'task-dup-arm').status === 'released', 'duplicate-arm-releases-once', `actual=${broker.status('timer-user', 'task-dup-arm').status}`);
+}
+
+// Fix 12: cancel DURING the timer's provider await — durable re-check must keep 'cancelled'.
+{
+  await broker.submit('timer-user', 'task-cancel-during-await', { route: 'autodl' });
+  readyResolve?.({ status: 'running' });
+  await new Promise((resolve) => setImmediate(resolve));
+  gateNextStop = true;
+  await broker.releaseAfterTask('timer-user', 'task-cancel-during-await', 2);
+  for (let i = 0; i < 50 && broker.status('timer-user', 'task-cancel-during-await').status !== 'releasing'; i++) {
+    await new Promise((resolve) => setTimeout(resolve, 2));
+  }
+  expect(broker.status('timer-user', 'task-cancel-during-await').status === 'releasing', 'timer-claims-releasing-before-await', `actual=${broker.status('timer-user', 'task-cancel-during-await').status}`);
+  const cancelDuring = await broker.cancel('timer-user', 'task-cancel-during-await');
+  expect(cancelDuring.cancelled === true, 'cancel-during-await-accepted', JSON.stringify(cancelDuring));
+  gateResolve?.(true);
+  await new Promise((resolve) => setTimeout(resolve, 30));
+  expect(broker.status('timer-user', 'task-cancel-during-await').status === 'cancelled', 'cancel-during-await-not-overwritten', `actual=${broker.status('timer-user', 'task-cancel-during-await').status},expected=cancelled`);
+}
+
+// Fix 13: same-task NEW lease must not be released by the OLD timer.
+{
+  await broker.submit('timer-user', 'task-new-lease', { route: 'autodl' });
+  await broker.releaseAfterTask('timer-user', 'task-new-lease', 30); // arm OLD timer on lease A
+  await broker.cancel('timer-user', 'task-new-lease');
+  const reborn = await broker.submit('timer-user', 'task-new-lease', { route: 'autodl' });
+  expect(reborn.deduped !== true && reborn.leaseId, 'new-lease-after-cancel-gets-new-id', JSON.stringify(reborn));
+  readyResolve?.({ status: 'running' });
+  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setTimeout(resolve, 60)); // old timer fires here — must not touch lease B
+  const st = broker.status('timer-user', 'task-new-lease');
+  expect(st.status === 'active' && st.id === reborn.leaseId, 'new-lease-not-released-by-old-timer', `actual=${st.status},expected=active (latest lease wins)`);
+}
+
+console.log(`SUMMARY fixed_head=${HEAD} source=git-show broker.js rentCalls=${rentCalls} stopCalls=${stopCalls} mode=desired-behavior`);
