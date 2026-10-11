@@ -14,7 +14,20 @@ const APP_DIR = process.env.APP_DIR ? path.resolve(process.env.APP_DIR) : path.r
 
 ensureDir(DATA_DIR);
 
+function insideDirectory(root, file) {
+  const relative = path.relative(root, file);
+  return relative !== '..' && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative);
+}
+
+function denyStatic(res) {
+  res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.end('Not found');
+}
+
 function sendFile(res, file) {
+  const realFile = fs.realpathSync(file);
+  if (!insideDirectory(fs.realpathSync(APP_DIR), realFile)) return denyStatic(res);
+  file = realFile;
   const stat = fs.statSync(file);
   res.writeHead(200, {
     'Content-Type': mimeOf(file),
@@ -26,7 +39,8 @@ function sendFile(res, file) {
 
 function serveStatic(res, pathname) {
   const candidate = path.join(APP_DIR, pathname);
-  if (candidate.startsWith(APP_DIR) && fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
+  if (!insideDirectory(APP_DIR, candidate)) return denyStatic(res);
+  if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
     return sendFile(res, candidate);
   }
   // SPA fallback
