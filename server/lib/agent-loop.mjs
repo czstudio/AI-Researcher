@@ -215,11 +215,13 @@ function inWorkspace(ws, rel) {
   return abs;
 }
 
-function sh(cmd, cwd) {
+function sh(cmd, cwd, signal) {
   return new Promise((resolve) => {
-    execFile('/bin/zsh', ['-c', cmd], { cwd, timeout: TOOL_TIMEOUT_MS, maxBuffer: 4e6 }, (err, stdout, stderr) => {
+    const child = execFile('/bin/zsh', ['-c', cmd], { cwd, timeout: TOOL_TIMEOUT_MS, maxBuffer: 4e6 }, (err, stdout, stderr) => {
       resolve({ output: [stdout, stderr].filter(Boolean).join('\n').slice(0, TOOL_OUTPUT_CAP) || '(空)', code: err ? (err.code ?? 1) : 0 });
     });
+    // cancel 路由 abort → SIGTERM 杀子进程（Bash 释放，不留孤儿）
+    if (signal) signal.addEventListener('abort', () => { try { child.kill('SIGTERM'); } catch { /* already exited */ } }, { once: true });
   });
 }
 
@@ -260,15 +262,15 @@ async function executeTool(ctx, name, input) {
       return `已写入 ${input.file_path}`;
     }
     case 'Bash':
-      return (await sh(String(input.command), ws)).output;
+      return (await sh(String(input.command), ws, ctx.signal)).output;
     case 'Glob': {
-      const out = await sh(`find . -path ./.git -prune -o -print | head -400`, ws);
+      const out = await sh(`find . -path ./.git -prune -o -print | head -400`, ws, ctx.signal);
       const pat = input.pattern || '**/*';
       const re = new RegExp('^' + pat.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*\*/g, '::').replace(/\*/g, '[^/]*').replace(/::/g, '.*').replace(/\?/g, '.') + '$');
       return out.output.split('\n').filter((l) => re.test(l.replace(/^\.\//, ''))).join('\n') || '(空)';
     }
     case 'Grep': {
-      const r = await sh(`grep -rn --include='*' -m 5 ${JSON.stringify(String(input.pattern))} . 2>/dev/null | head -40`, ws);
+      const r = await sh(`grep -rn --include='*' -m 5 ${JSON.stringify(String(input.pattern))} . 2>/dev/null | head -40`, ws, ctx.signal);
       return r.output || '(无命中)';
     }
     case 'TaskCreate': {
@@ -307,7 +309,7 @@ async function executeTool(ctx, name, input) {
         const prelude = `import pickle,os\n_ctx='.nb_ctx.pkl'\n_g={}\nif os.path.exists(_ctx):\n _g=pickle.load(open(_ctx,'rb'));globals().update(_g)\nexec(open(${JSON.stringify(tmp)}).read())\nimport sys\n_d={}\nfor k,v in list(globals().items()):\n if k.startswith('__') or k in ('pickle','os','sys'):continue\n try:_d[k]=pickle.dumps(v) and v\n except Exception:pass\ntry:pickle.dump(_d,open(_ctx,'wb'))\nexcept Exception:pass`;
         const pre = `.nb_pre_${Date.now().toString(36)}.py`;
         fs.writeFileSync(inWorkspace(ws, pre), prelude);
-        const r = await sh(`python3 ${pre}`, ws);
+        const r = await sh(`python3 ${pre}`, ws, ctx.signal);
         fs.rmSync(abs, { force: true }); fs.rmSync(inWorkspace(ws, pre), { force: true });
         cell.outputs = [{ output_type: 'stream', text: r.output }];
         cell.execution_count = ++ctx.nb.kernel;

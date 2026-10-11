@@ -575,11 +575,18 @@ route('POST', '/task/cancel/:taskId', async (req, res, p, body) => {
   const taskId = p.taskId;
   const t = taskId && db.get('tasks', String(taskId));
   if (!t) return U.fail('5101', 'task not found');
+  // 归属校验（2026-10-10 执行单 04 负验收发现：匿名 B fingerprint 可取消 A 的任务——IDOR 同族）
+  const own = db.get('sessions', t.chatSessionId);
+  const creatorOk = own && String(own.creatorUserId) === String(a.user.id);
+  if (!creatorOk) return U.fail('5100', 'not your task');
+  // 真中止：先 abort agent 循环（LLM fetch + Bash 子进程），再落终态
+  const { abortTask } = await import('../lib/executor.mjs');
+  const aborted = abortTask(taskId);
   t.status = 'cancelled';
   t.finishedAt = U.nowMs();
   db.put('tasks', t.id, t);
   publish(t.sessionId, { type: 'complete', taskId: t.id, cancelled: true });
-  return U.ok({ cancelled: true, taskId: t.id });
+  return U.ok({ cancelled: true, taskId: t.id, processTerminated: aborted });
 });
 
 route('POST', '/call_agent', async (req, res, p, body) => {

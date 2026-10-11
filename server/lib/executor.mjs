@@ -10,6 +10,15 @@ import { publish } from './hub.mjs';
 import { nowMs } from './util.mjs';
 
 const running = new Set();
+/** taskId → AbortController（cancel 路由调用 abortTask 真中止 agent 循环 + Bash 进程） */
+const aborters = new Map();
+
+export function abortTask(taskId) {
+  const ac = aborters.get(String(taskId));
+  if (!ac) return false;
+  ac.abort();
+  return true;
+}
 // 线上步 id 为全局数字自增（实测 15964924 量级）；本地以毫秒基种子近似
 let stepSeq = (Date.now() % 1_000_000_000) * 1000;
 
@@ -55,6 +64,9 @@ export async function runTask({ task, session, modeDef, body }) {
   db.put('tasks', task.id, task);
   publish(session.id, { type: 'task', taskId: task.id, status: 'processing' });
 
+  const ac = new AbortController();
+  aborters.set(task.id, ac);
+
   const ctx = {
     query: body.query || '',
     queryContent: body.queryContent || body.query || '',
@@ -63,7 +75,7 @@ export async function runTask({ task, session, modeDef, body }) {
     workspaceDir: db.workspaceDir(session.id),
     task,
     session,
-    signal: null,
+    signal: ac.signal,
   };
 
   const kernel = kernelFor(modeDef?.key, modeDef);
@@ -120,6 +132,7 @@ export async function runTask({ task, session, modeDef, body }) {
       db.put('tasks', task.id, task);
       publish(session.id, { type: 'complete', taskId: task.id });
       running.delete(task.id);
+    aborters.delete(task.id);
     }
     return;
   }
@@ -182,6 +195,7 @@ export async function runTask({ task, session, modeDef, body }) {
     db.put('tasks', task.id, task);
     publish(session.id, { type: 'complete', taskId: task.id });
     running.delete(task.id);
+    aborters.delete(task.id);
   }
 }
 
