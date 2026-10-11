@@ -1,0 +1,285 @@
+{
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "mnist": {
+    "Without-BN": {
+      "final_test_top1": {
+        "mean": 97.36,
+        "sd": 0.036055512754644546,
+        "values": [
+          97.4,
+          97.33,
+          97.35
+        ]
+      },
+      "published_last_plotted_top1": 97.2313384909941,
+      "published_last_plotted_step": 44086.34530602819,
+      "signed_gap_pp": 0.12866150900589446
+    },
+    "With-BN": {
+      "final_test_top1": {
+        "mean": 97.64666666666666,
+        "sd": 0.07505553499465441,
+        "values": [
+          97.57,
+          97.65,
+          97.72
+        ]
+      },
+      "published_last_plotted_top1": 98.16282342914418,
+      "published_last_plotted_step": 49051.18118591323,
+      "signed_gap_pp": -0.5161567624775216
+    },
+    "paired_bn_gain_pp": {
+      "mean": 0.28666666666666646,
+      "sd": 0.10408329997331665,
+      "values": [
+        0.1699999999999875,
+        0.3200000000000074,
+        0.37000000000000455
+      ]
+    }
+  },
+  "imagenette_proxy": {
+    "Inception": {
+      "best_dev_top1": {
+        "mean": 56.0,
+        "sd": 0.8717797887081349,
+        "values": [
+          55.6,
+          57.0,
+          55.4
+        ]
+      },
+      "selected_test_top1": {
+        "mean": 53.03333333333333,
+        "sd": 1.4224392195567928,
+        "values": [
+          54.0,
+          51.4,
+          53.7
+        ]
+      },
+      "selected_test_top5": {
+        "mean": 91.13333333333334,
+        "sd": 0.7371114795832031,
+        "values": [
+          91.4,
+          90.3,
+          91.7
+        ]
+      },
+      "last_test_top1": {
+        "mean": 53.3,
+        "sd": 1.8520259177452147,
+        "values": [
+          51.4,
+          55.1,
+          53.4
+        ]
+      },
+      "published_imagenet_max_top1": 72.2,
+      "signed_dev_gap_pp_noncomparable": -16.200000000000003
+    },
+    "BN-Baseline": {
+      "best_dev_top1": {
+        "mean": 64.2,
+        "sd": 1.9078784028338938,
+        "values": [
+          63.2,
+          63.0,
+          66.4
+        ]
+      },
+      "selected_test_top1": {
+        "mean": 62.766666666666666,
+        "sd": 1.2662279942148418,
+        "values": [
+          61.8,
+          62.3,
+          64.2
+        ]
+      },
+      "selected_test_top5": {
+        "mean": 94.93333333333334,
+        "sd": 0.9504384952922197,
+        "values": [
+          94.0,
+          94.9,
+          95.9
+        ]
+      },
+      "last_test_top1": {
+        "mean": 62.5,
+        "sd": 0.6557438524302024,
+        "values": [
+          62.6,
+          61.8,
+          63.1
+        ]
+      },
+      "published_imagenet_max_top1": 72.7,
+      "signed_dev_gap_pp_noncomparable": -8.5
+    },
+    "BN-x5": {
+      "best_dev_top1": {
+        "mean": 66.33333333333333,
+        "sd": 1.5534906930308063,
+        "values": [
+          64.6,
+          67.6,
+          66.8
+        ]
+      },
+      "selected_test_top1": {
+        "mean": 65.06666666666666,
+        "sd": 1.7616280348965065,
+        "values": [
+          64.1,
+          64.0,
+          67.1
+        ]
+      },
+      "selected_test_top5": {
+        "mean": 94.23333333333333,
+        "sd": 0.5033222956847163,
+        "values": [
+          94.3,
+          93.7,
+          94.7
+        ]
+      },
+      "last_test_top1": {
+        "mean": 65.0,
+        "sd": 1.8520259177452112,
+        "values": [
+          65.1,
+          63.1,
+          66.8
+        ]
+      },
+      "published_imagenet_max_top1": 73.0,
+      "signed_dev_gap_pp_noncomparable": -6.666666666666671
+    },
+    "BN-x30": {
+      "best_dev_top1": {
+        "mean": 65.8,
+        "sd": 0.9165151389911671,
+        "values": [
+          64.8,
+          66.0,
+          66.6
+        ]
+      },
+      "selected_test_top1": {
+        "mean": 64.96666666666667,
+        "sd": 1.0066445913694364,
+        "values": [
+          65.9,
+          63.9,
+          65.1
+        ]
+      },
+      "selected_test_top5": {
+        "mean": 93.8,
+        "sd": 0.26457513110646014,
+        "values": [
+          94.0,
+          93.5,
+          93.9
+        ]
+      },
+      "last_test_top1": {
+        "mean": 65.0,
+        "sd": 1.1532562594670812,
+        "values": [
+          66.3,
+          64.1,
+          64.6
+        ]
+      },
+      "published_imagenet_max_top1": 74.8,
+      "signed_dev_gap_pp_noncomparable": -9.0
+    },
+    "BN-x5-Sigmoid": {
+      "best_dev_top1": {
+        "mean": 65.53333333333333,
+        "sd": 1.9008769905844356,
+        "values": [
+          63.6,
+          67.4,
+          65.6
+        ]
+      },
+      "selected_test_top1": {
+        "mean": 63.6,
+        "sd": 0.6082762530298225,
+        "values": [
+          62.9,
+          64.0,
+          63.9
+        ]
+      },
+      "selected_test_top5": {
+        "mean": 94.86666666666667,
+        "sd": 0.4725815626252636,
+        "values": [
+          94.5,
+          95.4,
+          94.7
+        ]
+      },
+      "last_test_top1": {
+        "mean": 63.666666666666664,
+        "sd": 0.4932882862316236,
+        "values": [
+          63.1,
+          64.0,
+          63.9
+        ]
+      },
+      "published_imagenet_max_top1": 69.8,
+      "signed_dev_gap_pp_noncomparable": -4.266666666666666
+    }
+  },
+  "published": {
+    "paper": "Ioffe and Szegedy (2015), Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
+    "arxiv": "https://arxiv.org/abs/1502.03167",
+    "published": "https://proceedings.mlr.press/v37/ioffe15.html",
+    "requested_table_interpretation": "Figure 3 maximum single-crop top-1 accuracy column; neither downloaded version labels Table 1 column B",
+    "imagenet_figure3": {
+      "Inception": {
+        "max_top1": 72.2,
+        "steps_to_72_2": 31000000
+      },
+      "BN-Baseline": {
+        "max_top1": 72.7,
+        "steps_to_72_2": 13300000
+      },
+      "BN-x5": {
+        "max_top1": 73.0,
+        "steps_to_72_2": 2100000
+      },
+      "BN-x30": {
+        "max_top1": 74.8,
+        "steps_to_72_2": 2700000
+      },
+      "BN-x5-Sigmoid": {
+        "max_top1": 69.8,
+        "steps_to_72_2": null
+      }
+    },
+    "imagenet_figure4_single_crop": {
+      "top1_error": 25.2,
+      "top5_error": 7.82
+    },
+    "mnist": {
+      "source": "published_mnist_vectors.json",
+      "metric": "fraction correct on held-out test data",
+      "exact_tabulated_endpoint": false
+    }
+  }
+}

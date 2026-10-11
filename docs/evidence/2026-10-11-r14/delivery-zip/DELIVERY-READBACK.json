@@ -1,0 +1,23 @@
+{
+ "what": "one-time normal-login download of EXISTING task 246271 delivery (no new task/GPU/paid run; single download, no retry)",
+ "endpoint": "GET /api/file/download?fileKey=nova_agent_v1/user_data/session_1c051231511d5cadc252f9a3e06c3ea6/workspace/project/results/batch_normalization_reproduction.zip&chatSessionId=1c051231511d5cadc252f9a3e06c3ea6",
+ "httpStatus": 200,
+ "bytes": 7934662,
+ "sha256": "7cdb843a5ad90abc850b265782ae8fedd0efdc4838fbe3106632912d8829f6f0",
+ "bundle": {
+  "files": 125,
+  "uncompressedBytes": 10524241,
+  "checkpointPtFiles": 21,
+  "testsDir": [
+   "tests/test_pipeline.py",
+   "tests/test_models.py (see listing)"
+  ],
+  "entrypoint": "entrypoint.sh present (CPU-only, pinned deps torch==2.5.1+cpu/numpy==2.4.6/matplotlib==3.11.1/pillow==12.3.0; unittest discover → data → run_experiments → validate_results → analyze → results/fidelity_report.md; declared network fallback: get-pip.py bootstrap + pinned CPU wheels)"
+ },
+ "trajectoryCrossCheck": {
+  "seatAuditClaim": "Bundle verified: 125 files, 21 checkpoints (step 16116840) — ZIP REALITY: 125 files, 21 .pt MATCH",
+  "seatAuditClaim2": "MNIST paired gain mean=0.286666..., sd=0.104083... (step 16116451) — aggregate_metrics.json: 0.28666666666666646 / 0.10408329997331665 MATCH",
+  "deliveryQueue": "steps 16116896→16116905 'Queued 6 file(s)' — those were the UI queue entries; this download is the user-side readback the audit marked missing"
+ },
+ "scopeHonesty": "CPU-only MNIST + Imagenette proxy partial reproduction; NOT full-ImageNet/paper-headline root reproduction (per seat audit + fidelity_report.md)"
+}
