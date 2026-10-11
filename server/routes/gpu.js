@@ -19,12 +19,30 @@ export function registerGpuRoutes(route, requireUser) {
     const denied = denyUnregistered(a);
     return denied ? { denied } : a;
   }
+
+  // 任务归属链：db.tasks.chatSessionId → db.sessions.creatorUserId。
+  // VM/测试环境用上下文注入的 db；真实运行时动态 import 现有 store（无第二状态源）。
+  async function taskOwnedBy(userId, taskId) {
+    let dbRef;
+    if (typeof db !== 'undefined') dbRef = db;
+    else { try { dbRef = await import('../store/db.mjs'); } catch { return false; } }
+    if (!dbRef?.get) return false;
+    const task = dbRef.get('tasks', taskId);
+    if (!task || !task.chatSessionId) return false;
+    const session = dbRef.get('sessions', task.chatSessionId);
+    return !!session && String(session.creatorUserId) === String(userId);
+  }
+
   // 自动租用 GPU 服务器
   route('POST', '/gpu/rent', async (req, res, p, body, { user }) => {
     const a = authed(req, p);
     if (a.denied) return a.denied;
     const { taskId, gpuNames, gpuCount, maxPricePerHour, route: gpuRoute, byoTargetId, imageUuid } = body;
     if (!taskId) return { code: '5001', message: 'taskId required' };
+    // 归属门：foreign/missing task 在 broker/provider 调用前拒绝（零副作用）
+    if (!(await taskOwnedBy(a.user.id, String(taskId)))) {
+      return { code: '5200', message: 'task not found or not owned by user', result: null };
+    }
     const result = await broker.submit(a.user.id, String(taskId), {
       gpuNames, gpuCount, maxPricePerHour, route: gpuRoute, byoTargetId, imageUuid,
     });

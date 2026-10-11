@@ -94,7 +94,8 @@ function sessionOrShared(sessionId) {
 
 function assertReadable(session, a) {
   if (session.share) return null;
-  if (a.user && (a.user.id === session.creatorUserId || !a.anon)) return null;
+  // 只有 owner 可读私有；注册身份本身不授权（分享=只读公开，不扩展到私有）
+  if (a.user && String(a.user.id) === String(session.creatorUserId)) return null;
   return err(5200);
 }
 
@@ -452,6 +453,9 @@ async function createTask(req, res, p, body, { anonymous }) {
     const r = sessionOrShared(sessionId);
     if (r.denied) return r.denied;
     session = r.session;
+    // 归属门：foreign/shared 会话不得借道创建任务（分享只授权读）——
+    // 在扣 credits/appendLedger/newTask/调度之前拒绝，异常零副作用
+    if (String(session.creatorUserId) !== String(a.user.id)) return err(5200);
   } else {
     session = db.newSession({ userId: a.user.id, isAnonymous: anonymous });
   }

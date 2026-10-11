@@ -32,6 +32,14 @@ const users = new Map([
   ['member', { id: 'member', isAnonymous: false, level: 'free', credits: 50 }],
   ['wallet-operator', { id: 'wallet-operator', isAnonymous: false, level: 'pro', credits: 500 }],
 ]);
+const tasks = new Map([
+  ['owned-task', { id: 'owned-task', chatSessionId: 'owned-session' }],
+  ['foreign-task', { id: 'foreign-task', chatSessionId: 'foreign-session' }],
+]);
+const sessions = new Map([
+  ['owned-session', { id: 'owned-session', creatorUserId: 'member', share: false }],
+  ['foreign-session', { id: 'foreign-session', creatorUserId: 'other', share: false }],
+]);
 const calls = { rent: [], wallet: 0 };
 const contextObj = {
   ERRORS: { codes: {}, httpOverrides: {} },
@@ -42,7 +50,7 @@ const contextObj = {
     fail: (code) => ({ code: String(code), message: 'denied' }),
   },
   db: {
-    get: (table, id) => users.get(id),
+    get: (table, id) => (table === 'tasks' ? tasks : table === 'sessions' ? sessions : users).get(id),
     put: (table, id, v) => users.set(id, v),
     newUser: (spec) => ({ id: 'generated', ...spec, credits: 50 }),
   },
@@ -91,11 +99,13 @@ async function check(name, headers, path, body, expectCode, expectRent, expectWa
   return result;
 }
 
-// Root 4 (seat semantics).
+// Root 4 (seat semantics) + task-scope rent binding.
 await check('no-actor-rent-denied', {}, 'POST /gpu/rent', { taskId: 'test' }, '401', 0, 0);
-await check('signed-member-rent-route-positive', { authorization: 'signed-positive' }, 'POST /gpu/rent', { taskId: 'test' }, '0', 1, 0);
+await check('signed-member-rent-route-positive', { authorization: 'signed-positive' }, 'POST /gpu/rent', { taskId: 'owned-task' }, '0', 1, 0);
 await check('anonymous-fingerprint-rent-must-deny', { fingerprint: 'root-fp-negative' }, 'POST /gpu/rent', { taskId: 'arbitrary-unbound-task' }, ['401', '403'], 0, 0);
 await check('anonymous-fingerprint-wallet-must-deny', { fingerprint: 'root-fp-negative' }, 'GET /gpu/balance', {}, ['401', '403'], 0, 0);
+await check('registered-user-foreign-task-rent-must-deny', { authorization: 'signed-positive' }, 'POST /gpu/rent', { taskId: 'foreign-task' }, ['401', '403', '404', '5001', '5200'], 0, 0);
+await check('registered-user-missing-task-rent-must-deny', { authorization: 'signed-positive' }, 'POST /gpu/rent', { taskId: 'missing-task' }, ['401', '403', '404', '5001', '5200'], 0, 0);
 
 // Wallet scope: normal registered user gets own budget, platform wallet untouched.
 const userScope = await check('normal-user-wallet-scoped-to-own-budget', { authorization: 'signed-positive' }, 'GET /gpu/balance', {}, '0', 0, 0,
