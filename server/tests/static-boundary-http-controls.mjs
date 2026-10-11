@@ -25,6 +25,13 @@ const OUTSIDE = fs.mkdtempSync(path.join(os.tmpdir(), 'novix-static-outside-'));
 const RAND = crypto.randomBytes(4).toString('hex');
 const SIBLING_DIR = path.join(REPO, 'app', `dist-private-canary-${RAND}`);
 const CANARY = `synthetic_canary_${RAND}`;
+// cleanup 所需状态置于模块作用域：异常路径的 finally 也必须能杀掉 own child、
+// 释放自有 symlink（席位 NOVIX-a5be-CLEANUP-ROOT-CONTINUATION：main 局部变量
+// 在外部 finally 引用即 ReferenceError 被吞 → 泄漏 symlink 与孤儿 server）
+let server = null;
+let linkPath = null;
+let outsideCanaryPath = null;
+const FAULT = process.argv.includes('--fault-inject');
 
 const rows = [];
 function expect(cond, name, detail) {
@@ -63,12 +70,12 @@ async function main() {
   // synthetic fixtures
   fs.mkdirSync(SIBLING_DIR, { recursive: true });
   fs.writeFileSync(path.join(SIBLING_DIR, 'canary.txt'), CANARY);
-  const outsideCanaryPath = path.join(OUTSIDE, `canary-${RAND}.txt`);
+  outsideCanaryPath = path.join(OUTSIDE, `canary-${RAND}.txt`);
   fs.writeFileSync(outsideCanaryPath, CANARY);
-  const linkName = `escape-link-${RAND}.txt`;
-  fs.symlinkSync(outsideCanaryPath, path.join(APP_DIR, linkName));
+  linkPath = path.join(APP_DIR, `escape-link-${RAND}.txt`);
+  fs.symlinkSync(outsideCanaryPath, linkPath);
 
-  const server = spawn('node', ['server/serve.mjs'], {
+  server = spawn('node', ['server/serve.mjs'], {
     cwd: REPO,
     env: { ...process.env, PORT_SITE: String(PORT), NOVIX_DATA_DIR: DATA },
     stdio: ['ignore', 'ignore', 'pipe'],
@@ -113,7 +120,7 @@ async function main() {
   expect(out.status === 404 && !out.body.includes(CANARY), 'outside-encoded-traversal-denied', `status=${out.status}, canaryLeaked=${out.body.includes(CANARY)}`);
 
   // negative 3: symlink escape from inside app/dist to outside canary
-  const link = await fetch(`http://127.0.0.1:${PORT}/${linkName}`);
+  const link = await fetch(`http://127.0.0.1:${PORT}/${path.basename(linkPath)}`);
   const linkBody = await link.text();
   expect(link.status === 404 && !linkBody.includes(CANARY), 'symlink-escape-denied', `status=${link.status}, canaryLeaked=${linkBody.includes(CANARY)}`);
 
@@ -122,14 +129,50 @@ async function main() {
   const plainBody = await plain.text();
   expect(!plainBody.includes(CANARY), 'plain-dotdot-never-canary', `status=${plain.status}, canaryLeaked=${plainBody.includes(CANARY)}`);
 
-  // cleanup fixtures
-  server.kill('SIGTERM');
+  if (FAULT) throw new Error('controlled fault: cleanup must still release own child and known link');
   const pass = rows.filter((r) => r.pass).length;
   console.log(`SUMMARY static_boundary rows=${rows.length} pass=${pass} fixtures=synthetic cleanup=done`);
 }
 
-main().catch((e) => { console.error('HARNESS ERROR', e); process.exitCode = 1; }).finally(() => {
+async function releaseOwnedFixtures() {
+  // own child lifecycle: SIGTERM then SIGKILL fallback, wait for exit
+  if (server) {
+    try { server.kill('SIGTERM'); } catch { /* already gone */ }
+    await new Promise((resolve) => {
+      const t = setTimeout(resolve, 1500);
+      server.once('exit', () => { clearTimeout(t); resolve(); });
+    });
+    try { server.kill('SIGKILL'); } catch { /* already exited */ }
+  }
+  // own symlink: unlink ONLY after verifying it is the link THIS test created
+  // (points at our synthetic outside canary) — never a foreign/unknown file
+  try {
+    if (linkPath && fs.lstatSync(linkPath).isSymbolicLink() && fs.readlinkSync(linkPath) === outsideCanaryPath) {
+      fs.unlinkSync(linkPath);
+    }
+  } catch { /* already absent */ }
   try { fs.rmSync(SIBLING_DIR, { recursive: true, force: true }); } catch { /* temp */ }
-  try { fs.unlinkSync(path.join(APP_DIR, linkName)); } catch { /* temp */ }
+}
+
+async function portClosed() {
+  const net = await import('node:net');
+  return new Promise((resolve) => {
+    const c = net.connect(PORT, '127.0.0.1', () => { c.destroy(); resolve(false); });
+    c.on('error', () => resolve(true));
+  });
+}
+
+main().catch((e) => { console.error('HARNESS ERROR', e); process.exitCode = 1; }).finally(async () => {
+  await releaseOwnedFixtures();
   try { fs.rmSync(DATA, { recursive: true, force: true }); fs.rmSync(OUTSIDE, { recursive: true, force: true }); } catch { /* temp */ }
+  if (FAULT) {
+    // 受控异常自验：own child 与 known link 都已释放、树无残留
+    const linkGone = !fs.existsSync(linkPath);
+    const childGone = await portClosed();
+    console.log(`${linkGone && childGone ? 'PASS' : 'FAIL'} controlled-error-cleanup-releases-own-child-and-link :: linkGone=${linkGone}, portClosed=${childGone}`);
+    if (!(linkGone && childGone)) process.exitCode = 1;
+  }
+  const done = () => process.exit(process.exitCode || 0);
+  setTimeout(done, 100).unref?.();
+  done();
 });
