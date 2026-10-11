@@ -34,7 +34,7 @@ export function registerGpuRoutes(route, requireUser) {
   }
 
   // 自动租用 GPU 服务器
-  route('POST', '/gpu/rent', async (req, res, p, body, { user }) => {
+  route('POST', '/gpu/rent', async (req, res, p, body) => {
     const a = authed(req, p);
     if (a.denied) return a.denied;
     const { taskId, gpuNames, gpuCount, maxPricePerHour, route: gpuRoute, byoTargetId, imageUuid } = body;
