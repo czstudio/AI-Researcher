@@ -228,13 +228,16 @@ function sh(cmd, cwd, signal) {
     // 修：detached 进程组 + kill(-pid) 组杀；SIGTERM 后 2s 兜底 SIGKILL；未 abort 前不误杀。
     const child = spawn('/bin/zsh', ['-c', cmd], { cwd, timeout: TOOL_TIMEOUT_MS, maxBuffer: 4e6, detached: true });
     let out = '';
+    let abortInitiated = false; // 纠偏（v3 独立验收）：SIGTERM-ignore 孙进程使 close 先到、
+                                 // done() 清 killTimer → SIGKILL 被取消 → 孙进程存活
     child.stdout.on('data', (d) => { out += d; });
     child.stderr.on('data', (d) => { out += d; });
     let settled = false;
     const done = (code) => {
       if (settled) return;
       settled = true;
-      clearTimeout(killTimer);
+      // abort 路径下不清 killTimer——SIGKILL 兜底必须仍执行（SIGTERM-ignore 进程场景）
+      if (!abortInitiated) clearTimeout(killTimer);
       resolve({ output: (out || '').slice(0, TOOL_OUTPUT_CAP) || '(空)', code });
     };
     let killTimer = null;
@@ -242,6 +245,7 @@ function sh(cmd, cwd, signal) {
     child.on('close', (code) => done(code ?? 0));
     if (signal) signal.addEventListener('abort', () => {
       if (settled) return;
+      abortInitiated = true;
       try { process.kill(-child.pid, 'SIGTERM'); } catch { /* group gone */ }
       killTimer = setTimeout(() => { try { process.kill(-child.pid, 'SIGKILL'); } catch { /* gone */ } }, 2000);
       if (killTimer.unref) killTimer.unref();
