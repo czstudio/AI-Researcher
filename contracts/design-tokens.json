@@ -1,0 +1,55 @@
+{
+  "$comment": "Design DNA measured from the live product. Values are structure/numbers only; implement independently, do not copy brand assets or copy.",
+  "light": {
+    "--brand": "oklch(66.5% .1804 47.04)",
+    "--background": "oklch(97.65% .001 17.18)",
+    "--foreground": "oklch(14.1% .005 285.823)",
+    "--card": "oklch(100% 0 0)",
+    "--popover": "oklch(100% 0 0)",
+    "--primary": "oklch(66.5% .1804 47.04)",
+    "--primary-foreground": "oklch(100% 0 0)",
+    "--secondary": "oklch(96.2% .003 286.32)",
+    "--muted": "oklch(96.2% .003 286.32)",
+    "--muted-foreground": "oklch(55.2% .016 285.938)",
+    "--accent": "oklch(95.4% .008 47.04)",
+    "--destructive": "oklch(58.6% .22 27.3)",
+    "--border": "oklch(92% .004 286.32)",
+    "--input": "oklch(92% .004 286.32)",
+    "--ring": "oklch(66.5% .1804 47.04)"
+  },
+  "dark": {
+    "--background": "oklch(19.5% .006 285.823)",
+    "--foreground": "oklch(96.5% .002 286.32)",
+    "--card": "oklch(23.1% .007 285.823)",
+    "--popover": "oklch(23.1% .007 285.823)",
+    "--primary": "oklch(70.5% .175 47.04)",
+    "--primary-foreground": "oklch(19.5% .006 285.823)",
+    "--secondary": "oklch(27.4% .008 285.823)",
+    "--muted": "oklch(27.4% .008 285.823)",
+    "--muted-foreground": "oklch(70.5% .015 285.938)",
+    "--accent": "oklch(31% .02 47.04)",
+    "--destructive": "oklch(62% .2 27.3)",
+    "--border": "oklch(31.5% .008 286.32)",
+    "--input": "oklch(31.5% .008 286.32)",
+    "--ring": "oklch(70.5% .175 47.04)"
+  },
+  "radius": { "base": "0.625rem", "steps": ["5px", "8px", "9px", "12px", "14px", "16px", "18px"], "pill": "999px" },
+  "type": {
+    "body": "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
+    "display": "'Libre Baskerville', Georgia, 'Times New Roman', serif",
+    "mono": "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
+    "scale": [10, 11, 12, 13, 14, 16, 24, 32]
+  },
+  "shadow": {
+    "sm": "rgba(35,38,45,.06) 0 1px 2px, rgba(35,38,45,.05) 0 0 0 1px",
+    "md": "rgba(35,38,45,.08) 0 4px 12px, rgba(35,38,45,.05) 0 0 0 1px",
+    "lg": "rgba(35,38,45,.12) 0 12px 32px, rgba(35,38,45,.06) 0 0 0 1px"
+  },
+  "layout": {
+    "railWidth": "44px",
+    "contentMaxWidth": "768px",
+    "mobileBreakpoint": "390px",
+    "controlHeights": { "popover": "28px", "segmented": "28px", "send": "32px" },
+    "controlWidths": { "deepsurvey": [97, 89], "methoddesign": [82, 120], "autoexperiment": [81, 91], "notebook": [81, 95, 94], "reproduce": [91, 118] }
+  }
+}

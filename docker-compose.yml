@@ -1,0 +1,15 @@
+services:
+  novix:
+    build: .
+    image: novix-open:latest
+    env_file: .env
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+  # Optional: isolate code execution. Requires /var/run/docker.sock and
+  # is only used when SANDBOX=docker.
+  # sandbox note: din-d is intentionally not enabled by default; the default
+  # `local` sandbox runs python as a subprocess with a hard timeout.

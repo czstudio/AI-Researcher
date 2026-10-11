@@ -1,0 +1,20 @@
+{
+  "$comment": "ResultEnum. Business codes are returned inside the JSON envelope (HTTP 200) unless noted. Verified 2026-10-09 against live novix.science. Full ResultEnum (newnovix.science.science.vo.ResultEnum) not yet exhaustively extracted — see docs/research/2026-10-09-novix-live-capture/NOVIX_GAP_ANALYSIS_MULTI_AI.md §6.",
+  "version": "2",
+  "codes": {
+    "0": "Success",
+    "401": "user not found (HTTP 401, unauthenticated)",
+    "403": "forbidden",
+    "4000": "queryContent can not be blank",
+    "5000": "system error",
+    "5001": "chatSession not exist | published revision not ready",
+    "5016": "NEED_UPGRADE",
+    "5019": "USER_FREE_NOT_USE_CODE_AGENT",
+    "5100": "not your task (cross-tenant read of another user's task)",
+    "5102": "TASK_LIMIT",
+    "5200": "session not open share"
+  },
+  "httpOverrides": {
+    "401": 401
+  }
+}

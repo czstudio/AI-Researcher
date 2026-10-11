@@ -1,0 +1,81 @@
+/* Design tokens. Values mirror contracts/design-tokens.json (measured structure
+   and numbers only — implemented independently, no copied assets). */
+
+:root {
+  --brand: oklch(66.5% 0.1804 47.04);
+  --background: oklch(97.65% 0.001 17.18);
+  --foreground: oklch(14.1% 0.005 285.823);
+  --card: oklch(100% 0 0);
+  --popover: oklch(100% 0 0);
+  --primary: oklch(66.5% 0.1804 47.04);
+  --primary-foreground: oklch(100% 0 0);
+  --secondary: oklch(96.2% 0.003 286.32);
+  --muted: oklch(96.2% 0.003 286.32);
+  --muted-foreground: oklch(55.2% 0.016 285.938);
+  --accent: oklch(95.4% 0.008 47.04);
+  --destructive: oklch(58.6% 0.22 27.3);
+  --border: oklch(92% 0.004 286.32);
+  --input: oklch(92% 0.004 286.32);
+  --ring: oklch(66.5% 0.1804 47.04);
+  --chart-1: oklch(66.5% 0.1804 47.04);
+  --chart-2: oklch(62% 0.17 250);
+  --chart-3: oklch(70% 0.15 150);
+  --chart-4: oklch(65% 0.16 310);
+  --chart-5: oklch(72% 0.14 90);
+
+  --radius: 0.625rem;
+  --r-5: 5px;
+  --r-8: 8px;
+  --r-9: 9px;
+  --r-12: 12px;
+  --r-14: 14px;
+  --r-16: 16px;
+  --r-18: 18px;
+  --r-pill: 999px;
+
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font-display: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --fs-10: 10px;
+  --fs-11: 11px;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-24: 24px;
+  --fs-32: 32px;
+
+  --shadow-sm: rgba(35, 38, 45, 0.06) 0 1px 2px, rgba(35, 38, 45, 0.05) 0 0 0 1px;
+  --shadow-md: rgba(35, 38, 45, 0.08) 0 4px 12px, rgba(35, 38, 45, 0.05) 0 0 0 1px;
+  --shadow-lg: rgba(35, 38, 45, 0.12) 0 12px 32px, rgba(35, 38, 45, 0.06) 0 0 0 1px;
+
+  --rail-w: 44px;
+  --content-max: 768px;
+
+  --ansi-black: #1b1f26;
+  --ansi-red: #d1453b;
+  --ansi-green: #2f8f4e;
+  --ansi-yellow: #b58900;
+  --ansi-blue: #3b74d1;
+  --ansi-magenta: #a2509c;
+  --ansi-cyan: #2aa198;
+  --ansi-white: #cfd6df;
+}
+
+.dark {
+  --background: oklch(19.5% 0.006 285.823);
+  --foreground: oklch(96.5% 0.002 286.32);
+  --card: oklch(23.1% 0.007 285.823);
+  --popover: oklch(23.1% 0.007 285.823);
+  --primary: oklch(70.5% 0.175 47.04);
+  --primary-foreground: oklch(19.5% 0.006 285.823);
+  --secondary: oklch(27.4% 0.008 285.823);
+  --muted: oklch(27.4% 0.008 285.823);
+  --muted-foreground: oklch(70.5% 0.015 285.938);
+  --accent: oklch(31% 0.02 47.04);
+  --destructive: oklch(62% 0.2 27.3);
+  --border: oklch(31.5% 0.008 286.32);
+  --input: oklch(31.5% 0.008 286.32);
+  --ring: oklch(70.5% 0.175 47.04);
+}

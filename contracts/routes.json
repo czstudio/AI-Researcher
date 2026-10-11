@@ -1,0 +1,39 @@
+{
+  "$comment": "Client routes of the LIVE product surface (novix.science). Verified 2026-10-09 against production bundle index-Dk9cCEgm.js:52908-52990. Source of truth for app/.",
+  "version": "2",
+  "routes": [
+    { "path": "/", "name": "Landing", "auth": false, "note": "Marketing landing page (SEO). Signed-in first screen is the workspace at /:id" },
+    { "path": "/register", "name": "Register", "auth": false },
+    { "path": "/debug/markdown", "name": "MarkdownDebug", "auth": false },
+    {
+      "path": "/:id",
+      "name": "IndexPage",
+      "auth": false,
+      "idEnum": ["auto-discovery", "chat", "deepsurvey", "methoddesign", "ideaspark", "autoexperiment", "notebook", "reproduce"],
+      "note": "Single page component switched by :id (mode). /chat is Auto Pilot."
+    },
+    { "path": "/search-v1/:sessionId", "name": "search-v1", "auth": false, "note": "Also the share link format" },
+    { "path": "/published/revision/:revisionId", "name": "PublishedRevisionDetail", "auth": false },
+    { "path": "/account", "redirect": "/account/upgrade" },
+    { "path": "/account/upgrade", "name": "AccountUpgrade", "auth": true },
+    { "path": "/account/credit", "name": "AccountCredit", "auth": true },
+    { "path": "/account/billing", "name": "AccountBilling", "auth": true },
+    { "path": "/account/referrals", "name": "AccountReferrals", "auth": true },
+    { "path": "/account/info", "name": "AccountInfo", "auth": true },
+    { "path": "/account/version-history", "name": "AccountVersionHistory", "auth": true },
+    { "path": "/account/community", "redirect": "/account/info" },
+    { "path": "/upgrade", "redirect": "/account/upgrade" },
+    { "path": "/privacy", "name": "Privacy", "auth": false },
+    { "path": "/terms", "name": "Terms", "auth": false },
+    { "path": "/contact", "name": "Contact", "auth": false },
+    { "path": "/user-manual", "name": "UserManual", "auth": false },
+    { "path": "/:pathMatch(.*)*", "redirect": "/chat", "note": "catch-all" }
+  ],
+  "removedRoutes": ["/gallery", "/settings"],
+  "settingsSidebarOrder": ["Subscription", "Credit & Usage", "Billing & Invoices", "Referrals", "Profile", "Version History"],
+  "sessionPageLayout": {
+    "left": "Process (live trajectory)",
+    "right": "Workspace canvas: file tree | code viewer/editor | PDF viewer | ANSI terminal | env picker",
+    "secondaryToolSubmit": "continue the conversation in the context of the artifact currently open"
+  }
+}

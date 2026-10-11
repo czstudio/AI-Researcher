@@ -30,3 +30,7 @@ research_agent/.env
 research_agent/*_tmp/*
 
 .env
+# 运行数据库/工作区不入 Git（代码与数据分离）
+data/
+work/
+.live/
