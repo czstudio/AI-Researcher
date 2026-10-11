@@ -48,28 +48,37 @@ let gateNextStop = false;
 let gateResolve;
 let readyResolve;
 let readyProgress;
+let readyNameSeen;
+let sshIdSeen;
+let gateNextRent = false;
+let rentGateResolve;
 // fixture = official documented create shape (autodl.com/docs/esd_api_doc):
 // deployment_uuid — NOT the legacy deployment_id alias.
 const autodlMock = {
   async rentServer() {
     rentCalls += 1;
     if (rentCalls === Number(process.env.NOVIX_FIXCTL_BAD_RENT || 0)) return {};
+    if (gateNextRent) { gateNextRent = false; return new Promise((resolve) => { rentGateResolve = resolve; }); }
     return { deployment_uuid: `dep-${rentCalls}`, deployment_name: `gpu-${rentCalls}` };
   },
-  async waitForReady(_name, _timeout, onProgress) { readyProgress = onProgress; return new Promise((resolve) => { readyResolve = resolve; }); },
+  async waitForReady(name, _timeout, onProgress) {
+    readyNameSeen = name;
+    readyProgress = onProgress;
+    return new Promise((resolve) => { readyResolve = resolve; });
+  },
   async releaseServer() {
     stopCalls += 1;
     if (gateNextStop) { gateNextStop = false; return new Promise((resolve) => { gateResolve = resolve; }); }
     return stopOk;
   },
   async destroyServer() { return true; },
-  async getContainerSsh() { return null; },
+  async getContainerSsh(id) { sshIdSeen = id; return null; },
   async getBalance() { return null; },
   estimateCost() { return { ratePerHour: 1, hours: 1, estimatedCost: '1.00' }; },
 };
 
 const context = vm.createContext({
-  process: { env: { GPU_BROKER_DIR: '/mock-gpu' } },
+  process: { env: { GPU_BROKER_DIR: '/mock-gpu', GPU_MAX_TOTAL: '64' } },
   setTimeout, clearTimeout, setImmediate,
 });
 const synthetic = (name, value) => {
@@ -234,6 +243,34 @@ stopOk = true;
   await new Promise((resolve) => setTimeout(resolve, 60)); // old timer fires here — must not touch lease B
   const st = broker.status('timer-user', 'task-new-lease');
   expect(st.status === 'active' && st.id === reborn.leaseId, 'new-lease-not-released-by-old-timer', `actual=${st.status},expected=active (latest lease wins)`);
+}
+
+// Fix 14: provider binding — waitForReady/getContainerSsh receive the ACTUAL
+// create-returned deployment name/uuid, not undefined (regression guard for the
+// disk-only metadata write).
+{
+  readyNameSeen = undefined; sshIdSeen = undefined;
+  const binding = await broker.submit('bind-user', 'task-binding', { route: 'autodl' });
+  expect(typeof readyNameSeen === 'string' && readyNameSeen.length > 0, 'waitFor-ready-bound-to-deployment-name', `actual=${JSON.stringify(readyNameSeen)}`);
+  readyResolve?.({ status: 'running' });
+  await new Promise((resolve) => setImmediate(resolve));
+  expect(sshIdSeen === `dep-${rentCalls}`, 'get-container-ssh-bound-to-create-uuid', `actual=${JSON.stringify(sshIdSeen)},expected=dep-${rentCalls}`);
+  expect(broker.status('bind-user', 'task-binding').deploymentId === `dep-${rentCalls}`, 'binding-lease-disk-and-local-consistent', `actual=${JSON.stringify(broker.status('bind-user', 'task-binding').deploymentId)}, submit=${JSON.stringify(binding.status)}`);
+}
+
+// Fix 15: cancel during rentServer + create returns uuid + late-create stop=FALSE
+// → release_failed (occupied, honest), never 'cancelled'.
+{
+  stopOk = false;
+  gateNextRent = true;
+  const pending = broker.submit('late-user', 'task-late-create', { route: 'autodl' });
+  await new Promise((resolve) => setImmediate(resolve));
+  const earlyCancel = await broker.cancel('late-user', 'task-late-create');
+  expect(earlyCancel.cancelled === true, 'late-create-early-cancel-accepted', JSON.stringify(earlyCancel));
+  rentGateResolve?.({ deployment_uuid: `dep-${rentCalls}`, deployment_name: `gpu-${rentCalls}` });
+  const late = await pending;
+  expect(late.status === 'release_failed', 'late-create-stop-false-reports-release-failed', `actual=${JSON.stringify(late)}`);
+  expect(broker.status('late-user', 'task-late-create').status === 'release_failed', 'late-create-stop-false-disk-release-failed', `actual=${broker.status('late-user', 'task-late-create').status}`);
 }
 
 console.log(`SUMMARY fixed_head=${HEAD} source=git-show broker.js rentCalls=${rentCalls} stopCalls=${stopCalls} mode=desired-behavior`);

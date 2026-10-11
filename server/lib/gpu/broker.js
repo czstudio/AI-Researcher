@@ -165,22 +165,35 @@ async function _launch(userId, taskId, spec) {
       });
       throw new Error('AutoDL create returned no deployment_uuid');
     }
-    // 盘上读改写：rentServer 窗口内的取消不得被复活
+    // 盘上读改写（rentServer 窗口内的取消不得被复活），并同步回填局部对象——
+    // ready/SSH 路径绑定实际 create 返回的部署名/UUID，不得传 undefined
+    const deploymentName = result.deployment_name || `i2p-gpu-${taskId}`;
     mutateLease(lease.id, (l) => {
       l.deploymentId = uuid;
-      l.deploymentName = result.deployment_name || `i2p-gpu-${taskId}`;
+      l.deploymentName = deploymentName;
     });
-    // 取消发生在 rentServer 窗口时，cancel 当时无 deploymentId 可停——
-    // 此处发现终态即补停自愈（防 provider 泄漏计费），并维持终态
+    lease.deploymentId = uuid;
+    lease.deploymentName = deploymentName;
+    // 取消发生在 rentServer 窗口：cancel 当时无 deploymentId 可停——补停自愈。
+    // 补停失败 = release_failed（deployment 仍活、维持占用、如实失败），不得宣称 cancelled
     if (readLease(lease.id)?.status === 'cancelled') {
-      await releaseServer(uuid).catch(() => false);
+      const stopped = await releaseServer(uuid).catch(() => false);
+      if (stopped === false) {
+        mutateLease(lease.id, (l) => {
+          l.status = 'release_failed';
+          l.error = 'late-create stop failed (deployment still live)';
+        });
+        return { leaseId: lease.id, status: 'release_failed' };
+      }
       return { leaseId: lease.id, status: 'cancelled' };
     }
   } catch (err) {
-    // 租用失败释放容量（failed 不占容量）
-    lease.status = 'failed';
-    lease.error = String(err?.message || err);
-    writeLease(lease);
+    // 租用失败释放容量（failed 不占容量）；盘上终态不被迟到异常覆盖
+    mutateLease(lease.id, (l) => {
+      if (TERMINAL.has(l.status)) return;
+      l.status = 'failed';
+      l.error = String(err?.message || err);
+    });
     throw err;
   }
   active.set(taskId, { lease });
