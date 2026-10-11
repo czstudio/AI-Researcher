@@ -109,21 +109,21 @@ expect(broker.status('alice', 'task-stop-failure').status !== 'cancelled', 'stop
 
 // Fix 2b: releaseAfterTask with failing provider stop marks release_failed, not released.
 stopOk = false;
-await broker.submit('alice', 'task-deferred-fail', { route: 'autodl' });
+await broker.submit('defer-user', 'task-deferred-fail', { route: 'autodl' });
 readyResolve?.({ status: 'running' });
 await new Promise((resolve) => setImmediate(resolve));
-await broker.releaseAfterTask('alice', 'task-deferred-fail', 1);
+await broker.releaseAfterTask('defer-user', 'task-deferred-fail', 1);
 await new Promise((resolve) => setTimeout(resolve, 30));
-expect(broker.status('alice', 'task-deferred-fail').status === 'release_failed', 'deferred-stop-failure-marks-release-failed', `actual=${broker.status('alice', 'task-deferred-fail').status}`);
+expect(broker.status('defer-user', 'task-deferred-fail').status === 'release_failed', 'deferred-stop-failure-marks-release-failed', `actual=${broker.status('defer-user', 'task-deferred-fail').status}`);
 
 // Fix 2c: releaseAfterTask with successful stop still releases.
 stopOk = true;
-await broker.submit('alice', 'task-deferred-ok', { route: 'autodl' });
+await broker.submit('defer-user', 'task-deferred-ok', { route: 'autodl' });
 readyResolve?.({ status: 'running' });
 await new Promise((resolve) => setImmediate(resolve));
-await broker.releaseAfterTask('alice', 'task-deferred-ok', 1);
+await broker.releaseAfterTask('defer-user', 'task-deferred-ok', 1);
 await new Promise((resolve) => setTimeout(resolve, 30));
-expect(broker.status('alice', 'task-deferred-ok').status === 'released', 'deferred-stop-ok-releases', `actual=${broker.status('alice', 'task-deferred-ok').status}`);
+expect(broker.status('defer-user', 'task-deferred-ok').status === 'released', 'deferred-stop-ok-releases', `actual=${broker.status('defer-user', 'task-deferred-ok').status}`);
 
 // Fix 3: same (user, task) replay rents exactly once.
 const beforeReplay = rentCalls;
@@ -131,5 +131,22 @@ const first = await broker.submit('alice', 'task-replay', { route: 'autodl' });
 const replay = await broker.submit('alice', 'task-replay', { route: 'autodl' });
 expect(rentCalls - beforeReplay === 1, 'same-task-replay-rents-once', `replayRentCalls=${rentCalls - beforeReplay}`);
 expect(replay.deduped === true && replay.leaseId === first.leaseId, 'replay-returns-same-lease', `first=${first.leaseId}, replay=${JSON.stringify(replay)}`);
+
+// Fix 6: CONCURRENT same-task submit (Promise.all) rents exactly once —
+// the placeholder lease is written synchronously before the provider call.
+const concurrentBefore = rentCalls;
+await Promise.all([
+  broker.submit('replay-user', 'same-concurrent-task', { route: 'autodl' }),
+  broker.submit('replay-user', 'same-concurrent-task', { route: 'autodl' }),
+]);
+expect(rentCalls - concurrentBefore === 1, 'concurrent-same-task-rents-once', `actual=${rentCalls - concurrentBefore},expected=1`);
+
+// Fix 7: per-user cap counts provisioning occupancy (MAX_PER_USER=2 → 2 rents, 3rd rejected).
+const quotaBefore = rentCalls;
+const q1 = await broker.submit('quota-user', 'quota-first', { route: 'autodl' });
+const q2 = await broker.submit('quota-user', 'quota-second', { route: 'autodl' });
+const q3 = await broker.submit('quota-user', 'quota-third', { route: 'autodl' });
+expect(rentCalls - quotaBefore === 2, 'provisioning-counts-per-user-cap-two', `actual=${rentCalls - quotaBefore},expected=2`);
+expect(q3.rejected === true && q3.reason === 'per_user_limit', 'third-submit-rejected-per-user-limit', JSON.stringify(q3));
 
 console.log(`SUMMARY fixed_head=${HEAD} source=git-show broker.js rentCalls=${rentCalls} mode=desired-behavior`);

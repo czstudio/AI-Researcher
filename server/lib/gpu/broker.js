@@ -22,6 +22,11 @@ const DATA_DIR = process.env.GPU_BROKER_DIR || path.resolve(import.meta.dirname,
 const LEASE_TTL_MS = Number(process.env.GPU_LEASE_TTL_MS || 15 * 60_000); // 15min keep-warm
 const MAX_PER_USER = Number(process.env.GPU_MAX_PER_USER || 2);
 const MAX_TOTAL = Number(process.env.GPU_MAX_TOTAL || 8);
+// 占用容量的状态：provisioning（已下租用单）与 release_failed（provider 可能仍在计费，
+// 不可确认清理时维持占用）。cancelled/failed/released 不占。
+// 单进程幂等边界：占位租约在 provider 调用前同步落盘，同进程内并发/重放都被挡下；
+// 跨进程 CAS 需要文件锁或原子 rename，本模块不做此承诺。
+const OCCUPYING = new Set(['active', 'provisioning', 'release_failed']);
 
 // ---------- 租约存储（文件持久化，I2P AllocationLeaseStore 同构）----------
 
@@ -89,26 +94,27 @@ const active = new Map(); // taskId → {lease, controller}
 
 /**
  * 提交 GPU 任务（自动租用）
- * 限额检查 → 幂等检查 → 入队 → 自动调度
+ * 幂等（含并发）→ 限额检查（active+provisioning 都占容量）→ 入队 → 自动调度
  */
 export async function submit(userId, taskId, spec = {}) {
-  // 幂等：同一 (user, task) 的重复提交不重复租用（单一真源=盘上租约）
-  const existing = listLeases().find(l => l.taskId === taskId && l.userId === userId);
-  if (existing && (existing.status === 'active' || existing.status === 'provisioning')) {
-    return { leaseId: existing.id, status: existing.status, deduped: true };
+  // 幂等：同一 (user, task) 已占用（含 provisioning 占位）即去重，不重复租用
+  const mine = listLeases().filter(l => l.userId === userId && l.taskId === taskId);
+  const live = mine.find(l => OCCUPYING.has(l.status));
+  if (live) {
+    return { leaseId: live.id, status: live.status, deduped: true };
   }
   const queuedIdx = queue.findIndex(q => q.taskId === taskId && q.userId === userId);
   if (queuedIdx >= 0) {
     return { queued: true, position: queuedIdx + 1, deduped: true };
   }
 
-  // 多用户隔离：限额检查
-  const userActive = listLeases().filter(l => l.userId === userId && l.status === 'active').length;
-  if (userActive >= MAX_PER_USER) {
+  // 多用户隔离：限额检查（provisioning 占位同样计入容量）
+  const userOccupying = listLeases().filter(l => l.userId === userId && OCCUPYING.has(l.status)).length;
+  if (userOccupying >= MAX_PER_USER) {
     return { rejected: true, reason: 'per_user_limit', limit: MAX_PER_USER };
   }
-  const totalActive = listLeases().filter(l => l.status === 'active').length;
-  if (totalActive >= MAX_TOTAL) {
+  const totalOccupying = listLeases().filter(l => OCCUPYING.has(l.status)).length;
+  if (totalOccupying >= MAX_TOTAL) {
     // 入队等待
     queue.push({ userId, taskId, spec, enqueuedAt: new Date().toISOString() });
     return { queued: true, position: queue.length };
@@ -128,27 +134,36 @@ async function _launch(userId, taskId, spec) {
     }
   }
 
-  // AutoDL 自动租用（线上验证过的 API）
-  const result = await rentServer({
-    name: `i2p-gpu-${taskId}`,
-    gpuNames: spec.gpuNames || ['4090'],
-    gpuCount: spec.gpuCount || 1,
-    imageUuid: spec.imageUuid,
-    maxPricePerHour: spec.maxPricePerHour || 3.0,
-    preferredDC: spec.preferredDC,
-  });
-
+  // 占位租约先于 provider 调用同步落盘：并发同任务重放在此窗口被幂等挡下
   const lease = {
     id: crypto.randomUUID(),
     userId, taskId,
     provider: 'autodl',
-    deploymentId: result.deployment_id || result.id,
-    deploymentName: result.deployment_name || `i2p-gpu-${taskId}`,
     status: 'provisioning',
     createdAt: new Date().toISOString(),
     cost: estimateCost(spec.gpuNames?.[0] || '4090', 1),
   };
   writeLease(lease);
+
+  try {
+    const result = await rentServer({
+      name: `i2p-gpu-${taskId}`,
+      gpuNames: spec.gpuNames || ['4090'],
+      gpuCount: spec.gpuCount || 1,
+      imageUuid: spec.imageUuid,
+      maxPricePerHour: spec.maxPricePerHour || 3.0,
+      preferredDC: spec.preferredDC,
+    });
+    lease.deploymentId = result.deployment_id || result.id;
+    lease.deploymentName = result.deployment_name || `i2p-gpu-${taskId}`;
+    writeLease(lease);
+  } catch (err) {
+    // 租用失败释放容量（failed 不占容量）
+    lease.status = 'failed';
+    lease.error = String(err?.message || err);
+    writeLease(lease);
+    throw err;
+  }
   active.set(taskId, { lease });
 
   // 异步等 ready
@@ -249,8 +264,8 @@ export async function releaseAfterTask(userId, taskId, delayMs = LEASE_TTL_MS) {
 function _drainQueue() {
   while (queue.length > 0) {
     const next = queue.shift();
-    const totalActive = listLeases().filter(l => l.status === 'active').length;
-    if (totalActive >= MAX_TOTAL) { queue.unshift(next); break; }
+    const totalOccupying = listLeases().filter(l => OCCUPYING.has(l.status)).length;
+    if (totalOccupying >= MAX_TOTAL) { queue.unshift(next); break; }
     _launch(next.userId, next.taskId, next.spec).catch(() => {
       queue.unshift(next); // 失败放回
     });
