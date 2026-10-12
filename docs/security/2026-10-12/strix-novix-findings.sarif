@@ -1,0 +1,264 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Strix",
+          "informationUri": "https://strix.ai",
+          "rules": [
+            {
+              "id": "CWE-434",
+              "name": "Insecure File Upload - Dangerous Extensions Accepted at POST /api/file/upload_stream",
+              "shortDescription": {
+                "text": "Insecure File Upload - Dangerous Extensions Accepted at POST /api/file/upload_stream"
+              },
+              "fullDescription": {
+                "text": "The file upload endpoint POST /api/file/upload_stream accepts and stores files with dangerous executable extensions including .php, .jsp, .py, .sh, and .htaccess without proper validation, enabling potential remote code execution if uploaded files are web-accessible and executed by the server."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "help": {
+                "text": "The file upload endpoint POST /api/file/upload_stream accepts and stores files with dangerous executable extensions including .php, .jsp, .py, .sh, and .htaccess without proper validation, enabling potential remote code execution if uploaded files are web-accessible and executed by the server.\n\nAn attacker can upload web shells or executable scripts. If the upload directory is web-accessible and the server executes files based on extension, this leads to complete system compromise (RCE). Even without direct execution, stored malware poses a supply-chain and data-integrity risk.\n\n1. Implement a strict extension whitelist (e.g., only .jpg, .png, .pdf, .txt) and reject all other extensions\n2. Rename uploaded files to a non-executable extension (e.g., .tmp) or random filename without extension\n3. Validate file content using magic bytes/libraries rather than trusting the Content-Type header\n4. Normalize all path separators (both / and \\\\) before basename extraction\n5. Store uploads outside the web root or configure the web server to deny execution in the upload directory\n6. Consider using cloud object storage with presigned URLs instead of local file serving",
+                "markdown": "The file upload endpoint POST /api/file/upload_stream accepts and stores files with dangerous executable extensions including .php, .jsp, .py, .sh, and .htaccess without proper validation, enabling potential remote code execution if uploaded files are web-accessible and executed by the server.\n\nAn attacker can upload web shells or executable scripts. If the upload directory is web-accessible and the server executes files based on extension, this leads to complete system compromise (RCE). Even without direct execution, stored malware poses a supply-chain and data-integrity risk.\n\n1. Implement a strict extension whitelist (e.g., only .jpg, .png, .pdf, .txt) and reject all other extensions\n2. Rename uploaded files to a non-executable extension (e.g., .tmp) or random filename without extension\n3. Validate file content using magic bytes/libraries rather than trusting the Content-Type header\n4. Normalize all path separators (both / and \\\\) before basename extraction\n5. Store uploads outside the web root or configure the web server to deny execution in the upload directory\n6. Consider using cloud object storage with presigned URLs instead of local file serving"
+              },
+              "properties": {
+                "security-severity": "9.8",
+                "tags": [
+                  "security",
+                  "CWE-434",
+                  "stride:T"
+                ]
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/434.html"
+            },
+            {
+              "id": "strix-coverage/reconnaissance-and-attack-surface-mapping",
+              "name": "Reconnaissance and Attack Surface Mapping",
+              "shortDescription": {
+                "text": "Coverage: Reconnaissance and Attack Surface Mapping"
+              },
+              "fullDescription": {
+                "text": "Coverage of Reconnaissance and Attack Surface Mapping across the assessed attack surface."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "help": {
+                "text": "Coverage of Reconnaissance and Attack Surface Mapping across the assessed attack surface.",
+                "markdown": "Coverage of Reconnaissance and Attack Surface Mapping across the assessed attack surface."
+              },
+              "properties": {
+                "tags": [
+                  "coverage"
+                ]
+              }
+            },
+            {
+              "id": "strix-coverage/idor-object-level-authorization",
+              "name": "IDOR / object-level authorization",
+              "shortDescription": {
+                "text": "Coverage: IDOR / object-level authorization"
+              },
+              "fullDescription": {
+                "text": "Coverage of IDOR / object-level authorization across the assessed attack surface."
+              },
+              "defaultConfiguration": {
+                "level": "none"
+              },
+              "help": {
+                "text": "Coverage of IDOR / object-level authorization across the assessed attack surface.",
+                "markdown": "Coverage of IDOR / object-level authorization across the assessed attack surface."
+              },
+              "properties": {
+                "tags": [
+                  "coverage"
+                ]
+              }
+            }
+          ],
+          "version": "1.7.0"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CWE-434",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Insecure File Upload - Dangerous Extensions Accepted at POST /api/file/upload_stream\n\nThe file upload endpoint POST /api/file/upload_stream accepts and stores files with dangerous executable extensions including .php, .jsp, .py, .sh, and .htaccess without proper validation, enabling potential remote code execution if uploaded files are web-accessible and executed by the server."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SECURITY.md"
+                }
+              }
+            },
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "http://host.docker.internal:8091",
+                  "kind": "resource"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "primaryLocationLineHash": "3b4d641470a3236b09e2cdde170e768a01ba2c6a4ff47db4345f813c490111dc"
+          },
+          "properties": {
+            "security-severity": "9.8",
+            "strix_vuln_class_hash": "b8db0c1ce191bd85ee1d198ea902447da2054469a661157536656f8868784de4",
+            "synthetic_location": true,
+            "strix": {
+              "id": "vuln-0001",
+              "severity": "critical",
+              "cvss": 9.8,
+              "timestamp": "2026-10-12 03:45:23 UTC",
+              "target": "http://host.docker.internal:8091",
+              "cwe": "CWE-434",
+              "impact": "An attacker can upload web shells or executable scripts. If the upload directory is web-accessible and the server executes files based on extension, this leads to complete system compromise (RCE). Even without direct execution, stored malware poses a supply-chain and data-integrity risk.",
+              "technical_analysis": "The upload endpoint performs minimal filename sanitization (strips forward slashes and extracts basename) but fails to:\n\n1. Validate or whitelist file extensions against a safe list\n2. Normalize backslash path separators (Windows-style traversal)\n3. Validate actual file content (magic bytes) against claimed MIME type\n4. Rename stored files to non-executable extensions\n\nTesting confirmed that files with extensions .php, .jsp, .py, .sh, and .htaccess are accepted and stored at paths like `user_data/shell.php`. The endpoint responds with `{\"code\":\"0\",\"message\":\"Success\",\"result\":{\"path\":\"user_data/shell.php\"}}`.",
+              "remediation_steps": "1. Implement a strict extension whitelist (e.g., only .jpg, .png, .pdf, .txt) and reject all other extensions\n2. Rename uploaded files to a non-executable extension (e.g., .tmp) or random filename without extension\n3. Validate file content using magic bytes/libraries rather than trusting the Content-Type header\n4. Normalize all path separators (both / and \\\\) before basename extraction\n5. Store uploads outside the web root or configure the web server to deny execution in the upload directory\n6. Consider using cloud object storage with presigned URLs instead of local file serving",
+              "counterevidence": "The upload endpoint does strip forward slashes from filenames, providing partial path traversal protection. No content-type or extension validation was observed, and no WAF blocked the malicious uploads.",
+              "confidence": "high",
+              "severity_change_conditions": "If uploaded files are confirmed to be served from outside the web root or execution is strictly denied (e.g., nginx deny all on /user_data), severity drops to HIGH. If RCE is confirmed via direct execution, severity remains CRITICAL.",
+              "poc": {
+                "description": "1. Send a POST request to /api/file/upload_stream with a file named `shell.php` containing PHP code\n2. Observe the response returns `code: \"0\"` (success) with path `user_data/shell.php`\n3. The file is stored with its original dangerous extension intact",
+                "script_available": true
+              }
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/reconnaissance-and-attack-surface-mapping",
+          "ruleIndex": 1,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "Reconnaissance and Attack Surface Mapping — No issue identified: http://host.docker.internal:8091\n\nCompleted comprehensive reconnaissance. Discovered 35+ API endpoints across authentication, chat sessions, workspace operations, file handling, and search. Application is a Vue.js SPA with API-driven backend. All endpoints documented in shared notes."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "http://host.docker.internal:8091"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "no_issue_found",
+              "risk_area": "Reconnaissance and Attack Surface Mapping",
+              "surface": "http://host.docker.internal:8091",
+              "recorded_by": "Reconnaissance Agent",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/idor-object-level-authorization",
+          "ruleIndex": 2,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "IDOR / object-level authorization — No issue identified: POST /api/chat_session/create_anonymous\n\nCreated anonymous session successfully. Further IDOR tests on message/list showed application-level authorization checks (returns error about session not existing, not authentication bypass)."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "POST /api/chat_session/create_anonymous"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "no_issue_found",
+              "risk_area": "IDOR / object-level authorization",
+              "surface": "POST /api/chat_session/create_anonymous",
+              "recorded_by": "IDOR and Access Control Agent",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/idor-object-level-authorization",
+          "ruleIndex": 2,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "IDOR / object-level authorization — Ruled out: GET /api/chat_session/message/list\n\nTested with multiple arbitrary session_id values. All returned application-level error (code 5001: chatSession not exist | published revision not ready) rather than unauthorized data, indicating proper session ownership validation exists."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "GET /api/chat_session/message/list"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "IDOR / object-level authorization",
+              "surface": "GET /api/chat_session/message/list",
+              "recorded_by": "IDOR and Access Control Agent",
+              "source": "agent_reported"
+            }
+          }
+        },
+        {
+          "ruleId": "strix-coverage/idor-object-level-authorization",
+          "ruleIndex": 2,
+          "kind": "pass",
+          "level": "none",
+          "message": {
+            "text": "IDOR / object-level authorization — Ruled out: GET /api/task/get_task\n\nTested with various task_id values. All return application-level error (code 5001) indicating proper task ownership validation exists."
+          },
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "GET /api/task/get_task"
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "strix": {
+              "coverage_outcome": "ruled_out",
+              "risk_area": "IDOR / object-level authorization",
+              "surface": "GET /api/task/get_task",
+              "recorded_by": "IDOR and Access Control Agent",
+              "source": "agent_reported"
+            }
+          }
+        }
+      ],
+      "invocations": [
+        {
+          "executionSuccessful": false,
+          "toolExecutionNotifications": [
+            {
+              "level": "warning",
+              "message": {
+                "text": "2 agent(s) did not finish cleanly (IDOR and Access Control Agent, Search Injection Agent); any surface they held is under-covered."
+              }
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "syntheticLocationCount": 1
+      }
+    }
+  ]
+}

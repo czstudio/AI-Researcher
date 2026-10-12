@@ -638,6 +638,12 @@ route('POST', '/file/upload_stream', async (req, res, p, body) => {
       data = part.data;
     }
   }
+  // 上传名加固：反斜杠归一后取 basename；服务端可执行/危险扩展拒收
+  // （strix 2026-10-12 发现：无白名单校验，.php/.sh/.htaccess 原样入库）
+  name = path.basename(String(name).replace(/\\/g, '/')) || 'upload.bin';
+  if (/\.(php\d*|phtml|jsp|jspx|asp|aspx|exe|dll|so|bat|cmd|ps1|htaccess|cgi|pl|sh)$/i.test(name)) {
+    return err(5001);
+  }
   const sessionId = p.chatSessionId || body.chatSessionId;
   const dir = sessionId ? db.workspaceDir(sessionId) : U.ensureDir(path.join(U.DATA_DIR, 'uploads'));
   const target = U.safeJoin(dir, `user_data/${path.basename(name)}`);
