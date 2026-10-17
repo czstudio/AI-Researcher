@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { DATA_DIR, ensureDir, id, readJson, writeJson, nowMs } from '../lib/util.mjs';
 
-const COLLECTIONS = ['users', 'sessions', 'tasks', 'files', 'gallery', 'ledger', 'notifications', 'revisions', 'billing', 'invites', 'forks', 'onboarding', 'triggers'];
+const COLLECTIONS = ['users', 'sessions', 'tasks', 'files', 'gallery', 'ledger', 'notifications', 'revisions', 'billing', 'invites', 'forks', 'onboarding', 'triggers', 'feedback'];
 
 ensureDir(DATA_DIR);
 for (const c of COLLECTIONS) ensureDir(path.join(DATA_DIR, c));

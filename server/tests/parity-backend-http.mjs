@@ -238,8 +238,12 @@ async function main() {
   const modify = await api('POST', '/auto_ideaspark/modify', { token: owner.token, body: { idea: { id: 'i1' } } });
   expect(modify.json.result.ok === true, 'auto_ideaspark/modify auth', 'ok');
 
-  const feedback = await api('GET', '/getTaskFeedback?taskId=' + task.id);
-  expect(feedback.json.result.taskLikeCount === 0 && feedback.json.result.taskDislikeCount === 0 && typeof feedback.json.result.fileCounts === 'object', 'getTaskFeedback counts shape', JSON.stringify(feedback.json.result));
+  const like1 = await api('POST', '/likeTask', { token: owner.token, body: { taskId: task.id, like: true } });
+  const like2 = await api('POST', '/likeTask', { token: owner.token, body: { taskId: task.id, like: true } });
+  const feedback = await api('GET', '/getTaskFeedback?taskId=' + task.id, { token: owner.token });
+  expect(like1.json.result.liked === true && like1.json.result.taskLikeCount === 1, 'likeTask persists user feedback', JSON.stringify(like1.json.result));
+  expect(like2.json.result.taskLikeCount === 1, 'likeTask idempotent per user', JSON.stringify(like2.json.result));
+  expect(feedback.json.result.taskLikeCount === 1 && feedback.json.result.taskLike === true && feedback.json.result.items[0].taskId === task.id, 'getTaskFeedback persisted counts', JSON.stringify(feedback.json.result));
 
   const foreignDelete = await api('POST', '/chat_session/delete', { token: other.token, body: { chatSessionId: sid } });
   expect(foreignDelete.json && foreignDelete.json.code === '5200', 'foreign delete denied', foreignDelete.json && foreignDelete.json.code);

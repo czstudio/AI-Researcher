@@ -1031,12 +1031,55 @@ route('GET', '/referral/me', async (req, res, p) => {
 route('POST', '/likeTask', async (req, res, p, body) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
-  return U.ok({ liked: true, taskId: body.taskId || p.taskId });
+  const taskId = String(body.taskId || p.taskId || '');
+  if (taskId === '') return err(5001);
+  const task = db.get('tasks', taskId);
+  if (task == null) return err(5001);
+  const { session, denied } = sessionOrShared(task.chatSessionId);
+  if (denied) return denied;
+  const gate = assertReadable(session, a);
+  if (gate) return gate;
+  const like = body.like !== undefined ? Boolean(body.like) : (body.liked !== undefined ? Boolean(body.liked) : true);
+  const filePath = body.filePath || body.path || null;
+  const rec = db.get('feedback', taskId) || { taskId, rows: [], createdAt: U.nowMs() };
+  if (Array.isArray(rec.rows) === false) rec.rows = [];
+  const rowId = String(a.user.id) + ':' + String(filePath || 'task');
+  const existing = rec.rows.find((x) => x.rowId === rowId);
+  if (existing) {
+    existing.like = like;
+    existing.updatedAt = U.nowMs();
+  } else {
+    rec.rows.push({ rowId, userId: String(a.user.id), like, filePath, createdAt: U.nowMs(), updatedAt: U.nowMs() });
+  }
+  rec.updatedAt = U.nowMs();
+  db.put('feedback', taskId, rec);
+  const taskRows = rec.rows.filter((x) => (x.filePath || null) == null);
+  const taskLikeCount = taskRows.filter((x) => x.like === true).length;
+  const taskDislikeCount = taskRows.filter((x) => x.like === false).length;
+  return U.ok({ liked: like, taskLike: like, taskId, taskLikeCount, taskDislikeCount, filePath });
 });
 
 route('GET', '/getTaskFeedback', async (req, res, p) => {
-  const rows = db.get('feedback', String(p.taskId || 'global'))?.items || [];
-  return U.ok({ items: rows, taskLike: null, fileLikes: [], taskLikeCount: 0, taskDislikeCount: 0, fileCounts: {} });
+  const taskId = String(p.taskId || '');
+  if (taskId === '') return U.ok({ items: [], taskLike: null, fileLikes: [], taskLikeCount: 0, taskDislikeCount: 0, fileCounts: {} });
+  const task = db.get('tasks', taskId);
+  if (task == null) return err(5001);
+  const a = actor(req, p);
+  const { session, denied } = sessionOrShared(task.chatSessionId);
+  if (denied) return denied;
+  const gate = assertReadable(session, a);
+  if (gate) return gate;
+  const rec = db.get('feedback', taskId) || { taskId, rows: [] };
+  const rows = Array.isArray(rec.rows) ? rec.rows : [];
+  const taskRows = rows.filter((x) => (x.filePath || null) == null);
+  const taskLikeCount = taskRows.filter((x) => x.like === true).length;
+  const taskDislikeCount = taskRows.filter((x) => x.like === false).length;
+  const fileLikes = rows.filter((x) => x.filePath != null).map((x) => ({ filePath: x.filePath, liked: x.like, userId: x.userId }));
+  const fileCounts = {};
+  for (const row of fileLikes) fileCounts[row.filePath] = (fileCounts[row.filePath] || 0) + 1;
+  const mine = taskRows.find((x) => a.user && String(x.userId) === String(a.user.id)) || null;
+  const item = { taskId, taskLike: mine ? mine.like : null, liked: mine ? mine.like : null, taskLikeCount, taskDislikeCount, likes: taskLikeCount, dislikes: taskDislikeCount };
+  return U.ok({ items: [item], taskLike: item.taskLike, liked: item.liked, fileLikes, taskLikeCount, taskDislikeCount, fileCounts });
 });
 
 route('POST', '/credit/upgrade_plan', async (req, res, p, body) => {
