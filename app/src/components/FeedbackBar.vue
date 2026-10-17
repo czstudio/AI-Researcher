@@ -13,7 +13,10 @@ async function load() {
     const f = await api.taskFeedback(props.taskId);
     const rows = f?.items || [];
     const row = rows.find((x) => String(x.taskId) === String(props.taskId)) || f || {};
-    counts.value = { likes: row.taskLikeCount || row.likes || 0, dislikes: row.taskDislikeCount || row.dislikes || 0 };
+    counts.value = {
+      likes: row.taskLikeCount ?? row.likes ?? f?.taskLikeCount ?? 0,
+      dislikes: row.taskDislikeCount ?? row.dislikes ?? f?.taskDislikeCount ?? 0,
+    };
     if (row.taskLike === true || row.liked === true) liked.value = true;
     if (row.taskLike === false || row.disliked === true) liked.value = false;
   } catch {
@@ -24,10 +27,12 @@ async function vote(value) {
   if (busy.value) return;
   busy.value = true;
   try {
-    await api.likeTask(props.taskId, value);
-    liked.value = value;
-    counts.value.likes += value ? 1 : 0;
-    counts.value.dislikes += value ? 0 : 1;
+    const r = await api.likeTask(props.taskId, value);
+    liked.value = r?.liked ?? r?.taskLike ?? value;
+    counts.value = {
+      likes: r?.taskLikeCount ?? counts.value.likes,
+      dislikes: r?.taskDislikeCount ?? counts.value.dislikes,
+    };
     toast(value ? 'Feedback recorded: helpful' : 'Feedback recorded: needs work');
   } catch (e) {
     toast(String(e.message || e), 'error');
@@ -40,8 +45,8 @@ onMounted(load);
 
 <template>
   <div class="feedback">
-    <button class="thumb" :class="{ on: liked === true }" title="Helpful" @click="vote(true)">👍 <span>{{ counts.likes }}</span></button>
-    <button class="thumb" :class="{ on: liked === false }" title="Needs work" @click="vote(false)">👎 <span>{{ counts.dislikes }}</span></button>
+    <button class="thumb" :class="{ on: liked === true }" :disabled="busy" title="Helpful" @click="vote(true)">👍 <span>{{ counts.likes }}</span></button>
+    <button class="thumb" :class="{ on: liked === false }" :disabled="busy" title="Needs work" @click="vote(false)">👎 <span>{{ counts.dislikes }}</span></button>
     <span v-if="liked !== null" class="muted">Thanks — feedback is recorded.</span>
   </div>
 </template>
