@@ -75,7 +75,7 @@ async function main() {
 
   await step('GET /models', async () => {
     const r = await call('GET', '/models');
-    assert(r.result.models.length === 5, JSON.stringify(r));
+    assert(r.result.models.length === 6, JSON.stringify(r));
     return `${r.result.models.length} models`;
   });
 

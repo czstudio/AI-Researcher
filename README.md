@@ -141,3 +141,12 @@ cd app && npm run build     # UI build
 ## License
 
 MIT — see `LICENSE`. Upstream `research_agent/` and `paper_agent/` retain their own upstream terms; see `NOTICE.md`.
+
+## Full parity verification (2026-10-17)
+
+- Live reverse evidence and route/API matrix: `docs/reverse/NOVIX_FULL_PARITY_MATRIX_20261017.md`
+- Method, scope and limitations: `docs/reverse/DEEP_REVERSE_METHOD_20261017.md`
+- Contract: 91 HTTP endpoints, 9 documented agent modes, 27 public route probes.
+- Backend checks: `node server/tests/parity-backend-http.mjs`
+- End-to-end smoke: `node ops/smoke.mjs`
+- UI build: `cd app && npm run build`
