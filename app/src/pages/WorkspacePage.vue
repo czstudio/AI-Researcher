@@ -6,6 +6,7 @@ import { navigate } from '../lib/router.js';
 import ModeList from '../components/ModeList.vue';
 import Composer from '../components/Composer.vue';
 import CaseGallery from '../components/CaseGallery.vue';
+import AutoResearchLab from '../components/AutoResearchLab.vue';
 
 const props = defineProps({ mode: { type: String, default: 'auto' } });
 const emit = defineEmits(['submit']);
@@ -74,6 +75,7 @@ onMounted(loadGallery);
     </div>
 
     <CaseGallery :mode="props.mode" />
+    <AutoResearchLab v-if="props.mode === 'autoexperiment'" />
   </div>
 </template>
 

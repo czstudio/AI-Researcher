@@ -21,6 +21,9 @@ function openAccount() {
     <button class="rail-btn" title="Auto-Discovery" @click="navigate('/auto-discovery')">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.4"/><circle cx="3" cy="3" r="1.2" stroke="currentColor" stroke-width="1.2"/><circle cx="13" cy="4" r="1.2" stroke="currentColor" stroke-width="1.2"/><circle cx="4" cy="13" r="1.2" stroke="currentColor" stroke-width="1.2"/><path d="M4 4l2.5 2.5M12 5l-2.5 2M5 12l2-2" stroke="currentColor" stroke-width="1.1"/></svg>
     </button>
+    <button class="rail-btn" title="Research Team" @click="navigate('/team')">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="2" stroke="currentColor" stroke-width="1.3"/><circle cx="11" cy="6" r="1.6" stroke="currentColor" stroke-width="1.3"/><path d="M2 13c0-2 1.5-3.4 3.5-3.4S9 11 9 13M9 13c.2-1.4 1.2-2.4 2.6-2.4 1.3 0 2.2.9 2.4 2.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </button>
     <button class="rail-btn" title="New session" @click="emit('new-session')">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     </button>

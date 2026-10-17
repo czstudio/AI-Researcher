@@ -259,3 +259,24 @@ export function openStream({ chatSessionId, chatStatus = 'continue', onMessage, 
     });
   return () => controller.abort();
 }
+Object.assign(api, {
+  labContract: () => call('GET', '/autoresearch/lab/contract'),
+  labCreate: (body) => call('POST', '/autoresearch/lab/runs', { body }),
+  labList: () => call('GET', '/autoresearch/lab/runs'),
+  labGet: (id) => call('GET', `/autoresearch/lab/runs/${encodeURIComponent(id)}`),
+  labStart: (id) => call('POST', `/autoresearch/lab/runs/${encodeURIComponent(id)}/start`, { body: {} }),
+  labCancel: (id) => call('POST', `/autoresearch/lab/runs/${encodeURIComponent(id)}/cancel`, { body: {} }),
+  labResults: (id) => call('GET', `/autoresearch/lab/runs/${encodeURIComponent(id)}/results.tsv`),
+  teamRoles: () => call('GET', '/team/roles'),
+  teamList: () => call('GET', '/team/sprints'),
+  teamCreate: (body) => call('POST', '/team/sprints', { body }),
+  teamGet: (id) => call('GET', `/team/sprints/${encodeURIComponent(id)}`),
+  teamSpawn: (id, role) => call('POST', `/team/sprints/${encodeURIComponent(id)}/spawn`, { body: { role } }),
+  teamTaskCreate: (id, body) => call('POST', `/team/sprints/${encodeURIComponent(id)}/tasks`, { body }),
+  teamTaskClaim: (id, taskId, role) => call('POST', `/team/sprints/${encodeURIComponent(id)}/tasks/${encodeURIComponent(taskId)}/claim`, { body: { role } }),
+  teamTaskComplete: (id, taskId, role, evidence) => call('POST', `/team/sprints/${encodeURIComponent(id)}/tasks/${encodeURIComponent(taskId)}/complete`, { body: { role, evidence } }),
+  teamArtifact: (id, body) => call('POST', `/team/sprints/${encodeURIComponent(id)}/artifacts`, { body }),
+  teamAdvance: (id, role, toPhase) => call('POST', `/team/sprints/${encodeURIComponent(id)}/phase/advance`, { body: { role, toPhase } }),
+  teamMail: (id, body) => call('POST', `/team/sprints/${encodeURIComponent(id)}/mail`, { body }),
+  teamMessages: (id, body) => call('POST', `/team/sprints/${encodeURIComponent(id)}/messages`, { body }),
+});

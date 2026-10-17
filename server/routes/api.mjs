@@ -10,6 +10,9 @@ import { runTask } from '../lib/executor.mjs';
 import { searchAll } from '../lib/literature.mjs';
 import { llmConfigured } from '../lib/llm.mjs';
 import { registerGpuRoutes } from './gpu.js';
+import { registerAutoresearchRoutes } from './autoresearch-lab.mjs';
+import { registerTeamRoutes } from './team-sprint.mjs';
+import { registerSandboxRoutes } from '../lib/sandbox-router.mjs';
 import { workspaceTree, homeFiles, copyDir, previewTypeOf, normRel, parseTargets, workspaceNode } from '../lib/workspace.mjs';
 import { dateTime, onboardingOf, saveOnboarding, ensureDefaultNotifications, notificationRecord, billingRows, addBillingStatement, planForLevelOrSku, applyUpgrade, verifyInternalSignature } from '../lib/parity.mjs';
 
@@ -142,6 +145,9 @@ const route = (method, p, fn) => routes.set(`${method} ${p}`, fn);
 
 // GPU 租用面（自动租用/取消/状态/BYO）——注册进同一张路由表
 registerGpuRoutes(route, requireUser);
+registerAutoresearchRoutes(route, { requireUser });
+registerTeamRoutes(route, { requireUser });
+registerSandboxRoutes(route, { requireUser, ok: U.ok, fail: U.fail, rootDir: path.join(process.env.NOVIX_DATA_DIR ? path.resolve(process.env.NOVIX_DATA_DIR) : path.resolve(process.cwd(), 'data'), 'sandboxes') });
 
 // ---- public ----
 route('GET', '/site-config/public', async () =>

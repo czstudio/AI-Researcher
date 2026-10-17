@@ -61,6 +61,7 @@ export function matchRoute(path) {
   if (p === '/') return { name: 'Landing', params: {} };
   if (p === '/register') return { name: 'Register', params: {} };
   if (p === '/debug/markdown') return { name: 'MarkdownDebug', params: {} };
+  if (p === '/team') return { name: 'Team', params: {} };
 
   if (seg[0] === 'search-v1') {
     if (seg[1] == null) return { name: 'Redirect', redirect: '/chat', params: {} };
@@ -104,6 +105,7 @@ export function titleForRoute(route) {
     Session: 'Research session · Novix Open',
     Published: 'Published revision · Novix Open',
     AutoDiscovery: 'Auto-Discovery · Novix Open',
+    Team: 'Research Team · Novix Open',
     AccountUpgrade: 'Subscription · Novix Open',
     AccountCredit: 'Credit & Usage · Novix Open',
     AccountBilling: 'Billing & Invoices · Novix Open',

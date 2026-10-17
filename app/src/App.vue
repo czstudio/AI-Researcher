@@ -14,6 +14,7 @@ import LandingPage from './pages/LandingPage.vue';
 import RegisterPage from './pages/RegisterPage.vue';
 import AccountPage from './pages/AccountPage.vue';
 import AutoDiscoveryPage from './pages/AutoDiscoveryPage.vue';
+import TeamPage from './pages/TeamPage.vue';
 import StaticPage from './pages/StaticPage.vue';
 import MarkdownDebugPage from './pages/MarkdownDebugPage.vue';
 
@@ -86,6 +87,7 @@ onMounted(() => {
     <main class="main">
       <WorkspacePage v-if="route.name === 'Workspace'" :key="route.params.mode" :mode="route.params.mode || 'auto'" @submit="onSubmit" />
       <AutoDiscoveryPage v-else-if="route.name === 'AutoDiscovery'" />
+      <TeamPage v-else-if="route.name === 'Team'" />
       <SessionPage v-else-if="route.name === 'Session'" :key="route.params.sessionId" :session-id="route.params.sessionId" />
     </main>
   </div>

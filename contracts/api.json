@@ -814,5 +814,154 @@
     "livePublicObservation": "Login gate observed on account/workspace routes; token shape not re-tested on 2026-10-17.",
     "localImplementation": "HS256 JWT bearer + anonymous fingerprint header; not an upstream token-compatibility claim."
   },
-  "evidencePolicy": "observed = public bundle string or public DOM/network metadata; inference = local engineering judgment. No authenticated response bodies were captured in this pass."
+  "evidencePolicy": "observed = public bundle string or public DOM/network metadata; inference = local engineering judgment. No authenticated response bodies were captured in this pass.",
+  "extensions": {
+    "$comment": "Open-source extensions absorbed from the official novix-science OSS repositories on 2026-10-17. These are not claims about the live Novix API.",
+    "sandbox": [
+      {
+        "method": "GET",
+        "path": "/sandbox/health",
+        "source": "agent-sandbox origin/novix f64ec82"
+      },
+      {
+        "method": "GET",
+        "path": "/sandbox/router/parse",
+        "source": "agent-sandbox path-prefix routing"
+      },
+      {
+        "method": "POST",
+        "path": "/sandbox/workspaces",
+        "source": "local provider workspace lifecycle"
+      },
+      {
+        "method": "GET",
+        "path": "/sandbox/workspaces/:namespace/:sandboxId/files",
+        "source": "local provider file read"
+      },
+      {
+        "method": "POST",
+        "path": "/sandbox/workspaces/:namespace/:sandboxId/files",
+        "source": "local provider file write"
+      },
+      {
+        "method": "POST",
+        "path": "/sandbox/workspaces/:namespace/:sandboxId/exec",
+        "source": "local provider command execution"
+      }
+    ],
+    "autoresearchLab": [
+      {
+        "method": "GET",
+        "path": "/autoresearch/lab/contract",
+        "source": "autoresearch 29a5846 + mlx-sim a7d4e2b"
+      },
+      {
+        "method": "POST",
+        "path": "/autoresearch/lab/runs",
+        "source": "keep/discard/crash protocol"
+      },
+      {
+        "method": "GET",
+        "path": "/autoresearch/lab/runs",
+        "source": "persisted lab runs"
+      },
+      {
+        "method": "GET",
+        "path": "/autoresearch/lab/runs/:id",
+        "source": "persisted lab run"
+      },
+      {
+        "method": "POST",
+        "path": "/autoresearch/lab/runs/:id/start",
+        "source": "fixed-budget experiment loop"
+      },
+      {
+        "method": "POST",
+        "path": "/autoresearch/lab/runs/:id/cancel",
+        "source": "abort/timeout lifecycle"
+      },
+      {
+        "method": "GET",
+        "path": "/autoresearch/lab/runs/:id/results.tsv",
+        "source": "results.tsv evidence export"
+      }
+    ],
+    "teamSprint": [
+      {
+        "method": "GET",
+        "path": "/team/roles",
+        "source": "ClawTeam-gstack 48c717f 11 roles"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints",
+        "source": "7-phase sprint state"
+      },
+      {
+        "method": "GET",
+        "path": "/team/sprints",
+        "source": "persisted sprints"
+      },
+      {
+        "method": "GET",
+        "path": "/team/sprints/:id",
+        "source": "sprint snapshot"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/spawn",
+        "source": "role roster"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/tasks",
+        "source": "task board with dependencies"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/tasks/:taskId/claim",
+        "source": "claim/ownership gate"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/tasks/:taskId/complete",
+        "source": "evidence-backed completion"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/phase/advance",
+        "source": "ceo-only phase gate"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/artifacts",
+        "source": "TurnEnvelope/artifact schema gate"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/artifacts/:artifactId/verify",
+        "source": "evidence re-run gate"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/mail",
+        "source": "agent mailbox"
+      },
+      {
+        "method": "GET",
+        "path": "/team/sprints/:id/mail",
+        "source": "agent mailbox"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/messages",
+        "source": "MoChat text/reasoning/tool parts"
+      },
+      {
+        "method": "POST",
+        "path": "/team/envelopes/validate",
+        "source": "gstack TurnEnvelope validation"
+      }
+    ]
+  }
 }

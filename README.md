@@ -150,3 +150,31 @@ MIT — see `LICENSE`. Upstream `research_agent/` and `paper_agent/` retain thei
 - Backend checks: `node server/tests/parity-backend-http.mjs`
 - End-to-end smoke: `node ops/smoke.mjs`
 - UI build: `cd app && npm run build`
+
+## Official Novix OSS absorption (2026-10-17)
+
+Audited all six repositories in the `novix-science` GitHub org, including
+`agent-sandbox@origin/novix`, `ClawTeam-gstack@origin/gstack-integration`, and
+the eight `autoresearch/clawteam` GPU branches. Full provenance, licenses and
+gap register are under `docs/absorption/`.
+
+Implemented as independent open-source extensions:
+
+- **Sandbox routing + OpenNova tools**: `server/lib/sandbox-router.mjs`,
+  `server/lib/open-nova-tools.mjs`; API under `/api/sandbox/*`.
+- **AutoResearch keep/discard/crash lab**: `server/lib/autoresearch-lab.mjs`,
+  `server/routes/autoresearch-lab.mjs`, UI in Auto Experiment; API under
+  `/api/autoresearch/lab/*`, persisted `results.tsv`.
+- **ClawTeam 11-role / 7-phase team sprint**: `server/lib/team-sprint.mjs`,
+  `server/routes/team-sprint.mjs`, `/team` UI; ceo-only phase gates, task board,
+  mailbox, TurnEnvelope validation, evidence gates and MoChat-style message parts.
+- **mlx-sim**: vectorized-environment contract metadata only. The Metal physics
+  engine and GPU training harness are explicitly out of scope for this web app.
+
+Acceptance:
+
+```bash
+node server/tests/parity-official-sandbox.mjs
+node server/tests/parity-official-autoresearch.mjs
+node server/tests/parity-official-team.mjs
+```

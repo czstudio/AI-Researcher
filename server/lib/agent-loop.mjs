@@ -21,6 +21,7 @@ import * as db from '../store/db.mjs';
 import https from 'node:https';
 import http from 'node:http';
 import { URL } from 'node:url';
+import { OPEN_NOVA_TOOL_DESCRIPTORS, executeOpenNovaTool } from './open-nova-tools.mjs';
 
 const MAX_ROUNDS = 60;
 const ASK_TIMEOUT_MS = 10 * 60_000;
@@ -199,6 +200,7 @@ export const TOOLS = [
   { type: 'function', function: { name: 'mcp__files__open_files', description: '在工作区文件面板打开文件（登记近期打开）', parameters: { type: 'object', properties: { paths: { type: 'array', items: { type: 'string' } } }, required: ['paths'] } } },
   { type: 'function', function: { name: 'mcp__delivery__deliver_to_user', description: '把文件登记为对用户的最终交付', parameters: { type: 'object', properties: { files: { type: 'array', items: { type: 'string' } }, note: { type: 'string' } }, required: ['files'] } } },
 ];
+TOOLS.push(...OPEN_NOVA_TOOL_DESCRIPTORS);
 
 function persistNotebook(ctx, ws) {
   try {
@@ -409,6 +411,17 @@ async function executeTool(ctx, name, input) {
       fs.writeFileSync(inWorkspace(ws, 'delivery/MANIFEST.md'), `# 交付清单\n\n${files.map((f) => `- \`${f}\``).join('\n')}\n${input.note ? `\n> ${input.note}\n` : ''}`);
       return JSON.stringify({ delivered: files.length, files, manifest: 'delivery/MANIFEST.md' });
     }
+    case 'PythonExecute':
+      return JSON.stringify(await executeOpenNovaTool(name, input, { workspaceDir: ws, signal: ctx.signal }));
+    case 'BrowserUse':
+      return JSON.stringify(await executeOpenNovaTool(name, input, { workspaceDir: ws, signal: ctx.signal }));
+    case 'StrReplaceEditor':
+      return JSON.stringify(await executeOpenNovaTool(name, input, { workspaceDir: ws, signal: ctx.signal }));
+    case 'FileSaver':
+      return JSON.stringify(await executeOpenNovaTool(name, input, { workspaceDir: ws, signal: ctx.signal }));
+    case 'Terminate':
+      ctx.terminated = true;
+      return JSON.stringify(await executeOpenNovaTool(name, input, { workspaceDir: ws, signal: ctx.signal }));
     default:
       return `未实现的工具：${name}`;
   }
