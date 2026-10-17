@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { DATA_DIR, ensureDir, id, readJson, writeJson, nowMs } from '../lib/util.mjs';
 
-const COLLECTIONS = ['users', 'sessions', 'tasks', 'files', 'gallery', 'ledger', 'notifications'];
+const COLLECTIONS = ['users', 'sessions', 'tasks', 'files', 'gallery', 'ledger', 'notifications', 'revisions', 'billing', 'invites', 'forks', 'onboarding', 'triggers'];
 
 ensureDir(DATA_DIR);
 for (const c of COLLECTIONS) ensureDir(path.join(DATA_DIR, c));
@@ -59,6 +59,24 @@ export function sessionDir(sessionId) {
   return d;
 }
 
+export function revisionDir(revisionId) {
+  const d = path.join(DATA_DIR, 'revisions', revisionId, 'workspace');
+  ensureDir(d);
+  return d;
+}
+
+export function userWorkspaceDir(userId) {
+  const d = path.join(DATA_DIR, 'workspaces', `home-${userId}`, 'workspace');
+  ensureDir(d);
+  return d;
+}
+
+export function userUploadDir(userId) {
+  const d = path.join(DATA_DIR, 'uploads', String(userId));
+  ensureDir(d);
+  return d;
+}
+
 // ---------- factories ----------
 export function newSession({ userId = '-1', isAnonymous = false, title = null } = {}) {
   const sid = id(32);
@@ -82,7 +100,7 @@ export function newSession({ userId = '-1', isAnonymous = false, title = null } 
   return session;
 }
 
-export function newTask({ sessionId, agentName = '', query = '', queryContent = '', mode = 'auto' } = {}) {
+export function newTask({ sessionId, agentName = '', query = '', queryContent = '', mode = 'auto', createdBy = null } = {}) {
   const tid = String(Math.floor(Math.random() * 900000) + 100000);
   const task = {
     id: tid,
@@ -94,7 +112,7 @@ export function newTask({ sessionId, agentName = '', query = '', queryContent = 
     status: 'init',
     steps: null,
     errorCode: null,
-    createdBy: null,
+    createdBy,
     createdAt: nowMs(),
     updatedAt: nowMs(),
     finishedAt: null,
@@ -132,7 +150,14 @@ export function appendLedger(entry) {
 export function pushNotification(userId, notif) {
   const key = String(userId);
   const rows = get('notifications', key) || { userId: key, items: [] };
-  const item = { id: id(8), at: nowMs(), read: false, ...notif };
+  const item = {
+    id: Number(String(Date.now()).slice(-9)),
+    at: nowMs(),
+    read: false,
+    type: 'UPDATE',
+    status: 1,
+    ...notif,
+  };
   rows.items.unshift(item);
   put('notifications', key, rows);
   return item;

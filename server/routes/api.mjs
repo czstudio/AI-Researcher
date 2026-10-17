@@ -2,6 +2,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import * as db from '../store/db.mjs';
 import * as U from '../lib/util.mjs';
 import { subscribe, publish } from '../lib/hub.mjs';
@@ -9,6 +10,8 @@ import { runTask } from '../lib/executor.mjs';
 import { searchAll } from '../lib/literature.mjs';
 import { llmConfigured } from '../lib/llm.mjs';
 import { registerGpuRoutes } from './gpu.js';
+import { workspaceTree, homeFiles, copyDir, previewTypeOf, normRel, parseTargets, workspaceNode } from '../lib/workspace.mjs';
+import { dateTime, onboardingOf, saveOnboarding, ensureDefaultNotifications, notificationRecord, billingRows, addBillingStatement, planForLevelOrSku, applyUpgrade, verifyInternalSignature } from '../lib/parity.mjs';
 
 const MODES = U.readJson(path.resolve(process.cwd(), 'contracts/modes.json'), { modes: [], models: [], plans: [] });
 const ERRORS = U.readJson(path.resolve(process.cwd(), 'contracts/errors.json'), { codes: {} });
@@ -99,6 +102,15 @@ function assertReadable(session, a) {
   return err(5200);
 }
 
+function isOwner(session, a) {
+  return Boolean(session && a && a.user && String(session.creatorUserId) === String(a.user.id));
+}
+
+function assertOwner(session, a, code = 5200) {
+  if (isOwner(session, a)) return null;
+  return err(code);
+}
+
 // ---------- multipart ----------
 function parseMultipart(buffer, boundary) {
   const parts = [];
@@ -170,6 +182,8 @@ route('POST', '/user/login', async (req, res, p) => {
   return U.ok({ token: U.signJwt({ uid: user.id, level: user.level }), user: publicUser(user) });
 });
 
+route('POST', '/login', (req, res, p) => routes.get('POST /user/login')(req, res, p));
+
 route('POST', '/user/emailSignUp', async (req, res, p) => {
   const email = p.email;
   if (!email || !p.password) return err(5000);
@@ -180,7 +194,7 @@ route('POST', '/user/emailSignUp', async (req, res, p) => {
 });
 
 function publicUser(u) {
-  return { id: u.id, email: u.email, name: u.name, level: u.level, credits: u.credits, subscriptionStatus: u.subscriptionStatus, avatarInitial: u.avatarInitial, isAnonymous: !!u.isAnonymous };
+  return { id: u.id, email: u.email, name: u.name, level: u.level, credits: u.credits, subscriptionStatus: u.subscriptionStatus, subscriptionProvider: u.subscriptionProvider || null, sku: u.sku || null, entitlementEndsAt: u.entitlementEndsAt || null, avatarInitial: u.avatarInitial, isAnonymous: Boolean(u.isAnonymous) };
 }
 
 route('GET', '/user/sendEmailAuthCode', async () => U.ok({ sent: true, note: 'no-op in self-hosted mode' }));
@@ -196,7 +210,9 @@ route('POST', '/user/getUserCreditInfo', async (req, res, p) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
   const plan = planOf(a.user);
-  return U.ok({ credits: a.user.credits, level: a.user.level, monthlyCredits: plan.monthlyCredits, nextMonthCredit: plan.monthlyCredits, subscriptionStatus: a.user.subscriptionStatus });
+  const used = Math.max(0, Number(plan.monthlyCredits || 0) - Number(a.user.credits || 0));
+  const resetDate = a.user.entitlementEndsAt || (U.nowMs() + 30 * 24 * 3600 * 1000);
+  return U.ok({ userId: a.user.id, userLevel: a.user.level, sku: a.user.sku || 'FREE_MONTHLY', totalCredit: plan.monthlyCredits, usedCredit: used, remainingCredit: a.user.credits, inviteList: null, resetDate, userLevelSouce: null, subscriptionStatus: a.user.subscriptionStatus || 'free', subscriptionProvider: a.user.subscriptionProvider || null, entitlementEndsAt: resetDate, onboardingState: onboardingOf(a.user), credits: a.user.credits, level: a.user.level, monthlyCredits: plan.monthlyCredits, nextMonthCredit: plan.monthlyCredits });
 });
 
 route('POST', '/user/getUserCreditUsage', async (req, res, p) => {
@@ -215,8 +231,16 @@ route('GET', '/user/getAvailableCoupons', async (req, res, p) => {
 route('POST', '/user/workspace/init', async (req, res, p) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
-  const dir = db.sessionDir(`home-${a.user.id}`);
-  return U.ok({ path: dir });
+  const dir = db.userWorkspaceDir(a.user.id);
+  return U.ok({ path: dir, root: dir, workspaceTreeJson: JSON.stringify(workspaceTree(dir, 'home-' + a.user.id, [['', 3]])) });
+});
+
+route('POST', '/home/novix/workspace', async (req, res, p) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  const dir = db.userWorkspaceDir(a.user.id);
+  const tree = workspaceTree(dir, 'home-' + a.user.id, p.targets || [['', 3]], p.path || '');
+  return U.ok({ root: dir, workspaceTreeJson: JSON.stringify(tree), tree, files: homeFiles(dir, 'home-' + a.user.id) });
 });
 
 route('GET', '/user/workspace/interest', async (req, res, p) => {
@@ -230,6 +254,35 @@ route('GET', '/user/feature_white_list/enabled', async (req, res, p) => {
   if (a.denied) return a.denied;
   const plan = planOf(a.user);
   return U.ok({ codeAgent: plan.codeAgentAllowed, gpu: plan.level !== 'free', llmConfigured: llmConfigured() });
+});
+
+route('GET', '/account/info', async (req, res, p) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  const plan = planOf(a.user);
+  return U.ok({ user: publicUser(a.user), plan, subscription: { status: a.user.subscriptionStatus || 'free', provider: a.user.subscriptionProvider || null, sku: a.user.sku || null, entitlementEndsAt: a.user.entitlementEndsAt || null }, onboardingState: onboardingOf(a.user), credit: { remaining: a.user.credits, total: plan.monthlyCredits } });
+});
+
+route('POST', '/account/upgrade', async (req, res, p, body) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  const idempotencyKey = req.headers['idempotency-key'] || body.idempotencyKey || p.idempotencyKey || null;
+  const up = applyUpgrade(a.user, { level: body.level || p.level, sku: body.sku || p.sku, provider: body.provider || p.provider, idempotencyKey }, MODES.plans);
+  db.pushNotification(a.user.id, { type: 'BILLING', name: 'Subscription updated', title: 'Subscription updated', body: 'Your plan is now ' + up.plan.label + '.', content: 'Your plan is now ' + up.plan.label + '.' });
+  return U.ok({ user: publicUser(a.user), plan: up.plan, level: up.plan.level, credits: a.user.credits, subscriptionStatus: a.user.subscriptionStatus, statement: up.statement, idempotent: up.idempotent });
+});
+
+route('POST', '/user/ackOnboardingMilestone', async (req, res, p, body) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  const patch = {};
+  const milestone = String(body.milestone || p.milestone || '').toLowerCase();
+  if (milestone.includes('first') || body.firstTaskAcked === true || p.firstTaskAcked === true || p.firstTaskAcked === 'true') patch.firstTaskAcked = true;
+  if (milestone.includes('third') || body.thirdTaskAcked === true || p.thirdTaskAcked === true || p.thirdTaskAcked === 'true') patch.thirdTaskAcked = true;
+  if (body.activePromoCode != null) patch.activePromoCode = body.activePromoCode;
+  if (body.discountPercent != null) patch.discountPercent = Number(body.discountPercent);
+  if (Object.keys(patch).length === 0) patch[milestone || 'firstTaskAcked'] = true;
+  return U.ok(saveOnboarding(a.user, patch));
 });
 
 // ---- sessions ----
@@ -296,6 +349,7 @@ route('GET', '/chat_session/active', async (req, res, p) => {
   const active = db
     .all('tasks')
     .filter((t) => ['init', 'processing'].includes(t.status))
+    .filter((t) => { const ss = db.get('sessions', t.chatSessionId); return ss && String(ss.creatorUserId) === String(a.user.id); })
     .map((t) => ({ taskId: t.id, chatSessionId: t.chatSessionId, status: t.status }));
   return U.ok({ items: active });
 });
@@ -310,8 +364,11 @@ route('GET', '/chat_session/message/list', async (req, res, p) => {
 });
 
 route('GET', '/chat_session/status', async (req, res, p) => {
+  const a = actor(req, p);
   const { session, denied } = sessionOrShared(p.chatSessionId);
   if (denied) return denied;
+  const gate = assertReadable(session, a);
+  if (gate) return gate;
   return U.ok({ id: session.id, status: 'idle', storageTier: session.storageTier, share: session.share });
 });
 
@@ -320,6 +377,8 @@ route('POST', '/chat_session/share', async (req, res, p, body) => {
   if (a.denied) return a.denied;
   const { session, denied } = sessionOrShared(body.chatSessionId || p.chatSessionId);
   if (denied) return denied;
+  const gate = assertOwner(session, a);
+  if (gate) return gate;
   session.share = true;
   session.updatedAt = U.nowMs();
   db.put('sessions', session.id, session);
@@ -331,6 +390,11 @@ route('POST', '/chat_session/bind_anonymous', async (req, res, p, body) => {
   if (a.denied) return a.denied;
   const { session, denied } = sessionOrShared(body.chatSessionId || p.chatSessionId);
   if (denied) return denied;
+  const fp = req.headers.fingerprint || p.fingerprint || body.fingerprint;
+  const fpUid = fp ? 'fp-' + String(fp).slice(0, 24) : null;
+  const sameAnonymousOwner = String(session.creatorUserId) === String(a.user.id) || (fpUid && String(session.creatorUserId) === fpUid);
+  if (session.isAnonymous !== true && isOwner(session, a) === false) return err(5200);
+  if (session.isAnonymous === true && sameAnonymousOwner === false) return err(5200);
   session.creatorUserId = a.user.id;
   session.isAnonymous = false;
   db.put('sessions', session.id, session);
@@ -342,6 +406,8 @@ route('POST', '/chat_session/rename', async (req, res, p, body) => {
   if (a.denied) return a.denied;
   const { session, denied } = sessionOrShared(body.chatSessionId || p.chatSessionId);
   if (denied) return denied;
+  const gate = assertOwner(session, a);
+  if (gate) return gate;
   session.title = body.title || p.title || session.title;
   db.put('sessions', session.id, session);
   return U.ok(session);
@@ -350,15 +416,25 @@ route('POST', '/chat_session/rename', async (req, res, p, body) => {
 route('POST', '/chat_session/delete', async (req, res, p, body) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
-  db.del('sessions', body.chatSessionId || p.chatSessionId);
+  const sid = body.chatSessionId || p.chatSessionId;
+  const { session, denied } = sessionOrShared(sid);
+  if (denied) return denied;
+  const gate = assertOwner(session, a);
+  if (gate) return gate;
+  db.del('sessions', sid);
   return U.ok({ deleted: true });
 });
 
 route('GET', '/chat_session/workspace', async (req, res, p) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
-  const dir = db.workspaceDir(p.chatSessionId);
-  return U.ok({ root: dir, tree: tree(dir) });
+  const { session, denied } = sessionOrShared(p.chatSessionId);
+  if (denied) return denied;
+  const gate = assertOwner(session, a);
+  if (gate) return gate;
+  const dir = db.workspaceDir(session.id);
+  const node = workspaceTree(dir, session.id, p.targets || [['', 6]], p.path || '');
+  return U.ok({ root: dir, tree: node, workspaceTreeJson: JSON.stringify(node) });
 });
 
 route('POST', '/chat_session/workspace/subtree', async (req, res, p, body) => {
@@ -368,8 +444,9 @@ route('POST', '/chat_session/workspace/subtree', async (req, res, p, body) => {
   const gate = assertReadable(session, a);
   if (gate) return gate;
   const dir = db.workspaceDir(session.id);
-  const rel = body.path || p.path || '.';
-  return U.ok({ workspaceTreeJson: tree(dir, rel) });
+  const targets = body.targets || p.targets || (body.path || p.path ? [[body.path || p.path, 3]] : [['', 3]]);
+  const node = workspaceTree(dir, session.id, targets, body.path || p.path || '');
+  return U.ok({ workspaceTreeJson: JSON.stringify(node) });
 });
 
 route('GET', '/chat_session/workspace/download_workspace_url', async (req, res, p) => {
@@ -385,16 +462,25 @@ route('GET', '/chat_session/workspace/download_workspace_url', async (req, res, 
 route('GET', '/chat_session/workspace/home_files', async (req, res, p) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
-  const dir = db.workspaceDir(p.chatSessionId);
-  return U.ok({ files: (tree(dir)?.children || []).slice(0, 50) });
+  const { session, denied } = sessionOrShared(p.chatSessionId);
+  if (denied) return denied;
+  const gate = assertOwner(session, a);
+  if (gate) return gate;
+  const dir = db.workspaceDir(session.id);
+  return U.ok(homeFiles(dir, session.id));
 });
 
 route('POST', '/chat_session/workspace/home_file_preview', async (req, res, p, body) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
-  const dir = db.workspaceDir(body.chatSessionId || p.chatSessionId);
+  const sid = body.chatSessionId || p.chatSessionId;
+  const { session, denied } = sessionOrShared(sid);
+  if (denied) return denied;
+  const gate = assertOwner(session, a);
+  if (gate) return gate;
+  const dir = db.workspaceDir(session.id);
   const abs = U.safeJoin(dir, body.path || p.path || '');
-  if (!abs || !fs.existsSync(abs)) return err(5001);
+  if (abs == null || fs.existsSync(abs) === false || fs.statSync(abs).isFile() === false) return err(5001);
   const content = fs.readFileSync(abs, 'utf8');
   return U.ok({ path: body.path, content: content.slice(0, 200000), language: languageOf(abs) });
 });
@@ -422,8 +508,13 @@ function languageOf(file) {
 route('POST', '/chat_session/workspace/user_upload/delete', async (req, res, p, body) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
-  const dir = db.workspaceDir(body.chatSessionId || p.chatSessionId);
-  const abs = U.safeJoin(dir, `user_data/${body.path || p.path || ''}`);
+  const sid = body.chatSessionId || p.chatSessionId;
+  const { session, denied } = sessionOrShared(sid);
+  if (denied) return denied;
+  const gate = assertOwner(session, a);
+  if (gate) return gate;
+  const dir = db.workspaceDir(session.id);
+  const abs = U.safeJoin(dir, 'user_data/' + (body.path || p.path || ''));
   if (abs && fs.existsSync(abs)) fs.rmSync(abs, { force: true });
   return U.ok({ deleted: true });
 });
@@ -432,59 +523,71 @@ route('POST', '/chat_session/workspace/user_workspace/subtree', async (req, res,
   const a = actor(req, p);
   const { session, denied } = sessionOrShared(body.chatSessionId || p.chatSessionId);
   if (denied) return denied;
-  const gate = assertReadable(session, a);
+  const gate = assertOwner(session, a);
   if (gate) return gate;
   const dir = db.workspaceDir(session.id);
-  return U.ok({ workspaceTreeJson: tree(dir, 'user_data') || tree(dir) });
+  const node = workspaceNode(dir, 'user_data', session.id, 6) || workspaceTree(dir, session.id, [['', 3]]);
+  return U.ok({ workspaceTreeJson: JSON.stringify(node) });
 });
 
 // ---- tasks ----
-async function createTask(req, res, p, body, { anonymous }) {
-  const a = anonymous ? actor(req, p) : requireUser(req, p);
+async function createTask(req, res, p, body, { anonymous, userOverride = null } = {}) {
+  const a = userOverride ? { user: userOverride, anon: false } : (anonymous ? actor(req, p) : requireUser(req, p));
   if (a.denied) return a.denied;
-  if (anonymous && !a.user) a.user = db.newUser({ level: 'free', isAnonymous: true });
+  if (anonymous && a.user == null) a.user = db.newUser({ level: 'free', isAnonymous: true });
 
   const queryContent = body.queryContent ?? body.query;
-  if (!queryContent || !String(queryContent).trim()) return err(4000);
+  if (queryContent == null || String(queryContent).trim() === '') return err(4000);
 
-  let sessionId = body.chatSessionId;
+  const enableBrainstorming = body.enableBrainstorming === true || body.enableBrainstorming === 'true';
+  const fileIds = Array.isArray(body.fileIds) ? body.fileIds.map(String) : [];
+  const tempUrl = body.tempUrl ?? null;
+
+  let sessionId = body.chatSessionId || null;
   let session;
   if (sessionId) {
     const r = sessionOrShared(sessionId);
     if (r.denied) return r.denied;
     session = r.session;
-    // 归属门：foreign/shared 会话不得借道创建任务（分享只授权读）——
-    // 在扣 credits/appendLedger/newTask/调度之前拒绝，异常零副作用
-    if (String(session.creatorUserId) !== String(a.user.id)) return err(5200);
+    if (String(session.creatorUserId) === String(a.user.id)) {} else return err(5200);
   } else {
-    session = db.newSession({ userId: a.user.id, isAnonymous: anonymous });
+    session = db.newSession({ userId: a.user.id, isAnonymous: anonymous || a.anon === true });
   }
 
   const plan = planOf(a.user);
   const modeKey = body.mode || p.mode || 'auto';
   const modeDef = modeByKey(modeKey);
-  const agentName = body.agentName || modeDef?.agentName || '';
+  const agentName = body.agentName ?? modeDef?.agentName ?? '';
 
-  if (['autoexperiment', 'notebook'].includes(modeKey) && !plan.codeAgentAllowed) return err(5019);
+  if (['autoexperiment', 'notebook'].includes(modeKey) && plan.codeAgentAllowed === false) return err(5019);
   const cost = modeDef?.creditCost || 1;
-  if ((a.user.credits ?? 0) < cost && !anonymous) return err(5016);
+  if ((a.user.credits ?? 0) < cost && anonymous === false) return err(5016);
 
-  if (!anonymous) {
+  if (anonymous === false) {
     a.user.credits = Math.max(0, (a.user.credits ?? 0) - cost);
     db.put('users', a.user.id, a.user);
     db.appendLedger({ userId: a.user.id, kind: 'task', delta: -cost, balance: a.user.credits, mode: modeKey });
   }
 
+  for (const fileId of fileIds) {
+    const file = db.get('files', fileId);
+    if (file && file.owner && String(file.owner) === String(a.user.id)) {}
+    else if (file && file.owner) return err(5200);
+  }
+
   const enableGpu = body.enableGpu === true || body.enableGpu === 'true';
-  const fileIds = body.fileIds || [];
-  const task = db.newTask({ sessionId: session.id, agentName, query: body.query || queryContent, queryContent, mode: modeKey });
+  const task = db.newTask({ sessionId: session.id, agentName, query: body.query || queryContent, queryContent, mode: modeKey, createdBy: a.user.id });
   task.enableGpu = fileIds.length ? false : enableGpu;
-  task.questionMode = body.enableBrainstorming ? 'discuss' : 'task';
-  task.modelOverride = body.enableBrainstorming ? MODES.discussModelOverride : body.modelOverride || MODES.defaultModel;
+  task.enableBrainstorming = enableBrainstorming;
+  task.questionMode = body.questionMode || (enableBrainstorming ? 'discuss' : 'task');
+  task.modelOverride = body.modelOverride || (enableBrainstorming ? MODES.discussModelOverride : MODES.defaultModel);
   task.controls = body.controls || [];
+  task.fileIds = fileIds;
+  task.tempUrl = tempUrl;
   if (body.writeUpType) task.writeUpType = body.writeUpType;
+  session.enableGpu = task.enableGpu;
   session.updatedAt = U.nowMs();
-  if (!session.title) session.title = String(queryContent).slice(0, 60);
+  if (session.title == null || session.title === '') session.title = String(queryContent).slice(0, 60);
   db.put('sessions', session.id, session);
   db.put('tasks', task.id, task);
 
@@ -494,6 +597,20 @@ async function createTask(req, res, p, body, { anonymous }) {
 
 route('POST', '/task/create_task', (req, res, p, body) => createTask(req, res, p, body, { anonymous: false }));
 route('POST', '/task/create_anonymous_task', (req, res, p, body) => createTask(req, res, p, body, { anonymous: true }));
+
+route('POST', '/task/create_internal_task_with_signature', async (req, res, p, body) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  if (verifyInternalSignature(req, body) === false) return err(403);
+  let target = a.user;
+  if (body.userId) {
+    const found = db.get('users', String(body.userId));
+    if (found == null) return err(401);
+    target = found;
+  }
+  const payload = { ...body, chatSessionId: body.chatSessionId || p.chatSessionId || null };
+  return createTask(req, res, p, payload, { anonymous: false, userOverride: target });
+});
 
 route('GET', '/task/get_task', async (req, res, p) => {
   const a = actor(req, p);
@@ -511,6 +628,12 @@ route('POST', '/task/submit_user_question', async (req, res, p, body) => {
   // {sessionId, taskId, toolCallId, result: "{\"问题\":\"用户答\"}"} → agent 继续
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
+  if (body.taskId) {
+    const t = db.get('tasks', String(body.taskId));
+    if (t == null) return err(5001);
+    const own = db.get('sessions', t.chatSessionId);
+    if (own == null || String(own.creatorUserId) !== String(a.user.id)) return err(5100);
+  }
   const { pendingQuestions } = await import('../lib/agent-loop.mjs');
   const rec = body.toolCallId && pendingQuestions.get(String(body.toolCallId));
   if (rec) {
@@ -613,17 +736,25 @@ route('GET', '/agents', async (req, res, p) => {
 route('POST', '/file/batch_temp_urls', async (req, res, p, body) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
-  const names = body.files || body.names || [];
+  const sid = body.chatSessionId || p.chatSessionId || null;
+  if (sid) {
+    const { session, denied } = sessionOrShared(sid);
+    if (denied) return denied;
+    const gate = assertOwner(session, a);
+    if (gate) return gate;
+  }
+  const names = Array.isArray(body.files) ? body.files : (Array.isArray(body.names) ? body.names : []);
   const items = names.map((n) => {
     const fileId = U.id(16);
-    db.put('files', fileId, { id: fileId, name: n, owner: a.user.id, createdAt: U.nowMs() });
-    return { fileId, name: n, tempUrl: `/api/file/upload_stream?fileId=${fileId}` };
+    db.put('files', fileId, { id: fileId, name: n, owner: a.user.id, chatSessionId: sid, createdAt: U.nowMs() });
+    return { fileId, name: n, tempUrl: '/api/file/upload_stream?fileId=' + fileId + (sid ? '&chatSessionId=' + encodeURIComponent(sid) : '') };
   });
   return U.ok({ items });
 });
 
 route('POST', '/file/upload_stream', async (req, res, p, body) => {
   const a = actor(req, p);
+  if (a.user == null) return err(401);
   const ct = String(req.headers['content-type'] || '');
   const b = await U.readBody(req);
   const fileId = p.fileId || U.id(16);
@@ -644,88 +775,236 @@ route('POST', '/file/upload_stream', async (req, res, p, body) => {
   if (/\.(php\d*|phtml|jsp|jspx|asp|aspx|exe|dll|so|bat|cmd|ps1|htaccess|cgi|pl|sh)$/i.test(name)) {
     return err(5001);
   }
-  const sessionId = p.chatSessionId || body.chatSessionId;
-  const dir = sessionId ? db.workspaceDir(sessionId) : U.ensureDir(path.join(U.DATA_DIR, 'uploads'));
+  const existing = fileId ? db.get('files', fileId) : null;
+  if (existing && existing.owner && String(existing.owner) === String(a.user.id)) {} else if (existing && existing.owner) return err(5200);
+  const sessionId = p.chatSessionId || body.chatSessionId || existing?.chatSessionId || null;
+  if (sessionId) {
+    const { session, denied } = sessionOrShared(sessionId);
+    if (denied) return denied;
+    const gate = assertOwner(session, a);
+    if (gate) return gate;
+  }
+  const dir = sessionId ? db.workspaceDir(sessionId) : db.userUploadDir(a.user.id);
   const target = U.safeJoin(dir, `user_data/${path.basename(name)}`);
   if (!target) return err(5000);
   U.ensureDir(path.dirname(target));
   fs.writeFileSync(target, data);
-  db.put('files', fileId, { id: fileId, name, size: data.length, path: target, owner: a.user?.id || null, createdAt: U.nowMs() });
+  db.put('files', fileId, { id: fileId, name, size: data.length, path: target, owner: a.user.id, chatSessionId: sessionId, fileKey: sessionId ? 'nova_agent_v1/user_data/session_' + sessionId + '/workspace/user_data/' + path.basename(name) : null, createdAt: U.nowMs() });
   return U.ok({ fileId, name, size: data.length, path: `user_data/${path.basename(name)}` });
 });
 
 route('POST', '/file/upload_complete', async (req, res, p, body) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
   const ids = body.fileIds || [p.fileId].filter(Boolean);
+  for (const fid of ids) {
+    const f = db.get('files', String(fid));
+    if (f && f.owner && String(f.owner) === String(a.user.id)) {} else if (f && f.owner) return err(5200);
+  }
   return U.ok({ fileIds: ids, completed: true });
 });
 
-route('GET', '/file/temp_url', async (req, res, p) => U.ok({ tempUrl: `/api/file/upload_stream?fileId=${p.fileId || U.id(16)}` }));
+route('GET', '/file/temp_url', async (req, res, p) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  if (p.fileId) {
+    const f = db.get('files', String(p.fileId));
+    if (f && f.owner && String(f.owner) === String(a.user.id)) {} else if (f && f.owner) return err(5200);
+  }
+  return U.ok({ tempUrl: '/api/file/upload_stream?fileId=' + (p.fileId || U.id(16)) });
+});
 
 route('GET', '/file/download', async (req, res, p) => {
   const a = actor(req, p);
   const key = p.fileKey || '';
+  const wsMatch = /^nova_agent_v1\/user_data\/session_([^/]+)\/workspace\/?(.*)$/.exec(key);
+  if (wsMatch) {
+    const sid = wsMatch[1];
+    const { session, denied } = sessionOrShared(sid);
+    if (denied) return denied;
+    const sigOk = U.verifyJwt(p.signature || '')?.dl === sid;
+    const gate = session.share || sigOk ? null : assertReadable(session, a);
+    if (gate) return gate;
+    const abs = U.safeJoin(db.workspaceDir(sid), wsMatch[2] || '.');
+    if (abs == null || fs.existsSync(abs) === false || fs.statSync(abs).isFile() === false) return err(5001);
+    return { __streamFile: abs, name: path.basename(abs), inline: p.isDownload !== 'true' };
+  }
   if (key.startsWith('workspace/')) {
     const sid = key.split('/')[1];
     const { session, denied } = sessionOrShared(sid);
     if (denied) return denied;
-    const gate = session.share ? null : assertReadable(session, a);
+    const sigOk = U.verifyJwt(p.signature || '')?.dl === sid;
+    const gate = session.share || sigOk ? null : assertReadable(session, a);
     if (gate) return gate;
-    return { __streamZip: db.workspaceDir(sid), name: `workspace-${sid}.zip` };
+    return { __streamZip: db.workspaceDir(sid), name: 'workspace-' + sid + '.zip' };
   }
   const f = db.get('files', key);
-  if (!f || !f.path) return err(5001);
-  return { __streamFile: f.path, name: f.name };
+  if (f == null || f.path == null) return err(5001);
+  if (f.owner && String(f.owner) === String(a.user?.id)) {}
+  else if (f.chatSessionId) {
+    const { session } = sessionOrShared(f.chatSessionId);
+    if (session == null || session.share !== true) return err(5200);
+  } else return err(5200);
+  return { __streamFile: f.path, name: f.name, inline: p.isDownload !== 'true' };
+});
+
+route('GET', '/oss/getSTSToken', async (req, res, p) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  const expiration = U.nowMs() + 3600_000;
+  const credentials = { accessKeyId: null, accessKeySecret: null, securityToken: null, expiration };
+  return U.ok({ provider: 'local', bucket: 'novix-open-local', region: 'local', endpoint: '/api/file', credentials, accessKeyId: null, accessKeySecret: null, securityToken: null, expiration, uploadUrl: '/api/file/upload_stream', putUrl: '/api/file/putToGcs' });
+});
+
+route('POST', '/file/putToGcs', async (req, res, p, body) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  const sid = body.chatSessionId || p.chatSessionId || null;
+  if (sid) {
+    const { session, denied } = sessionOrShared(sid);
+    if (denied) return denied;
+    const gate = assertOwner(session, a);
+    if (gate) return gate;
+  }
+  const rawName = body.fileName || body.name || body.path || 'upload.bin';
+  const name = path.basename(String(rawName).replace(/\\/g, '/'));
+  if (/\.(php\d*|phtml|jsp|jspx|asp|aspx|exe|dll|so|bat|cmd|ps1|htaccess|cgi|pl|sh)$/i.test(name)) return err(5001);
+  let data = Buffer.alloc(0);
+  const content = body.contentBase64 || body.base64 || body.content || '';
+  if (typeof content === 'string' && content.startsWith('data:')) {
+    const idx = content.indexOf(',');
+    data = Buffer.from(idx >= 0 ? content.slice(idx + 1) : '', 'base64');
+  } else if (body.encoding === 'base64' || body.contentBase64 || body.base64) {
+    data = Buffer.from(String(content), 'base64');
+  } else {
+    data = Buffer.from(String(content), 'utf8');
+  }
+  const dir = sid ? db.workspaceDir(sid) : db.userUploadDir(a.user.id);
+  const target = U.safeJoin(dir, 'user_data/' + name);
+  if (target == null) return err(5000);
+  U.ensureDir(path.dirname(target));
+  fs.writeFileSync(target, data);
+  const fileId = body.fileId || U.id(16);
+  db.put('files', fileId, { id: fileId, name, size: data.length, path: target, owner: a.user.id, chatSessionId: sid, fileKey: sid ? 'nova_agent_v1/user_data/session_' + sid + '/workspace/user_data/' + name : null, createdAt: U.nowMs() });
+  return U.ok({ fileId, name, size: data.length, path: 'user_data/' + name, fileKey: sid ? 'nova_agent_v1/user_data/session_' + sid + '/workspace/user_data/' + name : null, gcsUri: 'local://novix-open/' + a.user.id + '/' + name });
 });
 
 // ---- published ----
+function publishedRevision(revisionId) {
+  const rec = db.get('revisions', String(revisionId));
+  if (rec) return rec;
+  const s = db.all('sessions').find((x) => x.revisionId === revisionId);
+  if (s == null) return null;
+  return { id: revisionId, sessionId: s.id, ownerUserId: s.creatorUserId, status: 'ready', revisionNo: 1 };
+}
+
 route('POST', '/published/item/publish', async (req, res, p, body) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
   const { session, denied } = sessionOrShared(body.chatSessionId || p.chatSessionId);
   if (denied) return denied;
+  const gate = assertOwner(session, a);
+  if (gate) return gate;
+  const prior = db.all('revisions').filter((r) => String(r.sessionId) === String(session.id));
+  const revisionNo = prior.reduce((m, r) => Math.max(m, Number(r.revisionNo || 0)), 0) + 1;
   const revisionId = U.id(16);
+  const snap = db.revisionDir(revisionId);
+  copyDir(db.workspaceDir(session.id), snap);
+  const revision = {
+    id: revisionId, publishedItemId: revisionId, sessionId: session.id,
+    ownerUserId: String(a.user.id), revisionNo, status: 'ready', title: session.title || 'Untitled session',
+    mode: session.mode || 'auto', summary: (lastMessageOf(session.id)?.result || '').slice(0, 240),
+    publishedAt: U.nowMs(), workspaceDir: snap,
+  };
+  db.put('revisions', revisionId, revision);
   session.share = true;
   session.revisionId = revisionId;
+  session.latestRevisionId = revisionId;
   db.put('sessions', session.id, session);
-  db.put('gallery', revisionId, {
-    id: revisionId,
-    mode: session.mode || 'auto',
-    title: session.title || 'Untitled session',
-    summary: (lastMessageOf(session.id)?.result || '').slice(0, 240),
-    sessionId: session.id,
-  });
-  return U.ok({ revisionId, url: `/published/revision/${revisionId}` });
+  db.put('gallery', revisionId, { id: revisionId, mode: revision.mode, title: revision.title, summary: revision.summary, sessionId: session.id, revisionId });
+  return U.ok({ revisionId, publishedItemId: revisionId, revisionNo, url: '/published/revision/' + revisionId });
+});
+
+route('POST', '/published/item/withdraw', async (req, res, p, body) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  const { session, denied } = sessionOrShared(body.chatSessionId || p.chatSessionId);
+  if (denied) return denied;
+  const gate = assertOwner(session, a);
+  if (gate) return gate;
+  let rec = db.get('revisions', String(session.latestRevisionId || session.revisionId || ''));
+  if (rec == null) rec = db.all('revisions').filter((r) => String(r.sessionId) === String(session.id)).sort((x, y) => y.publishedAt - x.publishedAt)[0] || null;
+  if (rec) {
+    rec.status = 'withdrawn';
+    rec.withdrawnAt = U.nowMs();
+    db.put('revisions', rec.id, rec);
+    db.del('gallery', rec.id);
+  }
+  session.share = false;
+  session.withdrawnAt = U.nowMs();
+  db.put('sessions', session.id, session);
+  return U.ok({ withdrawn: true, chatSessionId: session.id, revisionId: rec?.id || null });
 });
 
 route('GET', '/published/item/publish/access', async (req, res, p) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
-  return U.ok({ canPublish: true, reason: null });
+  return U.ok({ canPublish: true, message: 'OK', reason: null });
 });
 
 function revisionSession(revisionId) {
-  const s = db.all('sessions').find((x) => x.revisionId === revisionId);
-  return s || null;
+  const rec = publishedRevision(revisionId);
+  if (rec == null) return null;
+  return db.get('sessions', rec.sessionId) || null;
 }
 
 route('GET', '/published/revision/:id/session', async (req, res, p) => {
-  const s = revisionSession(p.id);
-  if (!s) return err(5001);
-  return U.ok({ chatSession: s, chatSessionMessages: messagesOf(s.id) });
+  const rec = publishedRevision(p.id);
+  if (rec == null || rec.status !== 'ready') return err(5001);
+  const s = db.get('sessions', rec.sessionId);
+  if (s == null) return err(5001);
+  return U.ok({ chatSession: { ...s, revisionId: rec.id, revisionNo: rec.revisionNo }, chatSessionMessages: messagesOf(s.id), revision: rec });
 });
 
 route('GET', '/published/revision/:id/task', async (req, res, p) => {
-  const s = revisionSession(p.id);
-  if (!s) return err(5001);
+  const rec = publishedRevision(p.id);
+  if (rec == null || rec.status !== 'ready') return err(5001);
   const task = db.get('tasks', p.taskId);
-  if (!task || task.chatSessionId !== s.id) return err(5001);
+  if (task == null || task.chatSessionId !== rec.sessionId) return err(5001);
   return U.ok(task);
 });
 
-route('GET', '/published/revision/:id/workspace/subtree', async (req, res, p) => {
-  const s = revisionSession(p.id);
-  if (!s) return err(5001);
-  return U.ok({ workspaceTreeJson: tree(db.workspaceDir(s.id), p.path || '.') });
+async function publishedSubtree(req, res, p, body) {
+  const rec = publishedRevision(p.id);
+  if (rec == null || rec.status !== 'ready') return err(5001);
+  const root = rec.workspaceDir && fs.existsSync(rec.workspaceDir) ? rec.workspaceDir : db.workspaceDir(rec.sessionId);
+  const targets = body.targets || p.targets || (body.path || p.path ? [[body.path || p.path, 3]] : [['', 3]]);
+  const node = workspaceTree(root, rec.sessionId, targets, body.path || p.path || '');
+  return U.ok({ workspaceTreeJson: JSON.stringify(node) });
+}
+
+route('POST', '/published/revision/:id/workspace/subtree', publishedSubtree);
+route('GET', '/published/revision/:id/workspace/subtree', publishedSubtree);
+
+route('POST', '/published/revision/:id/fork', async (req, res, p) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  const rec = publishedRevision(p.id);
+  if (rec == null || rec.status !== 'ready') return err(5001);
+  const src = db.get('sessions', rec.sessionId);
+  if (src == null) return err(5001);
+  const child = db.newSession({ userId: a.user.id, title: 'Fork of ' + (rec.title || src.title || 'published revision') });
+  child.forkedFromRevisionId = rec.id;
+  child.forkedFromSessionId = src.id;
+  child.forkLineage = Array.isArray(src.forkLineage) ? src.forkLineage.concat(rec.id) : [rec.id];
+  child.share = false;
+  child.mode = src.mode || 'auto';
+  db.put('sessions', child.id, child);
+  const srcRoot = rec.workspaceDir && fs.existsSync(rec.workspaceDir) ? rec.workspaceDir : db.workspaceDir(src.id);
+  copyDir(srcRoot, db.workspaceDir(child.id));
+  const fork = { id: U.id(16), sessionId: child.id, sourceRevisionId: rec.id, sourceSessionId: src.id, userId: String(a.user.id), createdAt: U.nowMs() };
+  db.put('forks', fork.id, fork);
+  return U.ok({ sessionId: child.id, chatSessionId: child.id, id: child.id, session: child, forkId: fork.id, forkedFromRevisionId: rec.id });
 });
 
 // ---- search / growth / notifications / billing ----
@@ -755,59 +1034,162 @@ route('POST', '/likeTask', async (req, res, p, body) => {
   return U.ok({ liked: true, taskId: body.taskId || p.taskId });
 });
 
-route('GET', '/getTaskFeedback', async (req, res, p) => U.ok({ items: [] }));
+route('GET', '/getTaskFeedback', async (req, res, p) => {
+  const rows = db.get('feedback', String(p.taskId || 'global'))?.items || [];
+  return U.ok({ items: rows, taskLike: null, fileLikes: [], taskLikeCount: 0, taskDislikeCount: 0, fileCounts: {} });
+});
 
 route('POST', '/credit/upgrade_plan', async (req, res, p, body) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
-  const level = body.level || p.level || 'pro';
-  const plan = MODES.plans.find((x) => x.level === level) || MODES.plans[1];
-  a.user.level = plan.level;
-  a.user.credits = plan.monthlyCredits;
-  a.user.subscriptionStatus = 'active';
-  db.put('users', a.user.id, a.user);
-  db.appendLedger({ userId: a.user.id, kind: 'upgrade', delta: plan.monthlyCredits, balance: a.user.credits, plan: plan.level });
-  return U.ok({ level: plan.level, credits: a.user.credits });
+  const key = req.headers['idempotency-key'] || body.idempotencyKey || p.idempotencyKey || null;
+  const up = applyUpgrade(a.user, { level: body.level || p.level, sku: body.sku || p.sku, provider: body.provider || p.provider, idempotencyKey: key }, MODES.plans);
+  return U.ok({ level: up.plan.level, plan: up.plan, credits: a.user.credits, subscriptionStatus: a.user.subscriptionStatus, statement: up.statement, idempotent: up.idempotent });
 });
 
 route('POST', '/credit/subscription/upgrade', async (req, res, p, body) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
+  if (body.level || p.level || body.sku || p.sku) {
+    const key = req.headers['idempotency-key'] || body.idempotencyKey || p.idempotencyKey || null;
+    const up = applyUpgrade(a.user, { level: body.level || p.level, sku: body.sku || p.sku, provider: body.provider || p.provider, idempotencyKey: key }, MODES.plans);
+    return U.ok({ level: up.plan.level, plan: up.plan, subscriptionStatus: a.user.subscriptionStatus, credits: a.user.credits, statement: up.statement, idempotent: up.idempotent });
+  }
   a.user.subscriptionStatus = body.action === 'cancel' ? 'cancel_scheduled' : 'active';
   db.put('users', a.user.id, a.user);
   return U.ok({ subscriptionStatus: a.user.subscriptionStatus });
 });
 
-route('POST', '/credit/join', async (req, res, p) => {
+route('POST', '/credit/cancel', async (req, res, p, body) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
+  a.user.subscriptionStatus = 'cancel_scheduled';
+  a.user.cancelAtPeriodEnd = true;
+  a.user.cancelledAt = a.user.cancelledAt || U.nowMs();
+  db.put('users', a.user.id, a.user);
+  return U.ok({ subscriptionStatus: a.user.subscriptionStatus, cancelAtPeriodEnd: true, entitlementEndsAt: a.user.entitlementEndsAt || null, cancelledAt: a.user.cancelledAt });
+});
+
+function inviteView(rec) {
+  return { inviteId: rec.id, inviteCode: rec.code, inviteLink: rec.link, referralCode: rec.code, status: rec.status || 'active', invitedCount: (rec.joinedUserIds || []).length, invited: (rec.joinedUserIds || []).length, rewardCredits: 30 };
+}
+
+route('POST', '/credit/invite', async (req, res, p, body) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  let rec = db.all('invites').find((x) => String(x.ownerUserId) === String(a.user.id) && x.status !== 'revoked');
+  if (rec == null) {
+    const id = U.id(12);
+    const code = 'NV' + String(a.user.id).replace(/[^A-Za-z0-9]/g, '').slice(0, 10).toUpperCase() + U.id(4).toUpperCase();
+    rec = { id, ownerUserId: String(a.user.id), code, link: '/register?referralCode=' + code, status: 'active', joinedUserIds: [], createdAt: U.nowMs() };
+    db.put('invites', id, rec);
+  }
+  return U.ok(inviteView(rec));
+});
+
+route('GET', '/credit/list', async (req, res, p) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  const list = db.all('invites').filter((x) => String(x.ownerUserId) === String(a.user.id)).map(inviteView);
+  return U.ok({ inviteInfoList: list });
+});
+
+route('POST', '/credit/list', async (req, res, p) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  const list = db.all('invites').filter((x) => String(x.ownerUserId) === String(a.user.id)).map(inviteView);
+  return U.ok({ inviteInfoList: list });
+});
+
+route('POST', '/credit/join', async (req, res, p, body) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  const inviteId = body.inviteId || p.inviteId || body.referralCode || p.referralCode;
+  if (inviteId == null || inviteId === '') return err(5001);
+  let rec = db.get('invites', String(inviteId));
+  if (rec == null) rec = db.all('invites').find((x) => x.code === String(inviteId)) || null;
+  if (rec == null) return err(5001);
+  if (String(rec.ownerUserId) === String(a.user.id)) return err(5200);
+  rec.joinedUserIds = Array.isArray(rec.joinedUserIds) ? rec.joinedUserIds : [];
+  if (rec.joinedUserIds.includes(String(a.user.id))) {
+    return U.ok({ credits: a.user.credits, inviteId: rec.id, alreadyJoined: true });
+  }
+  rec.joinedUserIds.push(String(a.user.id));
+  db.put('invites', rec.id, rec);
   a.user.credits = (a.user.credits || 0) + 30;
   db.put('users', a.user.id, a.user);
-  return U.ok({ credits: a.user.credits, inviteId: p.inviteId });
+  db.appendLedger({ userId: a.user.id, kind: 'invite_join', delta: 30, balance: a.user.credits, inviteId: rec.id });
+  return U.ok({ credits: a.user.credits, inviteId: rec.id, alreadyJoined: false });
 });
 
 route('POST', '/credit/remove', async (req, res, p, body) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
-  const amount = Number(body.amount || p.amount || 0);
+  const amount = Math.max(0, Number(body.amount || p.amount || 0));
   a.user.credits = Math.max(0, (a.user.credits || 0) - amount);
   db.put('users', a.user.id, a.user);
+  db.appendLedger({ userId: a.user.id, kind: 'credit_remove', delta: -amount, balance: a.user.credits });
   return U.ok({ credits: a.user.credits });
+});
+
+route('GET', '/credit/billing-statements', async (req, res, p) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  return U.ok(billingRows(a.user.id));
+});
+
+route('GET', '/credit/one-time-plans', async (req, res, p) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  const items = [];
+  for (const [level, terms] of Object.entries(MODES.oneTimeTerms || {})) {
+    for (const t of terms) items.push({ level, sku: t.sku, label: t.label, price: t.price, currency: 'usd' });
+  }
+  return U.ok({ buyOneGetOne: false, groups: null, items });
 });
 
 route('GET', '/notification/list', async (req, res, p) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
-  return U.ok({ items: db.get('notifications', a.user.id)?.items || [] });
+  const rec = ensureDefaultNotifications(a.user.id);
+  const page = Math.max(1, Number(p.page || 1));
+  const size = Math.max(1, Math.min(200, Number(p.pageSize || 50)));
+  const records = rec.items.map(notificationRecord);
+  const total = records.length;
+  const start = (page - 1) * size;
+  return U.ok({ records: records.slice(start, start + size), total, size, current: page, pages: Math.ceil(total / size), orders: [], optimizeCountSql: true, searchCount: true, countId: null, maxLimit: null });
 });
 
-route('GET', '/auto_ideaspark/ideas', async (req, res, p) => {
+route('GET', '/notification/latest', async (req, res, p) => {
   const a = requireUser(req, p);
   if (a.denied) return a.denied;
-  return U.ok({ items: db.all('gallery').filter((g) => g.mode === 'ideaspark').slice(0, 12) });
+  const rec = ensureDefaultNotifications(a.user.id);
+  const unread = rec.items.filter((x) => x.read !== true);
+  const ids = (unread.length ? unread : rec.items).slice(0, 20).map((x) => x.id);
+  return U.ok({ ids, total: ids.length });
 });
 
-route('POST', '/auto_ideaspark/modify', async (req, res, p, body) => U.ok({ ok: true, idea: body.idea || null }));
+route('POST', '/auto_ideaspark/trigger', async (req, res, p, body) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  const key = req.headers['idempotency-key'] || body.idempotencyKey || p.idempotencyKey || null;
+  if (key) {
+    const existing = db.all('triggers').find((x) => String(x.userId) === String(a.user.id) && x.idempotencyKey === key);
+    if (existing) return U.ok({ triggerId: existing.id, status: existing.status, accepted: true, idempotent: true, createdAt: existing.createdAt });
+  }
+  const trigger = { id: U.id(12), userId: String(a.user.id), status: 'queued', reason: body.reason || p.reason || 'manual', idempotencyKey: key || undefined, createdAt: U.nowMs() };
+  db.put('triggers', trigger.id, trigger);
+  return U.ok({ triggerId: trigger.id, status: trigger.status, accepted: true, idempotent: false, createdAt: trigger.createdAt });
+});
+
+route('POST', '/auto_ideaspark/modify', async (req, res, p, body) => {
+  const a = requireUser(req, p);
+  if (a.denied) return a.denied;
+  const idea = body.idea || p.idea || null;
+  const rec = { id: U.id(12), userId: String(a.user.id), idea, updatedAt: U.nowMs() };
+  db.put('triggers', rec.id, { ...rec, status: 'idea_modified' });
+  return U.ok({ ok: true, idea, id: rec.id });
+});
 
 // ---------- router ----------
 function match(method, pathname) {

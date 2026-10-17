@@ -129,12 +129,16 @@ export async function params(req, url) {
     if (ct.includes('application/json')) {
       try {
         const b = await readBody(req);
+        req.__rawBody = b.text;
+        req.__rawBodyBuffer = b.raw;
         if (b.json && typeof b.json === 'object') body = b.json;
       } catch {
         /* ignore */
       }
     } else if (ct.includes('application/x-www-form-urlencoded')) {
       const b = await readBody(req);
+      req.__rawBody = b.text;
+      req.__rawBodyBuffer = b.raw;
       body = Object.fromEntries(new URLSearchParams(b.text).entries());
     }
   }
