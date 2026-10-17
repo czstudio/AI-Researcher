@@ -1,102 +1,635 @@
 {
-  "$comment": "HTTP contract. Base path /api. Success envelope: {\"code\":\"0\",\"message\":\"Success\",\"result\":...}. Auth: Authorization: Bearer <opaque 44-byte server session token> (NOT a JWT); anonymous via fingerprint header. Verified 2026-10-09 against live novix.science + bundle index-Dk9cCEgm.js.",
-  "version": "3",
+  "$comment": "HTTP contract. Base /api. Live public capture 2026-10-17; bundle index-ykYPt_W7.js sha256 c647c1aa806f6788b6936ede0b29915a3827989de93eb3257834c0a626c74382. Observed truth is marked live-public-bundle-2026-10-17; repo-implementation-only entries are exact local server behavior, not claims of upstream parity.",
+  "version": "4",
   "base": "/api",
   "sse": {
     "path": "/api/chat/",
     "method": "GET",
-    "query": ["token", "query", "chatSessionId", "chatStatus"],
-    "headers": ["Authorization: Bearer <token>", "Accept: text/event-stream"],
+    "query": [
+      "token",
+      "query",
+      "chatSessionId",
+      "chatStatus"
+    ],
+    "headers": [
+      "Authorization: Bearer <token>",
+      "Accept: text/event-stream"
+    ],
     "framing": "space-padded lines; event:complete sentinel",
     "events": [
-      { "name": "message", "data": "text delta (raw string)" },
-      { "name": "response", "data": "{\"messages\":[{\"role\":\"...\",\"content\":\"...\"}]}" },
-      { "name": "complete", "data": "(empty)" }
+      {
+        "name": "message",
+        "data": "text delta (raw string)"
+      },
+      {
+        "name": "response",
+        "data": "{\"messages\":[{\"role\":\"...\",\"content\":\"...\"}]}"
+      },
+      {
+        "name": "complete",
+        "data": "(empty)"
+      }
     ],
-    "chatStatus": ["init", "continue"],
-    "note": "Client parses with fetch+reader (not EventSource). Token in query string is a known upstream leak; this implementation accepts header only and treats query token as deprecated. Observed live in the bundle at :163356/:163683; believed to serve Discuss mode."
+    "chatStatus": [
+      "init",
+      "continue"
+    ],
+    "note": "Observed in live bundle: client uses fetch+reader and query token. Local server accepts bearer header and deprecated query token; framing is a compatibility implementation."
   },
   "endpoints": [
-    { "path": "/user/login", "method": "POST", "auth": false, "params": "query", "desc": "email+password" },
-    { "path": "/user/emailSignUp", "method": "POST", "auth": false, "params": "query" },
-    { "path": "/user/sendEmailAuthCode", "method": "GET", "auth": false, "params": "query" },
-    { "path": "/user/resetPassword", "method": "POST", "auth": false, "params": "query" },
-    { "path": "/user/getUserInfo", "method": "POST", "auth": true, "params": "query" },
-    { "path": "/user/getUserCreditInfo", "method": "POST", "auth": true, "params": "query" },
-    { "path": "/user/getUserCreditUsage", "method": "POST", "auth": true, "params": "query" },
-    { "path": "/user/getAvailableCoupons", "method": "GET", "auth": true, "params": "query", "suspect": "not seen in live bundle" },
-    { "path": "/user/workspace/init", "method": "POST", "auth": true, "params": "query" },
-    { "path": "/user/workspace/interest", "method": "GET", "auth": true, "params": "query" },
-    { "path": "/user/feature_white_list/enabled", "method": "GET", "auth": true, "params": "query", "note": "feature gate, e.g. auto_discovery_manual_switch" },
-    { "path": "/site-config/public", "method": "GET", "auth": false, "params": "-" },
-
-    { "path": "/account/info", "method": "GET", "auth": true, "added": true },
-    { "path": "/account/upgrade", "method": "POST", "auth": true, "added": true },
-
-    { "path": "/chat_session/create", "method": "POST", "auth": true },
-    { "path": "/chat_session/create_anonymous", "method": "POST", "auth": false, "body": "{}" },
-    { "path": "/chat_session/list", "method": "GET", "auth": true },
-    { "path": "/chat_session/active", "method": "GET", "auth": true },
-    { "path": "/chat_session/message/list", "method": "GET", "auth": "share-or-token" },
-    { "path": "/chat_session/status", "method": "GET", "auth": true },
-    { "path": "/chat_session/share", "method": "POST", "auth": true, "body": "{\"chatSessionId\"}" },
-    { "path": "/chat_session/bind_anonymous", "method": "POST", "auth": true },
-    { "path": "/chat_session/rename", "method": "POST", "auth": true },
-    { "path": "/chat_session/delete", "method": "POST", "auth": true },
-    { "path": "/chat_session/workspace", "method": "GET", "auth": true },
-    { "path": "/chat_session/workspace/subtree", "method": "POST", "auth": true, "body": "{\"chatSessionId\",\"path\":\".\"}" },
-    { "path": "/chat_session/workspace/download_workspace_url", "method": "GET", "auth": true },
-    { "path": "/chat_session/workspace/home_files", "method": "GET", "auth": true },
-    { "path": "/chat_session/workspace/home_file_preview", "method": "POST", "auth": true },
-    { "path": "/chat_session/workspace/user_upload/delete", "method": "POST", "auth": true },
-    { "path": "/chat_session/workspace/user_workspace/subtree", "method": "POST", "auth": true },
-
-    { "path": "/home/novix/workspace", "method": "POST", "auth": true, "added": true },
-
-    { "path": "/task/create_task", "method": "POST", "auth": true },
-    { "path": "/task/create_anonymous_task", "method": "POST", "auth": false, "body": "JSON (query string -> 4000)" },
-    { "path": "/task/create_internal_task_with_signature", "method": "POST", "auth": true, "added": true },
-    { "path": "/task/get_task", "method": "GET", "auth": "share-or-token", "query": ["taskId"] },
-    { "path": "/task/submit_user_question", "method": "POST", "auth": true },
-    { "path": "/call_agent", "method": "POST", "auth": true, "suspect": "not seen in live bundle" },
-    { "path": "/agents", "method": "GET", "auth": true, "suspect": "not seen in live bundle" },
-
-    { "path": "/file/batch_temp_urls", "method": "POST", "auth": true },
-    { "path": "/file/upload_stream", "method": "POST", "auth": true, "body": "multipart, field 'file'" },
-    { "path": "/file/upload_complete", "method": "POST", "auth": true },
-    { "path": "/file/temp_url", "method": "GET", "auth": true },
-    { "path": "/file/download", "method": "GET", "auth": "share-or-token", "query": ["fileKey"] },
-
-    { "path": "/oss/getSTSToken", "method": "GET", "auth": true, "added": true },
-
-    { "path": "/published/item/publish", "method": "POST", "auth": true },
-    { "path": "/published/item/publish/access", "method": "GET", "auth": true, "returns": "{canPublish, message}" },
-    { "path": "/published/revision/{revisionId}/session", "method": "GET", "auth": false },
-    { "path": "/published/revision/{revisionId}/task", "method": "GET", "auth": false, "query": ["taskId"] },
-    { "path": "/published/revision/{revisionId}/workspace/subtree", "method": "POST", "auth": false, "body": "{targets}" },
-    { "path": "/published/revision/{revisionId}/fork", "method": "POST", "auth": true, "added": true, "returns": "new sessionId" },
-
-    { "path": "/search", "method": "POST", "auth": "shared-token", "body": "{\"query\",\"request_id\",\"topK\"}", "suspect": "not seen in live bundle" },
-    { "path": "/get_searchHistory", "method": "GET", "auth": true },
-    { "path": "/referral/me", "method": "GET", "auth": true, "suspect": "not seen in live bundle" },
-    { "path": "/likeTask", "method": "POST", "auth": true },
-    { "path": "/getTaskFeedback", "method": "GET", "auth": true },
-    { "path": "/credit/upgrade_plan", "method": "POST", "auth": true },
-    { "path": "/credit/subscription/upgrade", "method": "POST", "auth": true },
-    { "path": "/credit/list", "method": "GET", "auth": true, "added": true },
-    { "path": "/credit/billing-statements", "method": "GET", "auth": true, "added": true },
-    { "path": "/credit/cancel", "method": "POST", "auth": true, "added": true },
-    { "path": "/credit/invite", "method": "POST", "auth": true, "added": true },
-    { "path": "/credit/one-time-plans", "method": "GET", "auth": true, "added": true },
-    { "path": "/credit/join", "method": "POST", "auth": true, "query": ["inviteId"] },
-    { "path": "/credit/remove", "method": "POST", "auth": true },
-    { "path": "/notification/list", "method": "GET", "auth": true },
-    { "path": "/notification/latest", "method": "GET", "auth": true, "added": true },
-    { "path": "/notification/version-history", "method": "GET", "auth": false },
-    { "path": "/auto_ideaspark/ideas", "method": "GET", "auth": true },
-    { "path": "/auto_ideaspark/modify", "method": "POST", "auth": true },
-    { "path": "/gallery/list", "method": "GET", "auth": false, "suspect": "not seen in live bundle" },
-    { "path": "/models", "method": "GET", "auth": false, "suspect": "not seen in live bundle" }
+    {
+      "path": "/user/login",
+      "method": "POST",
+      "auth": false,
+      "params": "query",
+      "desc": "email+password",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/user/emailSignUp",
+      "method": "POST",
+      "auth": false,
+      "params": "query",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/user/sendEmailAuthCode",
+      "method": "GET",
+      "auth": false,
+      "params": "query",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/user/resetPassword",
+      "method": "POST",
+      "auth": false,
+      "params": "query",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/user/getUserInfo",
+      "method": "POST",
+      "auth": true,
+      "params": "query",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/user/getUserCreditInfo",
+      "method": "POST",
+      "auth": true,
+      "params": "query",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/user/getUserCreditUsage",
+      "method": "POST",
+      "auth": true,
+      "params": "query",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/user/getAvailableCoupons",
+      "method": "GET",
+      "auth": true,
+      "params": "query",
+      "evidence": "repo-implementation-only"
+    },
+    {
+      "path": "/user/workspace/init",
+      "method": "POST",
+      "auth": true,
+      "params": "query",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/user/workspace/interest",
+      "method": "GET",
+      "auth": true,
+      "params": "query",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/user/feature_white_list/enabled",
+      "method": "GET",
+      "auth": true,
+      "params": "query",
+      "note": "feature gate, e.g. auto_discovery_manual_switch",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/site-config/public",
+      "method": "GET",
+      "auth": false,
+      "params": "-",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/account/info",
+      "method": "GET",
+      "auth": true,
+      "evidence": "repo-implementation-only"
+    },
+    {
+      "path": "/account/upgrade",
+      "method": "POST",
+      "auth": true,
+      "evidence": "repo-implementation-only"
+    },
+    {
+      "path": "/chat_session/create",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/create_anonymous",
+      "method": "POST",
+      "auth": false,
+      "body": "{}",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/list",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/active",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/message/list",
+      "method": "GET",
+      "auth": "share-or-token",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/status",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/share",
+      "method": "POST",
+      "auth": true,
+      "body": "{\"chatSessionId\"}",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/bind_anonymous",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/rename",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/delete",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/workspace",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/workspace/subtree",
+      "method": "POST",
+      "auth": true,
+      "body": "{\"chatSessionId\",\"path\":\".\"}",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/workspace/download_workspace_url",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/workspace/home_files",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/workspace/home_file_preview",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/workspace/user_upload/delete",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/chat_session/workspace/user_workspace/subtree",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/home/novix/workspace",
+      "method": "POST",
+      "auth": true,
+      "evidence": "repo-implementation-only"
+    },
+    {
+      "path": "/task/create_task",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/task/create_anonymous_task",
+      "method": "POST",
+      "auth": false,
+      "body": "JSON (query string -> 4000)",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/task/create_internal_task_with_signature",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/task/get_task",
+      "method": "GET",
+      "auth": "share-or-token",
+      "query": [
+        "taskId"
+      ],
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/task/submit_user_question",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/call_agent",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/agents",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/file/batch_temp_urls",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/file/upload_stream",
+      "method": "POST",
+      "auth": true,
+      "body": "multipart, field 'file'",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/file/upload_complete",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/file/temp_url",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/file/download",
+      "method": "GET",
+      "auth": "share-or-token",
+      "query": [
+        "fileKey"
+      ],
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/oss/getSTSToken",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/published/item/publish",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/published/item/publish/access",
+      "method": "GET",
+      "auth": true,
+      "returns": "{canPublish, message}",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/published/revision/{revisionId}/session",
+      "method": "GET",
+      "auth": false,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/published/revision/{revisionId}/task",
+      "method": "GET",
+      "auth": false,
+      "query": [
+        "taskId"
+      ],
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/published/revision/{revisionId}/workspace/subtree",
+      "method": "POST",
+      "auth": false,
+      "body": "{targets}",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/published/revision/{revisionId}/fork",
+      "method": "POST",
+      "auth": true,
+      "returns": "new sessionId",
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/search",
+      "method": "POST",
+      "auth": "shared-token",
+      "body": "{\"query\",\"request_id\",\"topK\"}",
+      "evidence": "repo-implementation-only"
+    },
+    {
+      "path": "/get_searchHistory",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/referral/me",
+      "method": "GET",
+      "auth": true,
+      "evidence": "repo-implementation-only"
+    },
+    {
+      "path": "/likeTask",
+      "method": "POST",
+      "auth": true,
+      "evidence": "repo-implementation-only"
+    },
+    {
+      "path": "/getTaskFeedback",
+      "method": "GET",
+      "auth": true,
+      "evidence": "repo-implementation-only"
+    },
+    {
+      "path": "/credit/upgrade_plan",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/credit/subscription/upgrade",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/credit/list",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/credit/billing-statements",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/credit/cancel",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/credit/invite",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/credit/one-time-plans",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/credit/join",
+      "method": "POST",
+      "auth": true,
+      "query": [
+        "inviteId"
+      ],
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/credit/remove",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/notification/list",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/notification/latest",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/notification/version-history",
+      "method": "GET",
+      "auth": false,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/auto_ideaspark/ideas",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/auto_ideaspark/modify",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/gallery/list",
+      "method": "GET",
+      "auth": false,
+      "evidence": "repo-implementation-only"
+    },
+    {
+      "path": "/models",
+      "method": "GET",
+      "auth": false,
+      "evidence": "repo-implementation-only"
+    },
+    {
+      "path": "/login",
+      "method": "POST",
+      "auth": false,
+      "evidence": "live-public-bundle-2026-10-17",
+      "note": "observed 2026-10-17"
+    },
+    {
+      "path": "/auto_ideaspark/trigger",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/task/start_code_agent",
+      "method": "POST",
+      "auth": true,
+      "evidence": "repo-implementation-only"
+    },
+    {
+      "path": "/task/cancel/:taskId",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/sandbox_processes/:user_id/:session_id",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/history_updates/:user_id/:session_id",
+      "method": "GET",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/user/ackOnboardingMilestone",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/credit/list",
+      "method": "POST",
+      "auth": true,
+      "evidence": "live-public-bundle-2026-10-17"
+    },
+    {
+      "path": "/gpu/balance",
+      "method": "GET",
+      "auth": true,
+      "evidence": "repo-implementation-only",
+      "source": "server/routes/api.mjs or server/routes/gpu.js"
+    },
+    {
+      "path": "/gpu/byo/list",
+      "method": "GET",
+      "auth": true,
+      "evidence": "repo-implementation-only",
+      "source": "server/routes/api.mjs or server/routes/gpu.js"
+    },
+    {
+      "path": "/gpu/health",
+      "method": "GET",
+      "auth": true,
+      "evidence": "repo-implementation-only",
+      "source": "server/routes/api.mjs or server/routes/gpu.js"
+    },
+    {
+      "path": "/gpu/status/:taskId",
+      "method": "GET",
+      "auth": true,
+      "evidence": "repo-implementation-only",
+      "source": "server/routes/api.mjs or server/routes/gpu.js"
+    },
+    {
+      "path": "/gpu/byo/register",
+      "method": "POST",
+      "auth": true,
+      "evidence": "repo-implementation-only",
+      "source": "server/routes/api.mjs or server/routes/gpu.js"
+    },
+    {
+      "path": "/gpu/cancel/:taskId",
+      "method": "POST",
+      "auth": true,
+      "evidence": "repo-implementation-only",
+      "source": "server/routes/api.mjs or server/routes/gpu.js"
+    },
+    {
+      "path": "/gpu/estimate",
+      "method": "POST",
+      "auth": true,
+      "evidence": "repo-implementation-only",
+      "source": "server/routes/api.mjs or server/routes/gpu.js"
+    },
+    {
+      "path": "/gpu/rent",
+      "method": "POST",
+      "auth": true,
+      "evidence": "repo-implementation-only",
+      "source": "server/routes/api.mjs or server/routes/gpu.js"
+    },
+    {
+      "path": "/file/putToGcs",
+      "method": "POST",
+      "auth": true,
+      "evidence": "repo-implementation-only",
+      "source": "server/routes/api.mjs or server/routes/gpu.js"
+    },
+    {
+      "path": "/published/item/withdraw",
+      "method": "POST",
+      "auth": true,
+      "evidence": "repo-implementation-only",
+      "source": "server/routes/api.mjs or server/routes/gpu.js"
+    },
+    {
+      "path": "/published/revision/{revisionId}/workspace/subtree",
+      "method": "GET",
+      "auth": true,
+      "evidence": "repo-implementation-only",
+      "source": "server/routes/api.mjs or server/routes/gpu.js"
+    }
   ],
   "publish": {
     "base": "https://pub.novix.science",
@@ -115,9 +648,54 @@
     "fileIds": "string[]",
     "chatSessionId": "string"
   },
-  "taskPoll": { "initialMs": 500, "intervalMs": 2000, "statuses": ["init", "processing", "finish", "error"], "terminal": ["finish", "error"] },
+  "taskPoll": {
+    "initialMs": 500,
+    "intervalMs": 2000,
+    "statuses": [
+      "init",
+      "processing",
+      "finish",
+      "error"
+    ],
+    "terminal": [
+      "finish",
+      "error"
+    ]
+  },
   "constants": {
-    "SUPPORTED_EXTENSIONS": ["pdf", "doc", "docx", "txt", "md", "rtf", "xls", "xlsx", "csv", "tsv", "ppt", "pptx", "jpg", "jpeg", "png", "gif", "bmp", "zip", "rar", "7z", "tar", "gz", "bz2", "xz", "tgz", "html", "xml", "json", "py", "ipynb", "parquet"],
+    "SUPPORTED_EXTENSIONS": [
+      "pdf",
+      "doc",
+      "docx",
+      "txt",
+      "md",
+      "rtf",
+      "xls",
+      "xlsx",
+      "csv",
+      "tsv",
+      "ppt",
+      "pptx",
+      "jpg",
+      "jpeg",
+      "png",
+      "gif",
+      "bmp",
+      "zip",
+      "rar",
+      "7z",
+      "tar",
+      "gz",
+      "bz2",
+      "xz",
+      "tgz",
+      "html",
+      "xml",
+      "json",
+      "py",
+      "ipynb",
+      "parquet"
+    ],
     "MAX_FILE_COUNT": 100,
     "MAX_SINGLE_FILE_SIZE_MB": 100,
     "MAX_CONCURRENT_UPLOADS": 5,
@@ -125,5 +703,116 @@
     "PUBLISH_DONT_SHOW_KEY": "novix.publish.dontShowIntro",
     "contactEmail": "yasmine_li@novix.science",
     "discordInvite": "https://discord.com/invite/J6ws3Pj49k"
-  }
+  },
+  "liveCapture": {
+    "date": "2026-10-17",
+    "bundle": "index-ykYPt_W7.js",
+    "bundleSha256": "c647c1aa806f6788b6936ede0b29915a3827989de93eb3257834c0a626c74382",
+    "source": "https://novix.science/static/js/index-ykYPt_W7.js"
+  },
+  "counts": {
+    "total": 91,
+    "liveObserved": 69,
+    "repoOnly": 22
+  },
+  "liveObservedEndpoints": [
+    "POST /user/login",
+    "POST /user/emailSignUp",
+    "GET /user/sendEmailAuthCode",
+    "POST /user/resetPassword",
+    "POST /user/getUserInfo",
+    "POST /user/getUserCreditInfo",
+    "POST /user/getUserCreditUsage",
+    "POST /user/workspace/init",
+    "GET /user/workspace/interest",
+    "GET /user/feature_white_list/enabled",
+    "GET /site-config/public",
+    "POST /chat_session/create",
+    "POST /chat_session/create_anonymous",
+    "GET /chat_session/list",
+    "GET /chat_session/active",
+    "GET /chat_session/message/list",
+    "GET /chat_session/status",
+    "POST /chat_session/share",
+    "POST /chat_session/bind_anonymous",
+    "POST /chat_session/rename",
+    "POST /chat_session/delete",
+    "GET /chat_session/workspace",
+    "POST /chat_session/workspace/subtree",
+    "GET /chat_session/workspace/download_workspace_url",
+    "GET /chat_session/workspace/home_files",
+    "POST /chat_session/workspace/home_file_preview",
+    "POST /chat_session/workspace/user_upload/delete",
+    "POST /chat_session/workspace/user_workspace/subtree",
+    "POST /task/create_task",
+    "POST /task/create_anonymous_task",
+    "POST /task/create_internal_task_with_signature",
+    "GET /task/get_task",
+    "POST /task/submit_user_question",
+    "POST /call_agent",
+    "GET /agents",
+    "POST /file/batch_temp_urls",
+    "POST /file/upload_stream",
+    "POST /file/upload_complete",
+    "GET /file/temp_url",
+    "GET /file/download",
+    "GET /oss/getSTSToken",
+    "POST /published/item/publish",
+    "GET /published/item/publish/access",
+    "GET /published/revision/{revisionId}/session",
+    "GET /published/revision/{revisionId}/task",
+    "POST /published/revision/{revisionId}/workspace/subtree",
+    "POST /published/revision/{revisionId}/fork",
+    "GET /get_searchHistory",
+    "POST /credit/upgrade_plan",
+    "POST /credit/subscription/upgrade",
+    "GET /credit/list",
+    "GET /credit/billing-statements",
+    "POST /credit/cancel",
+    "POST /credit/invite",
+    "GET /credit/one-time-plans",
+    "POST /credit/join",
+    "POST /credit/remove",
+    "GET /notification/list",
+    "GET /notification/latest",
+    "GET /notification/version-history",
+    "GET /auto_ideaspark/ideas",
+    "POST /auto_ideaspark/modify",
+    "POST /login",
+    "POST /auto_ideaspark/trigger",
+    "POST /task/cancel/:taskId",
+    "GET /sandbox_processes/:user_id/:session_id",
+    "GET /history_updates/:user_id/:session_id",
+    "POST /user/ackOnboardingMilestone",
+    "POST /credit/list"
+  ],
+  "repoImplementationOnlyEndpoints": [
+    "GET /user/getAvailableCoupons",
+    "GET /account/info",
+    "POST /account/upgrade",
+    "POST /home/novix/workspace",
+    "POST /search",
+    "GET /referral/me",
+    "POST /likeTask",
+    "GET /getTaskFeedback",
+    "GET /gallery/list",
+    "GET /models",
+    "POST /task/start_code_agent",
+    "GET /gpu/balance",
+    "GET /gpu/byo/list",
+    "GET /gpu/health",
+    "GET /gpu/status/:taskId",
+    "POST /gpu/byo/register",
+    "POST /gpu/cancel/:taskId",
+    "POST /gpu/estimate",
+    "POST /gpu/rent",
+    "POST /file/putToGcs",
+    "POST /published/item/withdraw",
+    "GET /published/revision/{revisionId}/workspace/subtree"
+  ],
+  "auth": {
+    "livePublicObservation": "Login gate observed on account/workspace routes; token shape not re-tested on 2026-10-17.",
+    "localImplementation": "HS256 JWT bearer + anonymous fingerprint header; not an upstream token-compatibility claim."
+  },
+  "evidencePolicy": "observed = public bundle string or public DOM/network metadata; inference = local engineering judgment. No authenticated response bodies were captured in this pass."
 }

@@ -1,0 +1,5182 @@
+{
+  "capturedAt": "2026-10-17T13:01:17.695Z",
+  "base": "https://novix.science",
+  "method": "Playwright headless; domcontentloaded + 1500ms bounded settle; no auth; response bodies never read.",
+  "routeCount": 27,
+  "results": [
+    {
+      "requestedPath": "/",
+      "finalUrl": "https://novix.science/",
+      "httpStatus": 200,
+      "responseUrl": "https://novix.science/",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:07.623Z",
+      "elapsedMs": 5892,
+      "screenshot": "screenshots/root.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix - The AI Agentic Co-Scientist for Scientific Research",
+      "lang": "en",
+      "bodyText": "Novix Pub Blog Docs Pricing Contact join the global community Join Explore the Frontier with Intelligence That Evolves Your agentic research lab learns from your judgment, discovers new directions, and evolves with every research cycle. Start Exploring Trusted by researchers from Cutting the research clutter You set the goal, the agent does the rest Novel Idea Generation Generate breakthrough research hypotheses by analyzing patterns across thousands of papers and identifying unexplored connections between different scientific domains. Deep Survey Automatically scan, synthesize and summarize vast amounts of scientific literature to understand current knowledge gaps and emerging research trends. Method Design Report Create comprehensive experimental protocols with detailed methodologies, statistical approaches, and validation frameworks tailored to your research objectives. Data Analysis Perform sophisticated statistical analysis, pattern recognition, and data mining to extract meaningful insights. Plot Generation Create publication-ready visualizations, interactive charts, and scientific figures with automated styling and formatting. Model Implementation Build, train, and optimize machine learning models with automated hyperparameter tuning and performance evaluation for scientific applications. Join us to co-build the Agentic Researcher Add your tools, models and dataset as plugins to reach scientists cross the globe. Earn revenue-share, early-access credits, and a direct voice in our roadmap. Join co-build program today Ready to accelerate your research? Get Started Novix Company Blog Pub Docs Contact Discord Twitter Github Legal Privacy Policy Terms of Service",
+      "bodyTextLength": 1693,
+      "navLinks": [
+        {
+          "text": "Novix",
+          "href": "https://novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Pub",
+          "href": "https://pub.novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Blog",
+          "href": "https://blog.novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Docs",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Pricing",
+          "href": "https://novix.science/account/upgrade",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Contact",
+          "href": "https://novix.science/contact",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "X",
+          "href": "https://x.com/novix_science",
+          "ariaLabel": "X",
+          "title": "Follow us on X"
+        },
+        {
+          "text": "Discord",
+          "href": "https://discord.com/invite/J6ws3Pj49k",
+          "ariaLabel": "Discord",
+          "title": "Join our Discord"
+        },
+        {
+          "text": "GitHub",
+          "href": "https://github.com/HKUDS/AI-Researcher",
+          "ariaLabel": "GitHub",
+          "title": "View on GitHub"
+        },
+        {
+          "text": "Start Exploring",
+          "href": "https://novix.science/chat",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Get Started",
+          "href": "https://novix.science/chat",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Blog",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Pub",
+          "href": "https://pub.novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Docs",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Discord",
+          "href": "https://discord.com/invite/J6ws3Pj49k",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Twitter",
+          "href": "https://x.com/novix_science",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Github",
+          "href": "https://github.com/HKUDS/AI-Researcher",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Privacy Policy",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Terms of Service",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [],
+      "inputs": [],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Explore the Frontier with Intelligence That Evolves"
+        },
+        {
+          "tag": "h3",
+          "text": "Trusted by researchers from"
+        },
+        {
+          "tag": "h2",
+          "text": "Cutting the research clutter You set the goal, the agent does the rest"
+        },
+        {
+          "tag": "h2",
+          "text": "Ready to accelerate your research?"
+        },
+        {
+          "tag": "h3",
+          "text": "Novix"
+        },
+        {
+          "tag": "h3",
+          "text": "Company"
+        },
+        {
+          "tag": "h3",
+          "text": "Contact"
+        },
+        {
+          "tag": "h3",
+          "text": "Legal"
+        }
+      ],
+      "documentReadyState": "interactive",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/chat",
+      "finalUrl": "https://novix.science/chat",
+      "httpStatus": 200,
+      "responseUrl": "https://novix.science/chat/index.html",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:13.547Z",
+      "elapsedMs": 2704,
+      "screenshot": "screenshots/chat.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "AI Research Chat - Talk to Your AI Co-Scientist | Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Agentic Workspace for Research Auto Pilot Deep Survey Idea Spark Method Design Auto Experiment Data Analysis Reproduce Paper Deep Tutor Soon Draw Plot Soon Try: World models for physical AI RLVR and reasoning models AI-driven protein design Upload file CPU GPU Task mode Discuss mode CASE GALLERY World models for embodied intelligence and robotics Idea Spark Benchmark Gated Attention mechanism on a small Transformer Auto Experiment RLVR paradigm from DeepSeek-R1 to scientific reasoning Deep Survey Design a multi-agent AI co-scientist research system Method Design Mechanistic interpretability for AI safety auditing Idea Spark NOAA AI weather models vs traditional NWP accuracy Data Analysis",
+      "bodyTextLength": 702,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "CPU",
+          "off": false
+        },
+        {
+          "text": "GPU",
+          "off": false
+        },
+        {
+          "text": "Task mode",
+          "off": false
+        },
+        {
+          "text": "Discuss mode",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "textarea",
+          "type": null,
+          "name": null,
+          "placeholder": "Ask anything about your research...",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "interactive",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/deepsurvey",
+      "finalUrl": "https://novix.science/deepsurvey",
+      "httpStatus": 200,
+      "responseUrl": "https://novix.science/deepsurvey/index.html",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:16.281Z",
+      "elapsedMs": 2781,
+      "screenshot": "screenshots/deepsurvey.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod",
+          "status": 200
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Deep Survey - AI-Powered Literature Survey | Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Conduct in-depth literature surveys Auto Pilot Deep Survey Idea Spark Method Design Auto Experiment Data Analysis Reproduce Paper Deep Tutor Soon Draw Plot Soon 5 years Focus Format paper report ppt Upload file CPU GPU Task mode Discuss mode CASE GALLERY RLVR paradigm from DeepSeek-R1 to medical domains Deep Survey World models for robotics and autonomous systems Deep Survey Mechanistic interpretability of LLMs for safety evaluation Deep Survey Million-scale AI protein binder design and validation Deep Survey Test-time compute scaling for vision and multimodal models Deep Survey AI-powered weather and climate modeling at scale Deep Survey",
+      "bodyTextLength": 652,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "5 years",
+          "off": false
+        },
+        {
+          "text": "Focus",
+          "off": false
+        },
+        {
+          "text": "CPU",
+          "off": false
+        },
+        {
+          "text": "GPU",
+          "off": false
+        },
+        {
+          "text": "Task mode",
+          "off": false
+        },
+        {
+          "text": "Discuss mode",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "textarea",
+          "type": null,
+          "name": null,
+          "placeholder": "What topic do you want to survey?",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "interactive",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/ideaspark",
+      "finalUrl": "https://novix.science/ideaspark",
+      "httpStatus": 200,
+      "responseUrl": "https://novix.science/ideaspark/index.html",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:19.091Z",
+      "elapsedMs": 2653,
+      "screenshot": "screenshots/ideaspark.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Idea Spark - Generate Novel Research Ideas with AI | Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Generate novel research ideas Auto Pilot Deep Survey Idea Spark Method Design Auto Experiment Data Analysis Reproduce Paper Deep Tutor Soon Draw Plot Soon From Topic From Dataset From Paper Explore a research direction and branch into novel ideas Balanced Upload file CPU GPU Task mode Discuss mode CASE GALLERY World models for embodied intelligence and robotics Idea Spark AI co-scientists as multi-agent research systems Idea Spark Normalization-free Transformers with Dynamic Tanh Idea Spark AI for nuclear fusion plasma control and simulation Idea Spark Vision-Language-Action models for robotic manipulation Idea Spark Neural-guided search for formal theorem proving Idea Spark",
+      "bodyTextLength": 689,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "From Topic",
+          "off": false
+        },
+        {
+          "text": "From Dataset",
+          "off": false
+        },
+        {
+          "text": "From Paper",
+          "off": false
+        },
+        {
+          "text": "Balanced",
+          "off": false
+        },
+        {
+          "text": "CPU",
+          "off": false
+        },
+        {
+          "text": "GPU",
+          "off": false
+        },
+        {
+          "text": "Task mode",
+          "off": false
+        },
+        {
+          "text": "Discuss mode",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "textarea",
+          "type": null,
+          "name": null,
+          "placeholder": "e.g. \"Liquid neural networks for time-series forecasting\"",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "interactive",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/methoddesign",
+      "finalUrl": "https://novix.science/methoddesign",
+      "httpStatus": 200,
+      "responseUrl": "https://novix.science/methoddesign/index.html",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:21.774Z",
+      "elapsedMs": 2572,
+      "screenshot": "screenshots/methoddesign.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Method Design - AI Research Methodology Designer | Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Design methods and experimental plans Auto Pilot Deep Survey Idea Spark Method Design Auto Experiment Data Analysis Reproduce Paper Deep Tutor Soon Draw Plot Soon Field Constraints Output paper report ppt Upload file CPU GPU Task mode Discuss mode CASE GALLERY Multi-agent system with verifiable cross-checked reasoning Method Design Detect and mitigate the LLM artificial hivemind effect Method Design Benchmark world models on physical reasoning tasks Method Design AI-in-the-loop pipeline for autonomous protein binder design Method Design Mechanistic interpretability audit for medical AI safety Method Design Federated foundation model for multi-hospital psychiatric data Method Design",
+      "bodyTextLength": 696,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Field",
+          "off": false
+        },
+        {
+          "text": "Constraints",
+          "off": false
+        },
+        {
+          "text": "CPU",
+          "off": false
+        },
+        {
+          "text": "GPU",
+          "off": false
+        },
+        {
+          "text": "Task mode",
+          "off": false
+        },
+        {
+          "text": "Discuss mode",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "textarea",
+          "type": null,
+          "name": null,
+          "placeholder": "Describe your research goals...",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "interactive",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/autoexperiment",
+      "finalUrl": "https://novix.science/autoexperiment",
+      "httpStatus": 200,
+      "responseUrl": "https://novix.science/autoexperiment/index.html",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:24.376Z",
+      "elapsedMs": 2862,
+      "screenshot": "screenshots/autoexperiment.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Auto Experiment - Automate Scientific Experiments with AI | Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Build and test any algorithm Auto Pilot Deep Survey Idea Spark Method Design Auto Experiment Data Analysis Reproduce Paper Deep Tutor Soon Draw Plot Soon Data Metric Upload file CPU GPU Task mode Discuss mode CASE GALLERY Dynamic Tanh vs LayerNorm training stability on CIFAR-10 Auto Experiment Compare open reasoning models on GSM8K and MATH Auto Experiment Gated Attention on a 2-layer Transformer for text classification Auto Experiment Sparse autoencoder for LLM residual stream interpretability Auto Experiment Mamba-2 selective scan vs FlashAttention-2 throughput Auto Experiment ColPali late-interaction retrieval on scientific documents Auto Experiment",
+      "bodyTextLength": 666,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Data",
+          "off": false
+        },
+        {
+          "text": "Metric",
+          "off": false
+        },
+        {
+          "text": "CPU",
+          "off": false
+        },
+        {
+          "text": "GPU",
+          "off": false
+        },
+        {
+          "text": "Task mode",
+          "off": false
+        },
+        {
+          "text": "Discuss mode",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "textarea",
+          "type": null,
+          "name": null,
+          "placeholder": "What experiment to run?",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "interactive",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/notebook",
+      "finalUrl": "https://novix.science/notebook",
+      "httpStatus": 200,
+      "responseUrl": "https://novix.science/notebook/index.html",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:27.268Z",
+      "elapsedMs": 2672,
+      "screenshot": "screenshots/notebook.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Research Notebook - AI Jupyter Notebook Assistant | Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Analyze and visualize any data Auto Pilot Deep Survey Idea Spark Method Design Auto Experiment Data Analysis Reproduce Paper Deep Tutor Soon Draw Plot Soon Data Library Output Upload file CPU GPU Task mode Discuss mode CASE GALLERY ICLR 2026 submission trends and topic distribution Data Analysis Global AI compute demand growth vs energy consumption Data Analysis AI-discovered drug candidates in clinical trials dashboard Data Analysis NOAA AI vs traditional weather forecast accuracy comparison Data Analysis WHO global antimicrobial resistance surveillance trends Data Analysis Open-weight vs proprietary LLM cost-performance frontier Data Analysis",
+      "bodyTextLength": 658,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Data",
+          "off": false
+        },
+        {
+          "text": "Library",
+          "off": false
+        },
+        {
+          "text": "Output",
+          "off": false
+        },
+        {
+          "text": "CPU",
+          "off": false
+        },
+        {
+          "text": "GPU",
+          "off": false
+        },
+        {
+          "text": "Task mode",
+          "off": false
+        },
+        {
+          "text": "Discuss mode",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "textarea",
+          "type": null,
+          "name": null,
+          "placeholder": "What do you want to analyze?",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/reproduce",
+      "finalUrl": "https://novix.science/reproduce",
+      "httpStatus": 200,
+      "responseUrl": "https://novix.science/reproduce/index.html",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:29.972Z",
+      "elapsedMs": 2675,
+      "screenshot": "screenshots/reproduce.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "POST",
+          "url": "https://f.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Reproduce Paper - Replicate Published Research with AI | Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Reproduce results from any paper Auto Pilot Deep Survey Idea Spark Method Design Auto Experiment Data Analysis Reproduce Paper Deep Tutor Soon Draw Plot Soon Scope Framework Upload file CPU GPU Task mode Discuss mode CASE GALLERY Gated Attention from NeurIPS 2025 Best Paper on WikiText-103 Reproduce Paper Dynamic Tanh replacing LayerNorm in ViT-Small on ImageNet Reproduce Paper DeepSeek-R1 GRPO vs PPO ablations on math reasoning Reproduce Paper Goedel-Prover-V2 on the MiniF2F benchmark Reproduce Paper",
+      "bodyTextLength": 512,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Scope",
+          "off": false
+        },
+        {
+          "text": "Framework",
+          "off": false
+        },
+        {
+          "text": "CPU",
+          "off": false
+        },
+        {
+          "text": "GPU",
+          "off": false
+        },
+        {
+          "text": "Task mode",
+          "off": false
+        },
+        {
+          "text": "Discuss mode",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Paste paper URL or DOI",
+          "off": false
+        },
+        {
+          "tag": "textarea",
+          "type": null,
+          "name": null,
+          "placeholder": "Which experiments to reproduce? Any modifications?",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/auto-discovery",
+      "finalUrl": "https://novix.science/chat",
+      "httpStatus": 404,
+      "responseUrl": "https://novix.science/auto-discovery",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:32.679Z",
+      "elapsedMs": 2244,
+      "screenshot": "screenshots/auto-discovery.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "AI Research Chat - Talk to Your AI Co-Scientist | Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Agentic Workspace for Research Auto Pilot Deep Survey Idea Spark Method Design Auto Experiment Data Analysis Reproduce Paper Deep Tutor Soon Draw Plot Soon Try: World models for physical AI RLVR and reasoning models AI-driven protein design Upload file CPU GPU Task mode Discuss mode CASE GALLERY World models for embodied intelligence and robotics Idea Spark Benchmark Gated Attention mechanism on a small Transformer Auto Experiment RLVR paradigm from DeepSeek-R1 to scientific reasoning Deep Survey Design a multi-agent AI co-scientist research system Method Design Mechanistic interpretability for AI safety auditing Idea Spark NOAA AI weather models vs traditional NWP accuracy Data Analysis",
+      "bodyTextLength": 702,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "CPU",
+          "off": false
+        },
+        {
+          "text": "GPU",
+          "off": false
+        },
+        {
+          "text": "Task mode",
+          "off": false
+        },
+        {
+          "text": "Discuss mode",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "textarea",
+          "type": null,
+          "name": null,
+          "placeholder": "Ask anything about your research...",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/account",
+      "finalUrl": "https://novix.science/account/upgrade",
+      "httpStatus": 404,
+      "responseUrl": "https://novix.science/account",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:34.955Z",
+      "elapsedMs": 2361,
+      "screenshot": "screenshots/account.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/user/getAvailableCoupons"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/user/getAvailableCoupons",
+          "status": 401
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Subscription Credit & Usage Billing & Invoices Referrals Profile Version History Upgrade your plan Monthly Pay Once Lite $ 8 / month $12/month Get Lite 200 credits / month Full access to Deep Survey Full access to Idea Spark Full access to Method Design Full access to Data Analysis Full access to Reproduce Paper Access to Advanced Auto Experiment Early access to new agents & features Be part of the Novix Scientist Community, get connected with global top scientists Pro $ 26 / month $35/month Get Pro 800 credits / month Full access to Deep Survey Full access to Idea Spark Full access to Method Design Full access to Data Analysis Full access to Reproduce Paper Access to Advanced Auto Experiment Early access to new agents & features Be part of the Novix Scientist Community, get connected with global top scientists Ultra $ 230 / month $350/month Get Ultra 10000 credits / month Full access to Deep Survey Full access to Idea Spark Full access to Method Design Full access to Data Analysis Full access to Reproduce Paper Access to Advanced Auto Experiment Early access to new agents & features Be part of the Novix Scientist Community, get connected with global top scientists Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up",
+      "bodyTextLength": 1461,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        },
+        {
+          "text": "Subscription",
+          "href": "https://novix.science/account/upgrade",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Credit & Usage",
+          "href": "https://novix.science/account/credit",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Billing & Invoices",
+          "href": "https://novix.science/account/billing",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Referrals",
+          "href": "https://novix.science/account/referrals",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Profile",
+          "href": "https://novix.science/account/info",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Version History",
+          "href": "https://novix.science/account/version-history",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Monthly",
+          "off": false
+        },
+        {
+          "text": "Pay Once",
+          "off": false
+        },
+        {
+          "text": "Get Lite",
+          "off": false
+        },
+        {
+          "text": "Get Pro",
+          "off": false
+        },
+        {
+          "text": "Get Ultra",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/account/upgrade",
+      "finalUrl": "https://novix.science/account/upgrade",
+      "httpStatus": 404,
+      "responseUrl": "https://novix.science/account/upgrade",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:37.346Z",
+      "elapsedMs": 2094,
+      "screenshot": "screenshots/account_upgrade.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/user/getAvailableCoupons"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/user/getAvailableCoupons",
+          "status": 401
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Subscription Credit & Usage Billing & Invoices Referrals Profile Version History Upgrade your plan Monthly Pay Once Lite $ 8 / month $12/month Get Lite 200 credits / month Full access to Deep Survey Full access to Idea Spark Full access to Method Design Full access to Data Analysis Full access to Reproduce Paper Access to Advanced Auto Experiment Early access to new agents & features Be part of the Novix Scientist Community, get connected with global top scientists Pro $ 26 / month $35/month Get Pro 800 credits / month Full access to Deep Survey Full access to Idea Spark Full access to Method Design Full access to Data Analysis Full access to Reproduce Paper Access to Advanced Auto Experiment Early access to new agents & features Be part of the Novix Scientist Community, get connected with global top scientists Ultra $ 230 / month $350/month Get Ultra 10000 credits / month Full access to Deep Survey Full access to Idea Spark Full access to Method Design Full access to Data Analysis Full access to Reproduce Paper Access to Advanced Auto Experiment Early access to new agents & features Be part of the Novix Scientist Community, get connected with global top scientists Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up",
+      "bodyTextLength": 1461,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        },
+        {
+          "text": "Subscription",
+          "href": "https://novix.science/account/upgrade",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Credit & Usage",
+          "href": "https://novix.science/account/credit",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Billing & Invoices",
+          "href": "https://novix.science/account/billing",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Referrals",
+          "href": "https://novix.science/account/referrals",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Profile",
+          "href": "https://novix.science/account/info",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Version History",
+          "href": "https://novix.science/account/version-history",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Monthly",
+          "off": false
+        },
+        {
+          "text": "Pay Once",
+          "off": false
+        },
+        {
+          "text": "Get Lite",
+          "off": false
+        },
+        {
+          "text": "Get Pro",
+          "off": false
+        },
+        {
+          "text": "Get Ultra",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/account/credit",
+      "finalUrl": "https://novix.science/account/credit",
+      "httpStatus": 404,
+      "responseUrl": "https://novix.science/account/credit",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:39.473Z",
+      "elapsedMs": 2212,
+      "screenshot": "screenshots/account_credit.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Subscription Credit & Usage Billing & Invoices Referrals Profile Version History Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up",
+      "bodyTextLength": 346,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        },
+        {
+          "text": "Subscription",
+          "href": "https://novix.science/account/upgrade",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Credit & Usage",
+          "href": "https://novix.science/account/credit",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Billing & Invoices",
+          "href": "https://novix.science/account/billing",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Referrals",
+          "href": "https://novix.science/account/referrals",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Profile",
+          "href": "https://novix.science/account/info",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Version History",
+          "href": "https://novix.science/account/version-history",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/account/billing",
+      "finalUrl": "https://novix.science/account/billing",
+      "httpStatus": 404,
+      "responseUrl": "https://novix.science/account/billing",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:41.716Z",
+      "elapsedMs": 2205,
+      "screenshot": "screenshots/account_billing.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Subscription Credit & Usage Billing & Invoices Referrals Profile Version History Log in to view your billing information. Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up",
+      "bodyTextLength": 389,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        },
+        {
+          "text": "Subscription",
+          "href": "https://novix.science/account/upgrade",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Credit & Usage",
+          "href": "https://novix.science/account/credit",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Billing & Invoices",
+          "href": "https://novix.science/account/billing",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Referrals",
+          "href": "https://novix.science/account/referrals",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Profile",
+          "href": "https://novix.science/account/info",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Version History",
+          "href": "https://novix.science/account/version-history",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/account/referrals",
+      "finalUrl": "https://novix.science/account/referrals",
+      "httpStatus": 404,
+      "responseUrl": "https://novix.science/account/referrals",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:43.953Z",
+      "elapsedMs": 2141,
+      "screenshot": "screenshots/account_referrals.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/referral/me"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/referral/me",
+          "status": 401
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Subscription Credit & Usage Billing & Invoices Referrals Profile Version History Referrals Invited users 0 First payments 0 Your invitation code - Copy code Invitation link - Copy link Earn 30 credits when a friend signs up with your invitation code. Earn 100 credits when that friend makes their first payment. Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up",
+      "bodyTextLength": 577,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        },
+        {
+          "text": "Subscription",
+          "href": "https://novix.science/account/upgrade",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Credit & Usage",
+          "href": "https://novix.science/account/credit",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Billing & Invoices",
+          "href": "https://novix.science/account/billing",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Referrals",
+          "href": "https://novix.science/account/referrals",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Profile",
+          "href": "https://novix.science/account/info",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Version History",
+          "href": "https://novix.science/account/version-history",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Copy code",
+          "off": true
+        },
+        {
+          "text": "Copy link",
+          "off": true
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/account/info",
+      "finalUrl": "https://novix.science/account/info",
+      "httpStatus": 404,
+      "responseUrl": "https://novix.science/account/info",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:46.125Z",
+      "elapsedMs": 2183,
+      "screenshot": "screenshots/account_info.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Subscription Credit & Usage Billing & Invoices Referrals Profile Version History Account Information Sign in with Unknown Account email Log out Novix Community Novix Global Researcher Community - Engage in global peer discussions - Get early access to Novix beta features - Co-build Novix alongside our team - Enjoy exclusive surprise discounts released from time to time How to join Join one of the Novix community to stay connected Join Discord Group Join WeChat Group Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up",
+      "bodyTextLength": 736,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        },
+        {
+          "text": "Subscription",
+          "href": "https://novix.science/account/upgrade",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Credit & Usage",
+          "href": "https://novix.science/account/credit",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Billing & Invoices",
+          "href": "https://novix.science/account/billing",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Referrals",
+          "href": "https://novix.science/account/referrals",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Profile",
+          "href": "https://novix.science/account/info",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Version History",
+          "href": "https://novix.science/account/version-history",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Log out",
+          "off": false
+        },
+        {
+          "text": "Join Discord Group",
+          "off": false
+        },
+        {
+          "text": "Join WeChat Group",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/account/version-history",
+      "finalUrl": "https://novix.science/account/version-history",
+      "httpStatus": 404,
+      "responseUrl": "https://novix.science/account/version-history",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:48.340Z",
+      "elapsedMs": 2085,
+      "screenshot": "screenshots/account_version-history.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/version-history"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/version-history",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Subscription Credit & Usage Billing & Invoices Referrals Profile Version History Version History All product updates and release notes 2026-09-01 Model update A New Version Is Available We’ve released a new version of Novix with the latest improvements and fixes. Please refresh this page to load the update and ensure everything works correctly. Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up",
+      "bodyTextLength": 617,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        },
+        {
+          "text": "Subscription",
+          "href": "https://novix.science/account/upgrade",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Credit & Usage",
+          "href": "https://novix.science/account/credit",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Billing & Invoices",
+          "href": "https://novix.science/account/billing",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Referrals",
+          "href": "https://novix.science/account/referrals",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Profile",
+          "href": "https://novix.science/account/info",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Version History",
+          "href": "https://novix.science/account/version-history",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        }
+      ],
+      "headings": [
+        {
+          "tag": "h2",
+          "text": "Version History"
+        },
+        {
+          "tag": "h3",
+          "text": "Model update"
+        }
+      ],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/account/community",
+      "finalUrl": "https://novix.science/account/info",
+      "httpStatus": 404,
+      "responseUrl": "https://novix.science/account/community",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:50.456Z",
+      "elapsedMs": 2082,
+      "screenshot": "screenshots/account_community.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Subscription Credit & Usage Billing & Invoices Referrals Profile Version History Account Information Sign in with Unknown Account email Log out Novix Community Novix Global Researcher Community - Engage in global peer discussions - Get early access to Novix beta features - Co-build Novix alongside our team - Enjoy exclusive surprise discounts released from time to time How to join Join one of the Novix community to stay connected Join Discord Group Join WeChat Group Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up",
+      "bodyTextLength": 736,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        },
+        {
+          "text": "Subscription",
+          "href": "https://novix.science/account/upgrade",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Credit & Usage",
+          "href": "https://novix.science/account/credit",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Billing & Invoices",
+          "href": "https://novix.science/account/billing",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Referrals",
+          "href": "https://novix.science/account/referrals",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Profile",
+          "href": "https://novix.science/account/info",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Version History",
+          "href": "https://novix.science/account/version-history",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Log out",
+          "off": false
+        },
+        {
+          "text": "Join Discord Group",
+          "off": false
+        },
+        {
+          "text": "Join WeChat Group",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/privacy",
+      "finalUrl": "https://novix.science/privacy",
+      "httpStatus": 200,
+      "responseUrl": "https://novix.science/privacy/index.html",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:52.570Z",
+      "elapsedMs": 2750,
+      "screenshot": "screenshots/privacy.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Privacy Policy | Novix",
+      "lang": "en",
+      "bodyText": "Novix Pub Blog Docs Pricing Contact Privacy Policy Last updated: March 26, 2026 Welcome to Novix (\"we,\" \"us,\" or \"our\"). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-powered scientific research platform at novix.science (the \"Service\"). Please read this policy carefully. By accessing or using the Service, you agree to the practices described herein. 1. Information We Collect 1.1 Account Information When you create an account, we collect your name, email address, and authentication credentials. If you sign in through a third-party provider (e.g., Google, GitHub), we receive basic profile information from that provider. 1.2 Research Data When you use our research tools — including Deep Survey, Idea Spark, Method Design, and other AI-powered features — we collect the queries, prompts, uploaded documents, and any other content you submit to the Service (\"Research Data\"). 1.3 Usage Data We automatically collect information about how you interact with the Service, including pages visited, features used, timestamps, device type, browser type, IP address, and referring URLs. 1.4 AI Interaction Data We collect data related to your interactions with our AI agents, including conversation logs, generated outputs, and feedback you provide on AI-generated content. This data is used to improve the quality and accuracy of our AI models. 2. How We Use Your Information We use the information we collect to: Provide, maintain, and improve the Service and its AI-powered research tools; Process and respond to your research queries and generate relevant outputs; Personalize your experience and deliver content tailored to your research interests; Improve and train our AI models to enhance accuracy and relevance; Communicate with you about updates, security alerts, and support messages; Monitor and analyze usage trends to improve the Service; Detect, prevent, and address technical issues, fraud, or security concerns. 3. Data Storage and Security We implement industry-standard technical and organizational measures to protect your data against unauthorized access, alteration, disclosure, or destruction. These measures include encryption in transit and at rest, access controls, and regular security assessments. Your data is stored on secure servers. While we strive to use commercially acceptable means to protect your information, no method of transmission over the Internet or electronic storage is 100% secure, and we cannot guarantee absolute security. 4. Third-Party Services We may use third-party services for analytics, hosting, payment processing, and other operational purposes. These third parties have access to your information only to perform tasks on our behalf and are obligated to protect it in accordance with this Privacy Policy. The Service may contain links to third-party websites or services. We are not responsible for the privacy practices of these external sites, and we encourage you to review their privacy policies. 5. Your Rights Depending on your location, you may have the following rights regarding your personal data: Access: Request a copy of the personal data we hold about you. Correction: Request correction of inaccurate or incomplete data. Deletion: Request deletion of your personal data, subject to certain exceptions. Portability: Request a copy of your data in a structured, machine-readable format. Objection: Object to certain processing activities, including direct marketing. Restriction: Request restriction of processing in certain circumstances. To exercise any of these rights, please contact us through the \"Support\" feature available in the Novix app. We will respond to your request within 30 days. 6. AI-Specific Disclosures Our Service uses artificial intelligence to process your research queries and generate outputs. Please be aware of the following: Research inputs you submit may be processed by AI models to generate responses and improve service quality. We may use anonymized and aggregated interaction data to train and improve our AI models. AI-generated content is provided for informational and research purposes only and should not be considered as professional advice. You retain ownership of your original Research Data. AI-generated outputs are subject to our Terms of Service. 7. Data Retention We retain your personal data for as long as your account is active or as needed to provide the Service. We may also retain certain information as required by law or for legitimate business purposes, such as resolving disputes and enforcing our agreements. When data is no longer needed, we will securely delete or anonymize it. 8. Cookies and Tracking Technologies We use cookies and similar tracking technologies to enhance your experience, analyze usage patterns, and deliver personalized content. You can control cookie preferences through your browser settings. Please note that disabling cookies may affect certain features of the Service. 9. Children's Privacy The Service is not intended for individuals under the age of 16. We do not knowingly collect personal data from children. If we become aware that we have collected data from a child under 16, we will take steps to delete such information promptly. 10. Changes to This Policy We may update this Privacy Policy from time to time. We will notify you of material changes by posting the updated policy on this page and updating the \"Last updated\" date. Your continued use of the Service after any changes constitutes acceptance of the updated policy. 11. Contact Us If you have any questions about this Privacy Policy or our data practices, please reach out through the \"Support\" feature in the Novix app, email us at yasmine_li@novix.science, or contact us via our Discord community. Novix Company Blog Pub Docs Contact Discord Twitter Github Legal Privacy Policy Terms of Service",
+      "bodyTextLength": 5925,
+      "navLinks": [
+        {
+          "text": "Novix",
+          "href": "https://novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Pub",
+          "href": "https://pub.novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Blog",
+          "href": "https://blog.novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Docs",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Pricing",
+          "href": "https://novix.science/account/upgrade",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Contact",
+          "href": "https://novix.science/contact",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "X",
+          "href": "https://x.com/novix_science",
+          "ariaLabel": "X",
+          "title": "Follow us on X"
+        },
+        {
+          "text": "Discord",
+          "href": "https://discord.com/invite/J6ws3Pj49k",
+          "ariaLabel": "Discord",
+          "title": "Join our Discord"
+        },
+        {
+          "text": "GitHub",
+          "href": "https://github.com/HKUDS/AI-Researcher",
+          "ariaLabel": "GitHub",
+          "title": "View on GitHub"
+        },
+        {
+          "text": "yasmine_li@novix.science",
+          "href": "mailto:yasmine_li@novix.science",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Discord community",
+          "href": "https://discord.com/invite/J6ws3Pj49k",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Blog",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Pub",
+          "href": "https://pub.novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Docs",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Discord",
+          "href": "https://discord.com/invite/J6ws3Pj49k",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Twitter",
+          "href": "https://x.com/novix_science",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Github",
+          "href": "https://github.com/HKUDS/AI-Researcher",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Privacy Policy",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Terms of Service",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [],
+      "inputs": [],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Privacy Policy"
+        },
+        {
+          "tag": "h2",
+          "text": "1. Information We Collect"
+        },
+        {
+          "tag": "h3",
+          "text": "1.1 Account Information"
+        },
+        {
+          "tag": "h3",
+          "text": "1.2 Research Data"
+        },
+        {
+          "tag": "h3",
+          "text": "1.3 Usage Data"
+        },
+        {
+          "tag": "h3",
+          "text": "1.4 AI Interaction Data"
+        },
+        {
+          "tag": "h2",
+          "text": "2. How We Use Your Information"
+        },
+        {
+          "tag": "h2",
+          "text": "3. Data Storage and Security"
+        },
+        {
+          "tag": "h2",
+          "text": "4. Third-Party Services"
+        },
+        {
+          "tag": "h2",
+          "text": "5. Your Rights"
+        },
+        {
+          "tag": "h2",
+          "text": "6. AI-Specific Disclosures"
+        },
+        {
+          "tag": "h2",
+          "text": "7. Data Retention"
+        },
+        {
+          "tag": "h2",
+          "text": "8. Cookies and Tracking Technologies"
+        },
+        {
+          "tag": "h2",
+          "text": "9. Children's Privacy"
+        },
+        {
+          "tag": "h2",
+          "text": "10. Changes to This Policy"
+        },
+        {
+          "tag": "h2",
+          "text": "11. Contact Us"
+        },
+        {
+          "tag": "h3",
+          "text": "Novix"
+        },
+        {
+          "tag": "h3",
+          "text": "Company"
+        },
+        {
+          "tag": "h3",
+          "text": "Contact"
+        },
+        {
+          "tag": "h3",
+          "text": "Legal"
+        }
+      ],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/terms",
+      "finalUrl": "https://novix.science/terms",
+      "httpStatus": 200,
+      "responseUrl": "https://novix.science/terms/index.html",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:55.350Z",
+      "elapsedMs": 2903,
+      "screenshot": "screenshots/terms.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Terms of Service | Novix",
+      "lang": "en",
+      "bodyText": "Novix Pub Blog Docs Pricing Contact Terms of Service Last updated: March 26, 2026 Welcome to Novix. These Terms of Service (\"Terms\") govern your access to and use of the Novix platform at novix.science (the \"Service\"), operated by Novix (\"we,\" \"us,\" or \"our\"). By accessing or using the Service, you agree to be bound by these Terms. If you do not agree, please do not use the Service. 1. Description of Service Novix is an AI-powered scientific research platform that provides tools including but not limited to Deep Survey, Idea Spark, Method Design, Data Analysis, Plot Generation, and Model Implementation. The Service uses artificial intelligence agents to assist researchers in accelerating their work. We reserve the right to modify, suspend, or discontinue any part of the Service at any time. 2. User Accounts To access certain features of the Service, you must create an account. You agree to: Provide accurate and complete registration information; Maintain the security of your account credentials; Promptly notify us of any unauthorized use of your account; Accept responsibility for all activities that occur under your account. We reserve the right to suspend or terminate accounts that violate these Terms or are inactive for an extended period. 3. Acceptable Use You agree not to use the Service to: Violate any applicable laws, regulations, or third-party rights; Submit content that is unlawful, harmful, threatening, abusive, defamatory, or otherwise objectionable; Attempt to gain unauthorized access to the Service, other accounts, or related systems; Interfere with or disrupt the Service or its underlying infrastructure; Use the Service to generate fraudulent, misleading, or plagiarized research; Reverse engineer, decompile, or attempt to extract the source code of the Service; Use automated tools to scrape, crawl, or extract data from the Service beyond normal usage; Resell, redistribute, or sublicense access to the Service without our written consent. 4. Intellectual Property 4.1 Your Content You retain ownership of the research data, documents, and other content you submit to the Service (\"Your Content\"). By submitting Your Content, you grant us a limited, non-exclusive license to process and use it as necessary to provide the Service. 4.2 AI-Generated Output Content generated by our AI tools (\"AI Output\") is provided to you for your use in connection with your research activities. You may use AI Output in your work, subject to applicable academic integrity standards and citation practices. We do not claim ownership of AI Output generated specifically for you. 4.3 Our Intellectual Property The Service, including its design, features, AI models, algorithms, and underlying technology, is owned by Novix and protected by intellectual property laws. Nothing in these Terms grants you rights to our trademarks, logos, or other brand features. 5. AI-Generated Content Disclaimer The Service uses artificial intelligence to generate research outputs. Please be aware that: AI-generated content may contain inaccuracies, errors, or outdated information; AI outputs should be independently verified before use in academic publications or critical decisions; We do not guarantee the accuracy, completeness, or reliability of any AI-generated content; You are responsible for reviewing and validating all AI outputs before incorporating them into your work; The Service is intended to assist — not replace — human judgment in research activities. 6. Subscription and Payments Certain features of the Service may require a paid subscription. If you purchase a subscription: You agree to pay all applicable fees as described at the time of purchase; Subscriptions may renew automatically unless cancelled before the renewal date; We reserve the right to change pricing with reasonable notice; Refunds are handled in accordance with our refund policy, if applicable. 7. Limitation of Liability To the maximum extent permitted by applicable law: The Service is provided \"as is\" and \"as available\" without warranties of any kind, whether express or implied; We do not warrant that the Service will be uninterrupted, error-free, or secure; We shall not be liable for any indirect, incidental, special, consequential, or punitive damages; Our total liability for any claims arising from your use of the Service shall not exceed the amount you paid us in the 12 months preceding the claim. 8. Indemnification You agree to indemnify, defend, and hold harmless Novix and its officers, directors, employees, and agents from and against any claims, damages, losses, liabilities, and expenses (including reasonable legal fees) arising out of your use of the Service, your violation of these Terms, or your infringement of any third-party rights. 9. Termination We may suspend or terminate your access to the Service at any time, with or without cause, and with or without notice. You may also terminate your account at any time by contacting us. Upon termination, your right to use the Service will immediately cease. Provisions of these Terms that by their nature should survive termination shall remain in effect, including intellectual property, limitation of liability, and indemnification. 10. Governing Law These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which Novix operates, without regard to its conflict of law provisions. Any disputes arising from these Terms or the Service shall be resolved through binding arbitration or in the courts of competent jurisdiction. 11. Changes to These Terms We may update these Terms from time to time. We will notify you of material changes by posting the updated Terms on this page and updating the \"Last updated\" date. Your continued use of the Service after any changes constitutes acceptance of the updated Terms. 12. Contact Us If you have any questions about these Terms, please reach out through the \"Support\" feature in the Novix app, email us at yasmine_li@novix.science, or contact us via our Discord community. Novix Company Blog Pub Docs Contact Discord Twitter Github Legal Privacy Policy Terms of Service",
+      "bodyTextLength": 6173,
+      "navLinks": [
+        {
+          "text": "Novix",
+          "href": "https://novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Pub",
+          "href": "https://pub.novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Blog",
+          "href": "https://blog.novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Docs",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Pricing",
+          "href": "https://novix.science/account/upgrade",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Contact",
+          "href": "https://novix.science/contact",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "X",
+          "href": "https://x.com/novix_science",
+          "ariaLabel": "X",
+          "title": "Follow us on X"
+        },
+        {
+          "text": "Discord",
+          "href": "https://discord.com/invite/J6ws3Pj49k",
+          "ariaLabel": "Discord",
+          "title": "Join our Discord"
+        },
+        {
+          "text": "GitHub",
+          "href": "https://github.com/HKUDS/AI-Researcher",
+          "ariaLabel": "GitHub",
+          "title": "View on GitHub"
+        },
+        {
+          "text": "yasmine_li@novix.science",
+          "href": "mailto:yasmine_li@novix.science",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Discord community",
+          "href": "https://discord.com/invite/J6ws3Pj49k",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Blog",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Pub",
+          "href": "https://pub.novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Docs",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Discord",
+          "href": "https://discord.com/invite/J6ws3Pj49k",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Twitter",
+          "href": "https://x.com/novix_science",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Github",
+          "href": "https://github.com/HKUDS/AI-Researcher",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Privacy Policy",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Terms of Service",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [],
+      "inputs": [],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Terms of Service"
+        },
+        {
+          "tag": "h2",
+          "text": "1. Description of Service"
+        },
+        {
+          "tag": "h2",
+          "text": "2. User Accounts"
+        },
+        {
+          "tag": "h2",
+          "text": "3. Acceptable Use"
+        },
+        {
+          "tag": "h2",
+          "text": "4. Intellectual Property"
+        },
+        {
+          "tag": "h3",
+          "text": "4.1 Your Content"
+        },
+        {
+          "tag": "h3",
+          "text": "4.2 AI-Generated Output"
+        },
+        {
+          "tag": "h3",
+          "text": "4.3 Our Intellectual Property"
+        },
+        {
+          "tag": "h2",
+          "text": "5. AI-Generated Content Disclaimer"
+        },
+        {
+          "tag": "h2",
+          "text": "6. Subscription and Payments"
+        },
+        {
+          "tag": "h2",
+          "text": "7. Limitation of Liability"
+        },
+        {
+          "tag": "h2",
+          "text": "8. Indemnification"
+        },
+        {
+          "tag": "h2",
+          "text": "9. Termination"
+        },
+        {
+          "tag": "h2",
+          "text": "10. Governing Law"
+        },
+        {
+          "tag": "h2",
+          "text": "11. Changes to These Terms"
+        },
+        {
+          "tag": "h2",
+          "text": "12. Contact Us"
+        },
+        {
+          "tag": "h3",
+          "text": "Novix"
+        },
+        {
+          "tag": "h3",
+          "text": "Company"
+        },
+        {
+          "tag": "h3",
+          "text": "Contact"
+        },
+        {
+          "tag": "h3",
+          "text": "Legal"
+        }
+      ],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/contact",
+      "finalUrl": "https://novix.science/contact",
+      "httpStatus": 200,
+      "responseUrl": "https://novix.science/contact/index.html",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:00:58.285Z",
+      "elapsedMs": 2957,
+      "screenshot": "screenshots/contact.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Contact Us | Novix",
+      "lang": "en",
+      "bodyText": "Novix Pub Blog Docs Pricing Contact Contact Us We'd love to hear from you. Whether you have a question about features, pricing, partnerships, or anything else — our team is ready to help. Email Reach out to us directly via email. We typically respond within 1–2 business days. yasmine_li@novix.science Community Join the conversation, share feedback, and get the latest updates from the Novix team. Discord X (Twitter) GitHub WeChat Novix Company Blog Pub Docs Contact Discord Twitter Github Legal Privacy Policy Terms of Service",
+      "bodyTextLength": 535,
+      "navLinks": [
+        {
+          "text": "Novix",
+          "href": "https://novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Pub",
+          "href": "https://pub.novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Blog",
+          "href": "https://blog.novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Docs",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Pricing",
+          "href": "https://novix.science/account/upgrade",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Contact",
+          "href": "https://novix.science/contact",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "X",
+          "href": "https://x.com/novix_science",
+          "ariaLabel": "X",
+          "title": "Follow us on X"
+        },
+        {
+          "text": "Discord",
+          "href": "https://discord.com/invite/J6ws3Pj49k",
+          "ariaLabel": "Discord",
+          "title": "Join our Discord"
+        },
+        {
+          "text": "GitHub",
+          "href": "https://github.com/HKUDS/AI-Researcher",
+          "ariaLabel": "GitHub",
+          "title": "View on GitHub"
+        },
+        {
+          "text": "yasmine_li@novix.science",
+          "href": "mailto:yasmine_li@novix.science",
+          "ariaLabel": null,
+          "title": "Send an email to yasmine_li@novix.science"
+        },
+        {
+          "text": "",
+          "href": "mailto:yasmine_li@novix.science",
+          "ariaLabel": null,
+          "title": "Open in mail client"
+        },
+        {
+          "text": "Discord",
+          "href": "https://discord.com/invite/J6ws3Pj49k",
+          "ariaLabel": "Discord",
+          "title": null
+        },
+        {
+          "text": "X (Twitter)",
+          "href": "https://x.com/novix_science",
+          "ariaLabel": "X",
+          "title": null
+        },
+        {
+          "text": "GitHub",
+          "href": "https://github.com/HKUDS/AI-Researcher",
+          "ariaLabel": "GitHub",
+          "title": null
+        },
+        {
+          "text": "Blog",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Pub",
+          "href": "https://pub.novix.science/",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Docs",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Discord",
+          "href": "https://discord.com/invite/J6ws3Pj49k",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Twitter",
+          "href": "https://x.com/novix_science",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Github",
+          "href": "https://github.com/HKUDS/AI-Researcher",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Privacy Policy",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Terms of Service",
+          "href": "https://novix.science/user-manual",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "WeChat",
+          "off": false
+        }
+      ],
+      "inputs": [],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Contact Us"
+        },
+        {
+          "tag": "h2",
+          "text": "Email"
+        },
+        {
+          "tag": "h2",
+          "text": "Community"
+        },
+        {
+          "tag": "h3",
+          "text": "Novix"
+        },
+        {
+          "tag": "h3",
+          "text": "Company"
+        },
+        {
+          "tag": "h3",
+          "text": "Contact"
+        },
+        {
+          "tag": "h3",
+          "text": "Legal"
+        }
+      ],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/user-manual",
+      "finalUrl": "https://novix.science/user-manual",
+      "httpStatus": 200,
+      "responseUrl": "https://novix.science/user-manual/index.html",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:01:01.271Z",
+      "elapsedMs": 2794,
+      "screenshot": "screenshots/user-manual.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/static/pdf/user-manual.en-LNZ9h_vD.pdf"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/static/pdf/user-manual.en-LNZ9h_vD.pdf",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/static/pdf/user-manual.en-LNZ9h_vD.pdf"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/static/pdf/user-manual.en-LNZ9h_vD.pdf"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/static/pdf/user-manual.en-LNZ9h_vD.pdf",
+          "status": 206
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/static/pdf/user-manual.en-LNZ9h_vD.pdf",
+          "status": 206
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix User Manual | Official Product Guide",
+      "lang": "en",
+      "bodyText": "Novix User Manual Novix 1 / 10 100% English 中文",
+      "bodyTextLength": 46,
+      "navLinks": [
+        {
+          "text": "Novix",
+          "href": "https://novix.science/",
+          "ariaLabel": "Novix home",
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "off": true
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "English",
+          "off": false
+        },
+        {
+          "text": "中文",
+          "off": false
+        }
+      ],
+      "inputs": [],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Novix User Manual"
+        }
+      ],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/register",
+      "finalUrl": "https://novix.science/register",
+      "httpStatus": 200,
+      "responseUrl": "https://novix.science/register",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:01:04.112Z",
+      "elapsedMs": 2139,
+      "screenshot": "screenshots/register.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix",
+      "lang": "en",
+      "bodyText": "N Novix Create an account Continue with GitHub Continue with Google or Email Password Verify Code Send Code Discount code Invitation code Sign Up Already have an account? Log in",
+      "bodyTextLength": 178,
+      "navLinks": [
+        {
+          "text": "Continue with GitHub",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Send Code",
+          "off": false
+        },
+        {
+          "text": "Sign Up",
+          "off": false
+        },
+        {
+          "text": "Log in",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please input your verify code",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Optional",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Optional",
+          "off": false
+        }
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Create an account"
+        }
+      ],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/debug/markdown",
+      "finalUrl": "https://novix.science/debug/markdown",
+      "httpStatus": 404,
+      "responseUrl": "https://novix.science/debug/markdown",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:01:06.283Z",
+      "elapsedMs": 2052,
+      "screenshot": "screenshots/debug_markdown.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix",
+      "lang": "en",
+      "bodyText": "← 返回 Markdown 预览调试工具 加载示例 清 空 滚动到顶部 导出 Markdown Markdown 编辑器 0 字符 预览效果",
+      "bodyTextLength": 70,
+      "navLinks": [],
+      "buttons": [
+        {
+          "text": "← 返回",
+          "off": false
+        },
+        {
+          "text": "加载示例",
+          "off": false
+        },
+        {
+          "text": "清 空",
+          "off": false
+        },
+        {
+          "text": "滚动到顶部",
+          "off": true
+        },
+        {
+          "text": "导出 Markdown",
+          "off": true
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "textarea",
+          "type": null,
+          "name": null,
+          "placeholder": "在这里输入 Markdown 内容...",
+          "off": false
+        }
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Markdown 预览调试工具"
+        }
+      ],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/upgrade",
+      "finalUrl": "https://novix.science/account/upgrade",
+      "httpStatus": 404,
+      "responseUrl": "https://novix.science/upgrade",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:01:08.368Z",
+      "elapsedMs": 2272,
+      "screenshot": "screenshots/upgrade.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/user/getAvailableCoupons"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/user/getAvailableCoupons",
+          "status": 401
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Subscription Credit & Usage Billing & Invoices Referrals Profile Version History Upgrade your plan Monthly Pay Once Lite $ 8 / month $12/month Get Lite 200 credits / month Full access to Deep Survey Full access to Idea Spark Full access to Method Design Full access to Data Analysis Full access to Reproduce Paper Access to Advanced Auto Experiment Early access to new agents & features Be part of the Novix Scientist Community, get connected with global top scientists Pro $ 26 / month $35/month Get Pro 800 credits / month Full access to Deep Survey Full access to Idea Spark Full access to Method Design Full access to Data Analysis Full access to Reproduce Paper Access to Advanced Auto Experiment Early access to new agents & features Be part of the Novix Scientist Community, get connected with global top scientists Ultra $ 230 / month $350/month Get Ultra 10000 credits / month Full access to Deep Survey Full access to Idea Spark Full access to Method Design Full access to Data Analysis Full access to Reproduce Paper Access to Advanced Auto Experiment Early access to new agents & features Be part of the Novix Scientist Community, get connected with global top scientists Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up",
+      "bodyTextLength": 1461,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        },
+        {
+          "text": "Subscription",
+          "href": "https://novix.science/account/upgrade",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Credit & Usage",
+          "href": "https://novix.science/account/credit",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Billing & Invoices",
+          "href": "https://novix.science/account/billing",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Referrals",
+          "href": "https://novix.science/account/referrals",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Profile",
+          "href": "https://novix.science/account/info",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Version History",
+          "href": "https://novix.science/account/version-history",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Monthly",
+          "off": false
+        },
+        {
+          "text": "Pay Once",
+          "off": false
+        },
+        {
+          "text": "Get Lite",
+          "off": false
+        },
+        {
+          "text": "Get Pro",
+          "off": false
+        },
+        {
+          "text": "Get Ultra",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/search-v1/capture-probe",
+      "finalUrl": "https://novix.science/search-v1/capture-probe",
+      "httpStatus": 404,
+      "responseUrl": "https://novix.science/search-v1/capture-probe",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:01:10.669Z",
+      "elapsedMs": 2338,
+      "screenshot": "screenshots/search-v1_capture-probe.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/chat_session/message/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Process Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up",
+      "bodyTextLength": 143,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "interactive",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/published/revision/capture-probe",
+      "finalUrl": "https://novix.science/published/revision/capture-probe",
+      "httpStatus": 404,
+      "responseUrl": "https://novix.science/published/revision/capture-probe",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:01:13.036Z",
+      "elapsedMs": 2433,
+      "screenshot": "screenshots/published_revision_capture-probe.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/published/revision/capture-probe/session"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/published/revision/capture-probe/session",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://o4509909220917248.ingest.us.sentry.io/api/4509909225373696/envelope/"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Couldn't load this project Please try again to open this project. Try again Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up published revision not ready",
+      "bodyTextLength": 242,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "Try again",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        }
+      ],
+      "headings": [
+        {
+          "tag": "h2",
+          "text": "Couldn't load this project"
+        }
+      ],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    },
+    {
+      "requestedPath": "/definitely-not-a-real-route",
+      "finalUrl": "https://novix.science/chat",
+      "httpStatus": 404,
+      "responseUrl": "https://novix.science/definitely-not-a-real-route",
+      "gotoError": null,
+      "capturedAt": "2026-10-17T13:01:15.519Z",
+      "elapsedMs": 2160,
+      "screenshot": "screenshots/definitely-not-a-real-route.png",
+      "screenshotError": null,
+      "network": [
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest"
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/latest",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum"
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://test-ssr.joyland.ai/event-prod",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect"
+        },
+        {
+          "method": "POST",
+          "url": "https://novix.science/cdn-cgi/rum",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://www.google-analytics.com/g/collect",
+          "status": 204
+        },
+        {
+          "method": "POST",
+          "url": "https://r.clarity.ms/collect",
+          "status": 204
+        },
+        {
+          "method": "GET",
+          "url": "https://novix.science/api/notification/list",
+          "status": 200
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://www.google-analytics.com/g/collect",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "title": "AI Research Chat - Talk to Your AI Co-Scientist | Novix",
+      "lang": "en",
+      "bodyText": "NOVIX Agentic Workspace for Research Auto Pilot Deep Survey Idea Spark Method Design Auto Experiment Data Analysis Reproduce Paper Deep Tutor Soon Draw Plot Soon Try: World models for physical AI RLVR and reasoning models AI-driven protein design Upload file CPU GPU Task mode Discuss mode CASE GALLERY World models for embodied intelligence and robotics Idea Spark Benchmark Gated Attention mechanism on a small Transformer Auto Experiment RLVR paradigm from DeepSeek-R1 to scientific reasoning Deep Survey Design a multi-agent AI co-scientist research system Method Design Mechanistic interpretability for AI safety auditing Idea Spark NOAA AI weather models vs traditional NWP accuracy Data Analysis Welcome to Novix Continue with Github Continue with Google or Email Password Reset password Log In Don't have an account? Sign Up",
+      "bodyTextLength": 832,
+      "navLinks": [
+        {
+          "text": "NOVIX",
+          "href": "https://novix.science/chat",
+          "ariaLabel": "Go to /chat",
+          "title": null
+        },
+        {
+          "text": "Continue with Github",
+          "href": "https://github.com/login/oauth/authorize?client_id=Ov23li1J08NcyL5gCYtC&scope=user:email&prompt=consent",
+          "ariaLabel": null,
+          "title": null
+        }
+      ],
+      "buttons": [
+        {
+          "text": "CPU",
+          "off": false
+        },
+        {
+          "text": "GPU",
+          "off": false
+        },
+        {
+          "text": "Task mode",
+          "off": false
+        },
+        {
+          "text": "Discuss mode",
+          "off": false
+        },
+        {
+          "text": "",
+          "off": false
+        },
+        {
+          "text": "Continue with Github",
+          "off": false
+        },
+        {
+          "text": "Continue with Google",
+          "off": false
+        },
+        {
+          "text": "Log In",
+          "off": false
+        }
+      ],
+      "inputs": [
+        {
+          "tag": "textarea",
+          "type": null,
+          "name": null,
+          "placeholder": "Ask anything about your research...",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": null,
+          "placeholder": "Please enter your email address",
+          "off": false
+        },
+        {
+          "tag": "input",
+          "type": "password",
+          "name": null,
+          "placeholder": "Please input your password",
+          "off": false
+        }
+      ],
+      "headings": [],
+      "documentReadyState": "complete",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      }
+    }
+  ]
+}

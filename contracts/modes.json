@@ -1,6 +1,6 @@
 {
-  "$comment": "Agent mode registry. Reverse-engineered from the LIVE product surface (novix.science). Source of truth for both app/ and server/. Values verified 2026-10-09 against the production bundle (index-Dk9cCEgm.js) + CDP captures; see docs/research/2026-10-09-novix-live-capture/.",
-  "version": "3",
+  "$comment": "Agent mode registry reconciled 2026-10-17 against live bundle index-ykYPt_W7.js and Playwright public captures. liveAgentConfigs is observed truth; kernel/avgCost are local implementation annotations, not upstream observations.",
+  "version": "4",
   "defaultModel": "novix_proxy__gpt-6.1-sol",
   "discussModelOverride": "novix_proxy__gpt-6.1-sol",
   "writeUpTypes": [
@@ -38,7 +38,9 @@
         "Find a gap in LoRA fine-tuning research",
         "Reproduce Table 1 of a paper I paste below"
       ],
-      "comingSoon": false
+      "comingSoon": false,
+      "observedCreditLabel": "1 credit",
+      "observedDescription": ""
     },
     {
       "key": "deepsurvey",
@@ -116,7 +118,8 @@
           }
         }
       ],
-      "comingSoon": false
+      "comingSoon": false,
+      "observedCreditLabel": "5 credits"
     },
     {
       "key": "ideaspark",
@@ -158,7 +161,8 @@
           "default": "Balanced"
         }
       ],
-      "comingSoon": false
+      "comingSoon": false,
+      "observedCreditLabel": "3 credits"
     },
     {
       "key": "methoddesign",
@@ -207,7 +211,8 @@
           "default": "paper"
         }
       ],
-      "comingSoon": false
+      "comingSoon": false,
+      "observedCreditLabel": "3 credits"
     },
     {
       "key": "autoexperiment",
@@ -240,7 +245,8 @@
           ]
         }
       ],
-      "comingSoon": false
+      "comingSoon": false,
+      "observedCreditLabel": "10 credits"
     },
     {
       "key": "notebook",
@@ -296,7 +302,8 @@
           ]
         }
       ],
-      "comingSoon": false
+      "comingSoon": false,
+      "observedCreditLabel": "5 credits"
     },
     {
       "key": "reproduce",
@@ -333,35 +340,38 @@
           ]
         }
       ],
-      "comingSoon": false
+      "comingSoon": false,
+      "observedCreditLabel": "10 credits"
     },
     {
       "key": "deeptutor",
       "label": "Deep Tutor",
       "agentName": null,
-      "mentionValue": "@Deep Tutor",
+      "mentionValue": null,
       "routeId": "deeptutor",
       "creditCost": null,
       "avgCost": null,
       "trackKey": "deeptutor",
-      "description": "Coming soon",
+      "description": "Interactive tutor for research papers",
       "kernel": null,
       "controls": [],
-      "comingSoon": true
+      "comingSoon": true,
+      "observedCreditLabel": "\u2014"
     },
     {
       "key": "drawplot",
       "label": "Draw Plot",
       "agentName": null,
-      "mentionValue": "@Draw Plot",
+      "mentionValue": null,
       "routeId": "drawplot",
       "creditCost": null,
       "avgCost": null,
       "trackKey": "drawplot",
-      "description": "Coming soon",
+      "description": "Generate publication-ready plots",
       "kernel": null,
       "controls": [],
-      "comingSoon": true
+      "comingSoon": true,
+      "observedCreditLabel": "\u2014"
     }
   ],
   "models": [
@@ -578,5 +588,97 @@
     "PUBLISH_DONT_SHOW_KEY": "novix.publish.dontShowIntro",
     "contactEmail": "yasmine_li@novix.science",
     "discordInvite": "https://discord.com/invite/J6ws3Pj49k"
-  }
+  },
+  "liveAgentConfigs": [
+    {
+      "key": "auto",
+      "label": "Auto Pilot",
+      "desc": "",
+      "agentName": null,
+      "mentionValue": null,
+      "routeId": "chat",
+      "creditCostLabel": "1 credit",
+      "comingSoon": false
+    },
+    {
+      "key": "deepsurvey",
+      "label": "Deep Survey",
+      "desc": "Conduct in-depth literature surveys",
+      "agentName": "Deep Search Agent",
+      "mentionValue": "@Deep Survey",
+      "routeId": "deepsurvey",
+      "creditCostLabel": "5 credits",
+      "comingSoon": false
+    },
+    {
+      "key": "ideaspark",
+      "label": "Idea Spark",
+      "desc": "Generate novel research ideas",
+      "agentName": "Idea Agent",
+      "mentionValue": "@Idea Spark",
+      "routeId": "ideaspark",
+      "creditCostLabel": "3 credits",
+      "comingSoon": false
+    },
+    {
+      "key": "methoddesign",
+      "label": "Method Design",
+      "desc": "Design methods and experimental plans",
+      "agentName": "Proposal Agent",
+      "mentionValue": "@Method Design",
+      "routeId": "methoddesign",
+      "creditCostLabel": "3 credits",
+      "comingSoon": false
+    },
+    {
+      "key": "autoexperiment",
+      "label": "Auto Experiment",
+      "desc": "Build and test any algorithm",
+      "agentName": "ML Agent",
+      "mentionValue": "@Auto Experiment",
+      "routeId": "autoexperiment",
+      "creditCostLabel": "10 credits",
+      "comingSoon": false
+    },
+    {
+      "key": "notebook",
+      "label": "Data Analysis",
+      "desc": "Analyze and visualize any data",
+      "agentName": "Notebook Agent",
+      "mentionValue": "@Data Analysis",
+      "routeId": "notebook",
+      "creditCostLabel": "5 credits",
+      "comingSoon": false
+    },
+    {
+      "key": "reproduce",
+      "label": "Reproduce Paper",
+      "desc": "Reproduce results from any paper",
+      "agentName": "Reproduce Paper Agent",
+      "mentionValue": "@Reproduce Paper",
+      "routeId": "reproduce",
+      "creditCostLabel": "10 credits",
+      "comingSoon": false
+    },
+    {
+      "key": "deeptutor",
+      "label": "Deep Tutor",
+      "desc": "Interactive tutor for research papers",
+      "agentName": null,
+      "mentionValue": null,
+      "routeId": "deeptutor",
+      "creditCostLabel": "\u2014",
+      "comingSoon": true
+    },
+    {
+      "key": "drawplot",
+      "label": "Draw Plot",
+      "desc": "Generate publication-ready plots",
+      "agentName": null,
+      "mentionValue": null,
+      "routeId": "drawplot",
+      "creditCostLabel": "\u2014",
+      "comingSoon": true
+    }
+  ]
 }
