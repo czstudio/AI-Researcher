@@ -62,6 +62,14 @@ async function call(method, path, { query = {}, body = null, raw = false } = {})
   return json.result;
 }
 
+function normalizeTreeResult(result) {
+  if (result == null || typeof result !== 'object') return result;
+  if (typeof result.workspaceTreeJson === 'string') {
+    try { result.workspaceTreeJson = JSON.parse(result.workspaceTreeJson); } catch { /* leave the raw string for an honest error state */ }
+  }
+  return result;
+}
+
 async function blobCall(path, query = {}) {
   const qs = asQuery(query);
   const res = await fetch(`/api${path}${qs ? `?${qs}` : ''}`, { headers: authHeaders() });
@@ -92,12 +100,13 @@ export const api = {
   latestNotifications: () => call('GET', '/notification/latest'),
 
   // credit / plans / billing / referrals
-  upgradePlan: (level) => call('POST', '/credit/upgrade_plan', { query: { level }, body: { level } }),
+  upgradePlan: (level, sku = null) => call('POST', '/credit/upgrade_plan', { query: { level, sku }, body: { level, sku } }),
   subscriptionUpgrade: (action) => call('POST', '/credit/subscription/upgrade', { body: { action } }),
   creditList: () => call('GET', '/credit/list'),
   billingStatements: () => call('GET', '/credit/billing-statements'),
   oneTimePlans: () => call('GET', '/credit/one-time-plans'),
-  cancelSubscription: () => call('POST', '/credit/subscription/upgrade', { body: { action: 'cancel' } }),
+  inviteList: () => call('GET', '/credit/list'),
+  cancelSubscription: () => call('POST', '/credit/cancel', { body: {} }),
   invite: () => call('POST', '/credit/invite'),
   referral: () => call('GET', '/referral/me'),
   joinReferral: (inviteId) => call('POST', '/credit/join', { query: { inviteId } }),
@@ -114,7 +123,7 @@ export const api = {
   rename: (sid, title) => call('POST', '/chat_session/rename', { body: { chatSessionId: sid, title } }),
   deleteSession: (sid) => call('POST', '/chat_session/delete', { body: { chatSessionId: sid } }),
   workspace: (sid) => call('GET', '/chat_session/workspace', { query: { chatSessionId: sid } }),
-  subtree: (sid, p = '.') => call('POST', '/chat_session/workspace/subtree', { body: { chatSessionId: sid, path: p, targets: [[p === '.' ? '' : p, 3]] } }),
+  subtree: async (sid, p = '.') => normalizeTreeResult(await call('POST', '/chat_session/workspace/subtree', { body: { chatSessionId: sid, path: p, targets: [[p === '.' ? '' : p, 3]] } })),
   homeFiles: (sid) => call('GET', '/chat_session/workspace/home_files', { query: { chatSessionId: sid } }),
   homeFilePreview: (sid, p) => call('POST', '/chat_session/workspace/home_file_preview', { body: { chatSessionId: sid, path: p } }),
   deleteUpload: (sid, p) => call('POST', '/chat_session/workspace/user_upload/delete', { body: { chatSessionId: sid, path: p } }),
@@ -122,8 +131,10 @@ export const api = {
   downloadFile: (fileKey, isDownload = false) => blobCall('/file/download', { fileKey, isDownload }),
 
   // files upload workflow: batch_temp_urls -> upload_stream -> upload_complete
-  batchTempUrls: (names) => call('POST', '/file/batch_temp_urls', { body: { files: names } }),
+  batchTempUrls: (names, chatSessionId = '') => call('POST', '/file/batch_temp_urls', { body: { files: names, chatSessionId } }),
   tempUrl: (fileId) => call('GET', '/file/temp_url', { query: { fileId } }),
+  ossToken: () => call('GET', '/oss/getSTSToken'),
+  putToGcs: (payload) => call('POST', '/file/putToGcs', { body: payload }),
   uploadComplete: (fileIds) => call('POST', '/file/upload_complete', { body: { fileIds } }),
   uploadStream(file, { chatSessionId = '', fileId = '' } = {}) {
     const fd = new FormData();
@@ -147,7 +158,7 @@ export const api = {
     let slots = [];
     if (getToken()) {
       try {
-        const batch = await api.batchTempUrls(accepted.map((f) => f.name));
+        const batch = await api.batchTempUrls(accepted.map((f) => f.name), chatSessionId);
         slots = batch?.items || batch || [];
       } catch {
         slots = [];
@@ -183,7 +194,7 @@ export const api = {
   withdrawPublish: (sid) => call('POST', '/published/item/withdraw', { body: { chatSessionId: sid } }),
   revisionSession: (rid) => call('GET', `/published/revision/${encodeURIComponent(rid)}/session`),
   revisionTask: (rid, taskId) => call('GET', `/published/revision/${encodeURIComponent(rid)}/task`, { query: { taskId } }),
-  revisionWorkspace: (rid, path = '.') => call('POST', `/published/revision/${encodeURIComponent(rid)}/workspace/subtree`, { body: { targets: [[path === '.' ? '' : path, 3]] } }),
+  revisionWorkspace: async (rid, path = '.') => normalizeTreeResult(await call('POST', `/published/revision/${encodeURIComponent(rid)}/workspace/subtree`, { body: { targets: [[path === '.' ? '' : path, 3]] } })),
   forkRevision: (rid) => call('POST', `/published/revision/${encodeURIComponent(rid)}/fork`, { body: {} }),
 
   // feedback & discovery

@@ -77,10 +77,10 @@ async function fork() {
     busy.value = false;
   }
 }
-function downloadArtifact(f) {
+async function downloadArtifact(f) {
   try {
     if (f.fileKey) {
-      api.downloadFile(f.fileKey, true).then((blob) => {
+      await api.downloadFile(f.fileKey, true).then((blob) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url; a.download = f.name || 'artifact'; a.click();

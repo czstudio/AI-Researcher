@@ -48,6 +48,11 @@ const groups = computed(() => {
 const isPdf = computed(() => selected.value != null && /\.pdf$/i.test(selected.value));
 const isBinary = computed(() => selected.value != null && /\.(png|jpe?g|gif|bmp|zip|rar|7z|tar|gz|bz2|xz|tgz|docx?|xlsx?|pptx?|parquet)$/i.test(selected.value));
 
+function languageForPath(filePath) {
+  const ext = String(filePath || '').split('.').pop().toLowerCase();
+  const map = { py: 'python', js: 'javascript', mjs: 'javascript', ts: 'typescript', json: 'json', md: 'markdown', tex: 'latex', sh: 'shell', yaml: 'yaml', yml: 'yaml', csv: 'csv', bib: 'bibtex', html: 'html', css: 'css' };
+  return map[ext] || 'text';
+}
 function clearPreviewUrl() {
   if (previewUrl.value) URL.revokeObjectURL(previewUrl.value);
   previewUrl.value = '';
@@ -71,9 +76,19 @@ async function open(node) {
         content.value = 'This backend returns a workspace archive for workspace-prefixed file keys. Use Download workspace below.';
       }
     } else {
-      const r = await api.homeFilePreview(props.sessionId, node.path);
-      content.value = r.content || '';
-      language.value = r.language || 'text';
+      try {
+        const r = await api.homeFilePreview(props.sessionId, node.path);
+        content.value = r.content || '';
+        language.value = r.language || 'text';
+      } catch (previewError) {
+        if (node.fileKey) {
+          const blob = await api.downloadFile(node.fileKey, false);
+          content.value = await blob.text();
+          language.value = languageForPath(node.path);
+        } else {
+          throw previewError;
+        }
+      }
     }
   } catch (e) {
     content.value = `// cannot preview: ${e.message || e}`;

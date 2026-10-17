@@ -35,8 +35,11 @@ const signedIn = computed(() => store.user !== null);
 const availableCredits = computed(() => creditInfo.value?.credits ?? store.user?.credits ?? 0);
 const planLabel = computed(() => store.plan?.label || store.user?.level || 'free');
 const referralLink = computed(() => {
-  if (referral.value?.code == null) return '';
-  return `${location.origin}/register?referralCode=${encodeURIComponent(referral.value.code)}`;
+  const raw = referral.value?.inviteLink;
+  if (raw) return raw.startsWith('http') ? raw : `${location.origin}${raw.startsWith('/') ? '' : '/'}${raw}`;
+  const code = referral.value?.inviteCode || referral.value?.code;
+  if (code == null || code === '') return '';
+  return `${location.origin}/register?referralCode=${encodeURIComponent(code)}`;
 });
 const fallbackOneTime = computed(() => {
   const out = [];
@@ -80,11 +83,16 @@ async function load() {
       }
     } else if (props.tab === 'referrals') {
       try {
-        referral.value = await api.referral();
+        referral.value = await api.invite();
         referralError.value = '';
-      } catch (e) {
-        referral.value = null;
-        referralError.value = String(e.message || e);
+      } catch (firstError) {
+        try {
+          referral.value = await api.referral();
+          referralError.value = '';
+        } catch (e) {
+          referral.value = null;
+          referralError.value = String(e.message || firstError?.message || e);
+        }
       }
     } else if (props.tab === 'info') {
       creditInfo.value = await api.creditInfo();
@@ -111,7 +119,7 @@ async function choosePlan(level) {
 async function chooseOneTime(row) {
   const level = row.level || String(row.sku || '').toLowerCase().split('_')[0];
   try {
-    await api.upgradePlan(level);
+    await api.upgradePlan(level, row.sku || null);
     await refreshUser();
     toast(`One-time term recorded: ${row.label || row.sku || level}`);
   } catch (e) {
@@ -281,9 +289,9 @@ onMounted(load);
           <section v-else-if="activeTab.id === 'referrals'" class="panel-stack">
             <div v-if="referralError" class="notice">Referral data is unavailable: {{ referralError }}</div>
             <div v-else class="summary card">
-              <div><span class="muted small">Your code</span><strong class="big">{{ referral?.code || '—' }}</strong></div>
-              <div><span class="muted small">Invited</span><strong>{{ referral?.invited ?? 0 }}</strong></div>
-              <div><span class="muted small">Signup bonus</span><strong>{{ referral?.bonus ?? 30 }} credits</strong></div>
+              <div><span class="muted small">Your code</span><strong class="big">{{ referral?.inviteCode || referral?.code || '—' }}</strong></div>
+              <div><span class="muted small">Invited</span><strong>{{ referral?.invitedCount ?? referral?.invited ?? 0 }}</strong></div>
+              <div><span class="muted small">Signup bonus</span><strong>{{ referral?.rewardCredits ?? referral?.bonus ?? 30 }} credits</strong></div>
             </div>
             <h2>Invite link</h2>
             <div class="copy-row card">
