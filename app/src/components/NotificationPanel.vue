@@ -1,5 +1,7 @@
 <script setup>
-import { store } from '../stores/app.js';
+import { onMounted } from 'vue';
+import { store, refreshNotifications } from '../stores/app.js';
+onMounted(refreshNotifications);
 </script>
 
 <template>
@@ -12,8 +14,8 @@ import { store } from '../stores/app.js';
       <div class="list">
         <div v-if="!store.notifications.length" class="empty">No new notifications</div>
         <div v-for="n in store.notifications" :key="n.id" class="item">
-          <div class="title">{{ n.title }}</div>
-          <div class="meta">{{ n.body }}</div>
+          <div class="title">{{ n.title || n.name || 'Notification' }}</div>
+          <div class="meta">{{ n.body || n.content }}</div>
         </div>
       </div>
     </div>

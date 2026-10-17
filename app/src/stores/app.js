@@ -1,5 +1,4 @@
-// Global reactive state. No Pinia dependency — plain `reactive` is enough here.
-
+// Global reactive state. Plain `reactive` keeps this build dependency-light.
 import { reactive } from 'vue';
 import { api, getToken, setToken } from '../lib/api.js';
 import MODES from '../lib/modes.generated.js';
@@ -15,20 +14,22 @@ export const store = reactive({
   site: null,
   sessions: [],
   currentSessionId: null,
+  sessionMeta: null,
   messages: [],
+  currentTask: null,
+  pendingPayload: null,
+  trajectory: [],
+  pendingQuestion: null,
   workspaceTree: null,
+  homeFiles: { files: [], total: 0 },
   openFile: null,
   openFileContent: '',
   streamText: '',
   streaming: false,
   activeTaskId: null,
-  planSteps: [],
-  terminal: '',
-  artifacts: [],
-  gallery: [],
   notifications: [],
   toasts: [],
-  overlays: { account: false, settings: false, notifications: false, share: false },
+  overlays: { account: false, settings: false, notifications: false, share: false, login: false },
   workspaceMode: 'auto-discovery',
   mode: 'auto',
   composer: {
@@ -39,6 +40,9 @@ export const store = reactive({
     writeUpType: 'paper',
     controls: {},
     files: [],
+    fileIds: [],
+    uploading: false,
+    error: '',
   },
 });
 
@@ -57,37 +61,8 @@ export function setTheme(t) {
   document.documentElement.classList.toggle('dark', t === 'dark');
 }
 
-export async function bootstrap() {
-  document.documentElement.classList.toggle('dark', store.theme === 'dark');
-  try {
-    const site = await api.siteConfig();
-    store.site = site;
-  } catch {
-    /* offline */
-  }
-  try {
-    const m = await api.models();
-    store.models = m.models || [];
-    store.defaultModel = m.defaultModel || '';
-  } catch {
-    /* offline */
-  }
-  store.modes = MODES.modes || [];
-  store.plans = MODES.plans || [];
-  if (!store.defaultModel) store.defaultModel = MODES.defaultModel;
-  if (!store.models.length) store.models = MODES.models || [];
-  if (!store.composer.model) store.composer.model = store.defaultModel;
-  if (getToken()) {
-    try {
-      await refreshUser();
-    } catch {
-      setToken('');
-    }
-  }
-}
-
 export async function refreshUser() {
-  if (!getToken()) {
+  if (getToken() === '') {
     store.user = null;
     return null;
   }
@@ -98,7 +73,7 @@ export async function refreshUser() {
 }
 
 export async function refreshSessions() {
-  if (!getToken()) {
+  if (getToken() === '') {
     store.sessions = [];
     return;
   }
@@ -110,14 +85,79 @@ export async function refreshSessions() {
   }
 }
 
+export async function refreshNotifications() {
+  if (getToken() === '') {
+    store.notifications = [];
+    return;
+  }
+  try {
+    const r = await api.notifications();
+    store.notifications = r.items || r.records || [];
+  } catch {
+    store.notifications = [];
+  }
+}
+
+export async function login(email, password) {
+  const r = await api.login(email, password);
+  setToken(r.token);
+  await refreshUser();
+  await Promise.all([refreshSessions(), refreshNotifications()]);
+  return r.user || store.user;
+}
+
+export async function signup(email, password, name, referralCode = '') {
+  const r = await api.signUp(email, password, name);
+  setToken(r.token);
+  await refreshUser();
+  await Promise.all([refreshSessions(), refreshNotifications()]);
+  if (referralCode) {
+    try { await api.joinReferral(referralCode); } catch { /* invites are optional */ }
+  }
+  return r.user || store.user;
+}
+
+export function logout() {
+  setToken('');
+  store.user = null;
+  store.plan = null;
+  store.sessions = [];
+  store.notifications = [];
+  store.currentSessionId = null;
+}
+
 export function resetComposer() {
   store.composer.text = '';
   store.composer.files = [];
+  store.composer.fileIds = [];
   store.composer.controls = {};
+  store.composer.error = '';
   store.streamText = '';
-  store.planSteps = [];
-  store.terminal = '';
-  store.artifacts = [];
+  store.trajectory = [];
+  store.pendingQuestion = null;
+}
+
+export async function bootstrap() {
+  document.documentElement.classList.toggle('dark', store.theme === 'dark');
+  try { store.site = await api.siteConfig(); } catch { /* offline */ }
+  try {
+    const m = await api.models();
+    store.models = m.models || [];
+    store.defaultModel = m.defaultModel || '';
+  } catch { /* offline */ }
+  store.modes = MODES.modes || [];
+  store.plans = MODES.plans || [];
+  if (store.defaultModel === '') store.defaultModel = MODES.defaultModel;
+  if (store.models.length === 0) store.models = MODES.models || [];
+  if (store.composer.model === '') store.composer.model = store.defaultModel;
+  if (getToken()) {
+    try {
+      await refreshUser();
+      await Promise.all([refreshSessions(), refreshNotifications()]);
+    } catch {
+      setToken('');
+    }
+  }
 }
 
 export { setToken };

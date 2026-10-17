@@ -4,5 +4,6 @@ import './styles/tokens.css';
 import './styles/app.css';
 import { bootstrap } from './stores/app.js';
 
-bootstrap();
-createApp(App).mount('#app');
+bootstrap().finally(() => {
+  createApp(App).mount('#app');
+});
