@@ -1,7 +1,7 @@
 // HTTP surface for the absorbed ClawTeam-gstack sprint engine.
 import path from 'node:path';
 import { ok, fail } from '../lib/util.mjs';
-import { TeamSprintStore, TeamSprintError, ROLES, PHASES, ROLE_DEFINITIONS, validateTurnEnvelope } from '../lib/team-sprint.mjs';
+import { TeamSprintStore, TeamSprintError, ROLES, PHASES, ROLE_DEFINITIONS, ROLE_GUIDANCE, validateTurnEnvelope } from '../lib/team-sprint.mjs';
 
 const rootDir = path.join(process.env.NOVIX_DATA_DIR || path.resolve(process.cwd(), 'data'), 'team-sprints');
 const store = new TeamSprintStore({ rootDir });
@@ -12,7 +12,7 @@ function asFail(err) {
 function own(team, user) { return team != null && (team.ownerId == null || team.ownerId === String(user.id)); }
 export function registerTeamRoutes(route, helpers = {}) {
   const auth = (req, p) => helpers.requireUser ? helpers.requireUser(req, p) : { user: { id: 'local' }, anon: false };
-  route('GET', '/team/roles', async () => ok({ roles: ROLES, phases: PHASES, definitions: ROLE_DEFINITIONS }));
+  route('GET', '/team/roles', async () => ok({ roles: ROLES, phases: PHASES, definitions: ROLE_DEFINITIONS, guidance: ROLE_GUIDANCE }));
   route('POST', '/team/sprints', async (req, res, p, body) => {
     const a = auth(req, p); if (a.denied) return a.denied;
     try { return ok(store.create({ ...body, ownerId: a.user.id })); } catch (err) { return asFail(err); }

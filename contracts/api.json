@@ -816,151 +816,231 @@
   },
   "evidencePolicy": "observed = public bundle string or public DOM/network metadata; inference = local engineering judgment. No authenticated response bodies were captured in this pass.",
   "extensions": {
-    "$comment": "Open-source extensions absorbed from the official novix-science OSS repositories on 2026-10-17. These are not claims about the live Novix API.",
+    "$comment": "Open-source extensions absorbed from the official novix-science OSS repositories on 2026-10-17. Not claims about the live Novix API.",
     "sandbox": [
       {
         "method": "GET",
         "path": "/sandbox/health",
-        "source": "agent-sandbox origin/novix f64ec82"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "GET",
-        "path": "/sandbox/router/parse",
-        "source": "agent-sandbox path-prefix routing"
+        "path": "/sandbox/providers",
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/sandbox/workspaces",
-        "source": "local provider workspace lifecycle"
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "GET",
+        "path": "/sandbox/router/parse",
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "GET",
         "path": "/sandbox/workspaces/:namespace/:sandboxId/files",
-        "source": "local provider file read"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/sandbox/workspaces/:namespace/:sandboxId/files",
-        "source": "local provider file write"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/sandbox/workspaces/:namespace/:sandboxId/exec",
-        "source": "local provider command execution"
+        "source": "absorbed-official-oss-2026-10-17"
       }
     ],
     "autoresearchLab": [
       {
         "method": "GET",
         "path": "/autoresearch/lab/contract",
-        "source": "autoresearch 29a5846 + mlx-sim a7d4e2b"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/autoresearch/lab/runs",
-        "source": "keep/discard/crash protocol"
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "POST",
+        "path": "/autoresearch/lab/batches",
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "GET",
         "path": "/autoresearch/lab/runs",
-        "source": "persisted lab runs"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "GET",
         "path": "/autoresearch/lab/runs/:id",
-        "source": "persisted lab run"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/autoresearch/lab/runs/:id/start",
-        "source": "fixed-budget experiment loop"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/autoresearch/lab/runs/:id/cancel",
-        "source": "abort/timeout lifecycle"
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "GET",
+        "path": "/autoresearch/lab/runs/:id/verify",
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "GET",
         "path": "/autoresearch/lab/runs/:id/results.tsv",
-        "source": "results.tsv evidence export"
+        "source": "absorbed-official-oss-2026-10-17"
       }
     ],
     "teamSprint": [
       {
         "method": "GET",
         "path": "/team/roles",
-        "source": "ClawTeam-gstack 48c717f 11 roles"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/team/sprints",
-        "source": "7-phase sprint state"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "GET",
         "path": "/team/sprints",
-        "source": "persisted sprints"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "GET",
         "path": "/team/sprints/:id",
-        "source": "sprint snapshot"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/team/sprints/:id/spawn",
-        "source": "role roster"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/team/sprints/:id/tasks",
-        "source": "task board with dependencies"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/team/sprints/:id/tasks/:taskId/claim",
-        "source": "claim/ownership gate"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/team/sprints/:id/tasks/:taskId/complete",
-        "source": "evidence-backed completion"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/team/sprints/:id/phase/advance",
-        "source": "ceo-only phase gate"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/team/sprints/:id/artifacts",
-        "source": "TurnEnvelope/artifact schema gate"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/team/sprints/:id/artifacts/:artifactId/verify",
-        "source": "evidence re-run gate"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/team/sprints/:id/mail",
-        "source": "agent mailbox"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "GET",
         "path": "/team/sprints/:id/mail",
-        "source": "agent mailbox"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/team/sprints/:id/messages",
-        "source": "MoChat text/reasoning/tool parts"
+        "source": "absorbed-official-oss-2026-10-17"
       },
       {
         "method": "POST",
         "path": "/team/envelopes/validate",
-        "source": "gstack TurnEnvelope validation"
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "GET",
+        "path": "/team/sprints/:id/review",
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/review/route",
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "GET",
+        "path": "/team/sprints/:id/ship/approval",
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/ship/approve",
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/memory",
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "GET",
+        "path": "/team/sprints/:id/memory",
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/memory/prune",
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "GET",
+        "path": "/team/sprints/:id/attention",
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "GET",
+        "path": "/team/sprints/:id/attention/digest",
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/attention/auto-accept",
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/attention/:attentionId/answer",
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "POST",
+        "path": "/team/sprints/:id/progress/turn",
+        "source": "absorbed-official-oss-2026-10-17"
+      },
+      {
+        "method": "GET",
+        "path": "/team/sprints/:id/theater",
+        "source": "absorbed-official-oss-2026-10-17"
       }
     ]
   }

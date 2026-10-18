@@ -147,7 +147,7 @@ onMounted(load);
         <section class="card roles">
           <h2>Roster</h2>
           <div class="chips">
-            <button v-for="r in meta.roles" :key="r" class="chip" :class="{ on: active.roles?.some(x => x.name === r) }" @click="spawn(r)">{{ r }}</button>
+            <button v-for="r in meta.roles" :key="r" class="chip" :class="{ on: active.roles?.some(x => x.name === r) }" :title="meta.guidance?.[r]?.mandate || meta.definitions[r]?.authority || r" @click="spawn(r)">{{ r }}</button>
           </div>
           <p class="muted tiny">{{ meta.definitions.ceo?.authority }} Only the ceo role can advance phases.</p>
         </section>

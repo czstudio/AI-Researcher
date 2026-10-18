@@ -53,6 +53,20 @@ export const ROLE_DEFINITIONS = Object.freeze({
   sre: { title: 'Site Reliability Engineer', phaseAffinity: ['ship', 'reflect'], authority: 'Canary, benchmark and operational signals.' },
 });
 
+export const ROLE_GUIDANCE = Object.freeze({
+  ceo: { mandate: 'Decompose the goal, assign owners, make scope decisions and advance phases only when evidence is present.', forbidden: 'Do not write implementation code or advance on missing evidence.' },
+  pm: { mandate: 'Ask the six forcing questions one at a time and record a proceed/reframe/kill verdict.', forbidden: 'Do not enumerate all six questions in one turn or substitute advice for evidence.' },
+  'eng-mgr': { mandate: 'Lock architecture, data flow, edge cases and an observable test plan before build.', forbidden: 'Do not leave edge cases without a covering test or owner.' },
+  designer: { mandate: 'Review information architecture, states, journey, AI-slop risk, design-system alignment and accessibility.', forbidden: 'Do not approve placeholder visuals or unexplained one-off styling.' },
+  'dx-lead': { mandate: 'Measure time-to-hello-world, friction traces and persona learnability.', forbidden: 'Do not report developer experience without measured steps or observed friction.' },
+  engineer: { mandate: 'Read before writing, make one atomic change, run tests and report a substantive diff summary.', forbidden: 'Do not ship WIP, stubs, unrelated bundled changes or unverified claims.' },
+  reviewer: { mandate: 'Pin the review SHA, enumerate findings and issue an approved/rejected/needs-revision verdict.', forbidden: 'Do not approve a moving HEAD or hand-wave findings.' },
+  qa: { mandate: 'Reproduce bugs, write a failing test, apply the minimal fix, then run the full suite.', forbidden: 'Do not claim green without executable output evidence.' },
+  security: { mandate: 'Threat-model auth, ownership, input boundaries, secrets and agent tool abuse.', forbidden: 'Do not leave unresolved high-impact findings without an explicit gate.' },
+  shipper: { mandate: 'Verify tests, review and CEO approval before shipping; record deploy URL and release notes.', forbidden: 'Do not deploy without an approved review and green test evidence.' },
+  sre: { mandate: 'Measure canaries, benchmarks and operational signals after ship; flag regressions.', forbidden: 'Do not call a release clean without telemetry or benchmark evidence.' },
+});
+
 const STUB_MARKERS = [
   [/\bTBD\b/i, 'TBD'],
   [/\bTODO\b/, 'TODO'],
