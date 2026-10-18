@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
-import { api } from '../lib/api.js';
+import { api, authHeaders } from '../lib/api.js';
 import { toast, store } from '../stores/app.js';
 const teams = ref([]);
 const active = ref(null);
@@ -16,6 +16,17 @@ const artifactContent = ref('ceo delegates to pm engineer qa');
 const artifactJson = ref('{}');
 const busy = ref(false);
 const error = ref('');
+const reviewPaths = ref('src/auth/login.ts' + String.fromCharCode(10) + 'app/api/team.mjs');
+const reviewResult = ref(null);
+const shipState = ref(null);
+const attention = ref([]);
+const digest = ref([]);
+const approvalNote = ref('Release approved by ceo after green evidence.');
+const memoryQuery = ref('evidence gate');
+const memoryResults = ref([]);
+const memoryTitle = ref('');
+const memoryBody = ref('');
+const memoryTags = ref('decision,retro');
 const currentIndex = computed(() => meta.value.phases.indexOf(active.value?.phase || 'think'));
 const nextPhase = computed(() => meta.value.phases[currentIndex.value + 1] || null);
 async function load() {
@@ -27,7 +38,7 @@ async function load() {
 }
 async function refresh() {
   await load();
-  if (active.value) active.value = await api.teamGet(active.value.id);
+  if (active.value) { active.value = await api.teamGet(active.value.id); await loadInsights(); }
 }
 async function createTeam() {
   busy.value = true;
@@ -60,6 +71,56 @@ async function say() {
   try { await api.teamMessages(active.value.id, { role: 'ceo', parts: [{ type: 'text', text: message.value }] }); message.value = ''; await refresh(); }
   catch (e) { error.value = String(e.message || e); }
 }
+
+async function teamFetch(method, subpath, body) {
+  const init = { method, headers: authHeaders() };
+  if (body !== undefined) { init.headers['Content-Type'] = 'application/json'; init.body = JSON.stringify(body); }
+  const res = await fetch('/api/team/sprints/' + encodeURIComponent(active.value.id) + subpath, init);
+  const json = await res.json();
+  if (String(json.code) !== '0') throw new Error(json.message || ('team api ' + json.code));
+  return json.result;
+}
+async function routeReview() {
+  try {
+    const diffPaths = reviewPaths.value.split(String.fromCharCode(10)).map((x) => x.trim()).filter(Boolean);
+    reviewResult.value = await teamFetch('POST', '/review/route', { diffPaths });
+    await loadAttention(); toast('Reviewers routed: ' + reviewResult.value.reviewers.join(', '));
+  } catch (e) { error.value = String(e.message || e); }
+}
+async function loadShip() {
+  if (active.value == null) return;
+  try { shipState.value = await teamFetch('GET', '/ship/approval'); } catch (e) { shipState.value = { passed: false, checks: [], error: String(e.message || e) }; }
+}
+async function approveShip() {
+  try { await teamFetch('POST', '/ship/approve', { role: 'ceo', note: approvalNote.value }); await loadShip(); toast('Ship approval recorded'); }
+  catch (e) { error.value = String(e.message || e); }
+}
+async function loadAttention() {
+  if (active.value == null) return;
+  try {
+    const [list, dig] = await Promise.all([teamFetch('GET', '/attention'), teamFetch('GET', '/attention/digest')]);
+    attention.value = list.items || []; digest.value = dig.items || [];
+  } catch (e) { error.value = String(e.message || e); }
+}
+async function answerAttention(item, decision) {
+  try { await teamFetch('POST', '/attention/' + encodeURIComponent(item.id) + '/answer', { decision, answer: decision === 'rejected' ? 'Rejected by operator' : 'Approved by operator', actor: 'user' }); await loadAttention(); }
+  catch (e) { error.value = String(e.message || e); }
+}
+async function autoAccept() {
+  try { const out = await teamFetch('POST', '/attention/auto-accept', { ttlMinutes: 15 }); await loadAttention(); toast('Auto-accepted ' + out.applied.length + ' reversible item(s)'); }
+  catch (e) { error.value = String(e.message || e); }
+}
+async function writeMemory() {
+  try {
+    await teamFetch('POST', '/memory', { author: 'human@cli', title: memoryTitle.value, body: memoryBody.value, tags: memoryTags.value.split(',').map((x) => x.trim()).filter(Boolean), learnedFrom: 'user', evidence: 'team-page:manual' });
+    memoryTitle.value = ''; memoryBody.value = ''; await searchMemory(); toast('Memory entry appended');
+  } catch (e) { error.value = String(e.message || e); }
+}
+async function searchMemory() {
+  try { const out = await teamFetch('GET', '/memory?q=' + encodeURIComponent(memoryQuery.value)); memoryResults.value = out.items || []; }
+  catch (e) { error.value = String(e.message || e); }
+}
+async function loadInsights() { await Promise.all([loadShip(), loadAttention()]); }
 onMounted(load);
 </script>
 <template>
@@ -127,6 +188,40 @@ onMounted(load);
           </div>
           <div class="say"><input v-model="message" placeholder="Message the team as ceo…" @keydown.enter="say" /><button class="btn primary" @click="say">Send</button></div>
         </section>
+
+        <section class="card review">
+          <h2>Review router</h2>
+          <textarea v-model="reviewPaths" rows="2" placeholder="One changed path per line" />
+          <button class="btn" @click="routeReview">Route reviewers</button>
+          <p v-if="reviewResult" class="tiny">Floor + matched: <strong>{{ (reviewResult.reviewers || []).join(', ') }}</strong></p>
+          <p v-if="reviewResult" class="muted tiny">Rules: {{ (reviewResult.matchedRules || []).map(r => r.pattern).join(', ') || 'floor only' }}</p>
+        </section>
+        <section class="card ship">
+          <h2>Ship approval gate</h2>
+          <div v-if="shipState">
+            <p class="tiny" :class="shipState.passed ? 'good' : 'warn'">{{ shipState.passed ? 'Ship gate open' : 'Ship gate blocked' }}</p>
+            <p v-for="c in shipState.checks || []" :key="c.check" class="tiny" :class="c.passed ? 'good' : 'warn'">{{ c.passed ? 'PASS' : 'BLOCK' }} · {{ c.check }} — {{ c.detail }}</p>
+          </div>
+          <input v-model="approvalNote" placeholder="CEO ship approval note" />
+          <button class="btn primary" @click="approveShip">CEO approve ship</button>
+        </section>
+        <section class="card attention">
+          <h2>Attention queue</h2>
+          <div class="row"><button class="btn" @click="autoAccept">Auto-accept reversible · 15m TTL</button><span class="muted tiny">{{ attention.length }} pending · {{ digest.length }} digest cluster(s)</span></div>
+          <article v-for="item in attention" :key="item.id" class="attention-item">
+            <div><strong>{{ item.title }}</strong><p class="muted tiny">{{ item.urgencyLabel }} · {{ item.ageBucket }} · {{ item.reversibility }} · score {{ item.priorityScore.toFixed(1) }}</p></div>
+            <div class="row"><button class="btn ghost" @click="answerAttention(item, 'approved')">Approve</button><button class="btn ghost" @click="answerAttention(item, 'rejected')">Reject</button></div>
+          </article>
+          <p v-if="attention.length === 0" class="muted tiny">No pending questions or approvals.</p>
+        </section>
+        <section class="card memory">
+          <h2>Team memory</h2>
+          <div class="task-form"><input v-model="memoryQuery" placeholder="Keyword search" /><button class="btn" @click="searchMemory">Search</button></div>
+          <div v-for="row in memoryResults" :key="row.entry.id" class="memory-row"><strong>{{ row.entry.title }}</strong><p class="muted tiny">{{ row.entry.learnedFrom }} · score {{ row.score.toFixed(2) }} · tags {{ (row.entry.tags || []).join(', ') }}</p></div>
+          <div class="task-form"><input v-model="memoryTitle" placeholder="New memory title" /></div>
+          <textarea v-model="memoryBody" rows="2" placeholder="Append-only team lesson" />
+          <div class="task-form"><input v-model="memoryTags" placeholder="tags comma-separated" /><button class="btn" @click="writeMemory">Append memory</button></div>
+        </section>
       </main>
       <div v-else class="card empty muted">Create a sprint to begin.</div>
     </section>
@@ -166,5 +261,13 @@ h2 { font-size: var(--fs-13); margin: 0 0 8px; }
 .say { display: flex; gap: 6px; }
 .error { color: var(--destructive); font-size: var(--fs-11); }
 .empty { padding: 40px; text-align: center; }
+.review textarea, .memory textarea { width: 100%; box-sizing: border-box; border: 1px solid var(--input); border-radius: var(--r-8); padding: 7px; margin: 5px 0; background: var(--background); font: inherit; }
+.review > button, .ship > button { margin-top: 6px; }
+.ship input { width: 100%; box-sizing: border-box; border: 1px solid var(--input); border-radius: var(--r-8); padding: 7px; margin: 5px 0; background: var(--background); }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.attention-item { display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid var(--border); padding: 7px 0; }
+.memory-row { border-top: 1px solid var(--border); padding: 6px 0; }
+.good { color: var(--chart-3); }
+.warn { color: var(--destructive); }
 @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } .head { flex-direction: column; } .team-page { padding: 12px; } }
 </style>

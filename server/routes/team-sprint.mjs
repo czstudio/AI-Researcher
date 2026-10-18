@@ -91,4 +91,70 @@ export function registerTeamRoutes(route, helpers = {}) {
     const a = auth(req, p); if (a.denied) return a.denied;
     try { return ok(validateTurnEnvelope(body.role, body.envelope || body)); } catch (err) { return asFail(err); }
   });
+  registerExtendedTeamRoutes(route, helpers, store, own, asFail, auth);
+}
+
+function registerExtendedTeamRoutes(route, helpers, store, own, asFail, auth) {
+  const guard = (req, p) => {
+    const a = auth(req, p);
+    if (a.denied) return { denied: a.denied };
+    const team = store.load(p.id);
+    if (own(team, a.user) === false) return { denied: fail('5200', 'team not owned by caller') };
+    return { a, team };
+  };
+  route('GET', '/team/sprints/:id/review', async (req, res, p) => {
+    const g = guard(req, p); if (g.denied) return g.denied;
+    return ok({ items: store.listReviews(p.id) });
+  });
+  route('POST', '/team/sprints/:id/review/route', async (req, res, p, body) => {
+    const g = guard(req, p); if (g.denied) return g.denied;
+    try { return ok(store.routeReview(p.id, body)); } catch (err) { return asFail(err); }
+  });
+  route('GET', '/team/sprints/:id/ship/approval', async (req, res, p) => {
+    const g = guard(req, p); if (g.denied) return g.denied;
+    try { return ok(store.shipApprovalStatus(p.id)); } catch (err) { return asFail(err); }
+  });
+  route('POST', '/team/sprints/:id/ship/approve', async (req, res, p, body) => {
+    const g = guard(req, p); if (g.denied) return g.denied;
+    try { return ok(store.approveShip(p.id, body)); } catch (err) { return asFail(err); }
+  });
+  route('POST', '/team/sprints/:id/memory', async (req, res, p, body) => {
+    const g = guard(req, p); if (g.denied) return g.denied;
+    try { return ok(store.writeMemory(p.id, body)); } catch (err) { return asFail(err); }
+  });
+  route('GET', '/team/sprints/:id/memory', async (req, res, p) => {
+    const g = guard(req, p); if (g.denied) return g.denied;
+    try {
+      if (p.q) return ok(store.searchMemory(p.id, p.q, { scope: p.scope || 'team', role: p.role || null }));
+      return ok({ items: store.listMemory(p.id, { scope: p.scope || 'team', role: p.role || null }) });
+    } catch (err) { return asFail(err); }
+  });
+  route('POST', '/team/sprints/:id/memory/prune', async (req, res, p, body) => {
+    const g = guard(req, p); if (g.denied) return g.denied;
+    try { return ok(store.pruneMemory(p.id, body.memoryId, body)); } catch (err) { return asFail(err); }
+  });
+  route('GET', '/team/sprints/:id/attention', async (req, res, p) => {
+    const g = guard(req, p); if (g.denied) return g.denied;
+    try { return ok({ items: store.allAttention(p.id, { includeAnswered: p.includeAnswered === 'true' }) }); } catch (err) { return asFail(err); }
+  });
+  route('GET', '/team/sprints/:id/attention/digest', async (req, res, p) => {
+    const g = guard(req, p); if (g.denied) return g.denied;
+    try { return ok(store.attentionDigest(p.id)); } catch (err) { return asFail(err); }
+  });
+  route('POST', '/team/sprints/:id/attention/auto-accept', async (req, res, p, body) => {
+    const g = guard(req, p); if (g.denied) return g.denied;
+    try { return ok(store.autoAcceptReversible(p.id, body)); } catch (err) { return asFail(err); }
+  });
+  route('POST', '/team/sprints/:id/attention/:attentionId/answer', async (req, res, p, body) => {
+    const g = guard(req, p); if (g.denied) return g.denied;
+    try { return ok(store.answerAttention(p.id, p.attentionId, body)); } catch (err) { return asFail(err); }
+  });
+  route('POST', '/team/sprints/:id/progress/turn', async (req, res, p, body) => {
+    const g = guard(req, p); if (g.denied) return g.denied;
+    try { return ok(store.registerTurn(p.id, body)); } catch (err) { return asFail(err); }
+  });
+  route('GET', '/team/sprints/:id/theater', async (req, res, p) => {
+    const g = guard(req, p); if (g.denied) return g.denied;
+    try { return ok(store.theaterStatus(p.id)); } catch (err) { return asFail(err); }
+  });
 }
